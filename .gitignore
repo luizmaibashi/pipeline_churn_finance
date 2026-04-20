@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Ambientes virtuais
+venv/
+.env/
+.venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Modelos grandes (opcional — remova se quiser versionar os .pkl)
+# output/models/*.pkl
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dados sensíveis (em produção, dados reais NUNCA vão pro git)
+# output/data/*.csv   ← descomente se quiser omitir os dados
