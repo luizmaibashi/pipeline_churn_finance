@@ -183,15 +183,16 @@ Este projeto segue **rigorosamente** as 6 fases do CRISP-DM. Diferente de um pro
 ```
 pipeline_churn_finance/
 │
-├── 📓 Projeto_.ipynb         ← Notebook principal (CRISP-DM completo, didático)
-├── 🐍 pipeline.py            ← Script de treino standalone (gera todos os artefatos)
-├── 🐍 app.py                 ← Dashboard Streamlit (produção)
-├── 🐍 transformers.py        ← FeatureEngineer customizado (sklearn-compatible)
-├── 📄 README.md              ← Este arquivo
-├── 📄 requirements.txt       ← Dependências pinadas
-├── 🖼️ deploy.jpeg            ← Screenshot do dashboard (capa)
-├── 🖼️ deploy2.jpeg           ← Screenshot da predição individual
-├── 📄 .gitignore             ← Exclusões de ambiente e cache
+├── 📓 01_Pipeline_Pandas_ScikitLearn.ipynb ← Notebook da Fase 1 (CRISP-DM completo com Pandas)
+├── 📓 02_Evolucao_BigData_PySpark.ipynb  ← Notebook da Fase 2 (Migração para Arquitetura Distribuída e MLflow)
+├── 🐍 pipeline.py                        ← Script de treino standalone (gera todos os artefatos)
+├── 🐍 app.py                             ← Dashboard Streamlit (produção)
+├── 🐍 transformers.py                    ← FeatureEngineer customizado (sklearn-compatible)
+├── 📄 README.md                          ← Este arquivo
+├── 📄 requirements.txt                   ← Dependências pinadas
+├── 🖼️ deploy.jpeg                        ← Screenshot do dashboard (capa)
+├── 🖼️ deploy2.jpeg                       ← Screenshot da predição individual
+├── 📄 .gitignore                         ← Exclusões de ambiente e cache
 │
 └── output/                   ← Gerado por pipeline.py (não editar manualmente)
     ├── data/
@@ -493,6 +494,19 @@ docker run -p 8501:8501 churn-finance
 |---|---|
 | **Build Command** | `pip install -r requirements.txt && python pipeline.py` |
 | **Start Command** | `streamlit run app.py --server.port=$PORT --server.address=0.0.0.0` |
+
+---
+
+## 🚀 Evolução 2.0: Big Data & MLOps (PySpark + MLflow)
+
+Para provar que o projeto escala para cenários de transações financeiras reais em instituições globais, o pipeline original em Pandas/Scikit-Learn foi recriado usando **Apache Spark (PySpark)** e **MLflow**.
+
+| Desafio Resolvido | Ferramenta | Impacto no Negócio |
+|---|---|---|
+| **Escalabilidade (Gargalo de RAM)** | **PySpark** | O modelo agora processa dados de forma *distribuída*, permitindo lidar com Bilhões de linhas sem estourar a memória (Lazy Evaluation). |
+| **Feature Engineering Distribuído** | **VectorAssembler** | Ao invés de mandar colunas soltas pela rede (lento), as features são "esmagadas" em vetores únicos (rápido para cálculos da JVM do Spark). |
+| **Punição ao Churn** | **Class Weights** | O desbalanceamento foi corrigido usando pesos automáticos. O algoritmo penaliza o Falso Negativo, priorizando a segurança da receita. |
+| **Rastreabilidade (Governança)** | **MLflow** | Cada treinamento, parâmetro (ex: `numTrees=100`) e métrica (`f1_score`) é gravado automaticamente no histórico, garantindo reprodutibilidade exigida por órgãos reguladores. |
 
 ---
 
