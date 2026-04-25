@@ -1,6 +1,8 @@
 # 🏦 Churn Prediction — Ecossistema Financeiro Independente
 ### Pipeline de Machine Learning para Retenção de Clientes de Alta Renda
 
+🔴 **Acesse o App Ao Vivo:** [Dashboard Churn Finance](https://pipelinechurnfinance-6tkwgj3d5mzaxqeoxjncq9.streamlit.app/)
+
 > **Dados sintéticos:** Todos os números, clientes e métricas são **fictícios**, gerados com lógica de negócios real embutida para fins de demonstração técnica e portfólio. O contexto é inspirado em plataformas como XP Investimentos, BTG Pactual e Safra, que operam nessa escala.
 
 ---
@@ -470,7 +472,7 @@ Abra os arquivos em `output/charts/*.html` no navegador — hover, zoom e pan na
 ### Opção A — Streamlit Cloud (gratuito, recomendado para portfólio)
 1. Acesse [share.streamlit.io](https://share.streamlit.io) e conecte com GitHub
 2. Selecione o repositório, branch `main`, arquivo: `app.py`
-3. Clique **Deploy** — app live em `https://seu-app.streamlit.app`
+3. Clique **Deploy** — app live em `https://pipelinechurnfinance-6tkwgj3d5mzaxqeoxjncq9.streamlit.app/`
 
 > ⚠️ O Streamlit Cloud **não executa** `pipeline.py`. Os arquivos `.pkl`, `.json` e `.csv` em `output/` precisam estar comitados no repo antes do deploy.
 
