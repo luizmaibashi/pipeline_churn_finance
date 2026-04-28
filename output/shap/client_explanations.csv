@@ -1,0 +1,813 @@
+cliente_id,segmento,churn_prob,churn_real,explicacao
+CLI00591,Varejo,0.9181,1,"Risco de Churn: [ALTO] (91.8%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.2545)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.7520)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6596)"
+CLI00824,Varejo,0.895,1,"Risco de Churn: [ALTO] (89.5%)
+  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+2.3832)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+1.2361)
+  • Tempo como cliente (meses): [-] REDUZ risco (SHAP=-0.4186)"
+CLI00973,Varejo,0.8742,1,"Risco de Churn: [ALTO] (87.4%)
+  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+2.3895)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+1.1954)
+  • Tempo como cliente (meses): [-] REDUZ risco (SHAP=-0.2062)"
+CLI01059,Varejo,0.8734,1,"Risco de Churn: [ALTO] (87.3%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.1549)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7139)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.4746)"
+CLI00997,Varejo,0.8656,1,"Risco de Churn: [ALTO] (86.6%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8112)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.8002)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6849)"
+CLI00412,Wealth,0.8639,1,"Risco de Churn: [ALTO] (86.4%)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+1.4211)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+1.2603)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7253)"
+CLI00600,Varejo,0.8607,1,"Risco de Churn: [ALTO] (86.1%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.9781)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.9047)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.8290)"
+CLI00882,Varejo,0.8545,1,"Risco de Churn: [ALTO] (85.5%)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.9331)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.8596)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.8169)"
+CLI00477,Varejo,0.8541,1,"Risco de Churn: [ALTO] (85.4%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.0817)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.9278)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6990)"
+CLI00812,Varejo,0.8442,1,"Risco de Churn: [ALTO] (84.4%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8122)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6798)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6058)"
+CLI00049,Varejo,0.8361,1,"Risco de Churn: [ALTO] (83.6%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.1666)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8433)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6561)"
+CLI00703,Varejo,0.8207,1,"Risco de Churn: [ALTO] (82.1%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8402)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7122)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6396)"
+CLI00764,Varejo,0.8182,1,"Risco de Churn: [ALTO] (81.8%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.4179)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7926)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4505)"
+CLI00275,Varejo,0.8173,1,"Risco de Churn: [ALTO] (81.7%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.2270)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8833)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5756)"
+CLI00229,Varejo,0.817,1,"Risco de Churn: [ALTO] (81.7%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.1975)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.1474)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.8127)"
+CLI01159,Varejo,0.8076,1,"Risco de Churn: [ALTO] (80.8%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8753)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7448)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4888)"
+CLI00343,Varejo,0.8065,1,"Risco de Churn: [ALTO] (80.7%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.0807)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8031)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5838)"
+CLI00181,Varejo,0.7968,1,"Risco de Churn: [ALTO] (79.7%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.0869)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8512)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6267)"
+CLI00940,Varejo,0.7964,1,"Risco de Churn: [ALTO] (79.6%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.9296)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6088)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5267)"
+CLI00270,Alta Renda,0.7937,1,"Risco de Churn: [ALTO] (79.4%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+1.1386)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.9837)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6895)"
+CLI01118,Varejo,0.783,1,"Risco de Churn: [ALTO] (78.3%)
+  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+1.6557)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.9674)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.8113)"
+CLI00058,Varejo,0.7809,1,"Risco de Churn: [ALTO] (78.1%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.2561)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7834)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4244)"
+CLI00861,Varejo,0.7797,1,"Risco de Churn: [ALTO] (78.0%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.2527)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7409)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6757)"
+CLI00958,Varejo,0.7773,1,"Risco de Churn: [ALTO] (77.7%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.2011)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8641)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4085)"
+CLI01086,Varejo,0.7738,1,"Risco de Churn: [ALTO] (77.4%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.9407)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7762)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.7204)"
+CLI01174,Varejo,0.7689,1,"Risco de Churn: [ALTO] (76.9%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.1886)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.1800)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4012)"
+CLI00085,Varejo,0.7678,1,"Risco de Churn: [ALTO] (76.8%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.0423)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8747)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6708)"
+CLI01139,Varejo,0.7642,1,"Risco de Churn: [ALTO] (76.4%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.9602)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6431)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4623)"
+CLI00910,Varejo,0.7635,1,"Risco de Churn: [ALTO] (76.3%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.4314)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6972)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.3988)"
+CLI00850,Varejo,0.7633,1,"Risco de Churn: [ALTO] (76.3%)
+  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+2.3434)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.9926)
+  • Tempo como cliente (meses): [-] REDUZ risco (SHAP=-0.1806)"
+CLI00461,Varejo,0.7518,1,"Risco de Churn: [ALTO] (75.2%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6828)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.6300)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5088)"
+CLI00459,Varejo,0.7494,1,"Risco de Churn: [ALTO] (74.9%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.0422)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.9680)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6635)"
+CLI01196,Corporate,0.7494,1,"Risco de Churn: [ALTO] (74.9%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.5652)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+1.2705)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5297)"
+CLI00098,Varejo,0.748,1,"Risco de Churn: [ALTO] (74.8%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.3903)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6402)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4205)"
+CLI00279,Alta Renda,0.7467,1,"Risco de Churn: [ALTO] (74.7%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.2399)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.9731)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4151)"
+CLI00019,Varejo,0.7467,1,"Risco de Churn: [ALTO] (74.7%)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.8238)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.8159)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7953)"
+CLI00455,Varejo,0.7426,1,"Risco de Churn: [ALTO] (74.3%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.9882)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.8235)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6366)"
+CLI00930,Varejo,0.7372,1,"Risco de Churn: [ALTO] (73.7%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.4675)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5695)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4755)"
+CLI01162,Varejo,0.7346,1,"Risco de Churn: [ALTO] (73.5%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8885)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4141)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4054)"
+CLI00797,Varejo,0.7338,1,"Risco de Churn: [ALTO] (73.4%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.9376)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.8056)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6753)"
+CLI00550,Varejo,0.7244,1,"Risco de Churn: [ALTO] (72.4%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6738)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6687)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6353)"
+CLI00254,Varejo,0.7239,0,"Risco de Churn: [ALTO] (72.4%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.9954)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8971)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5143)"
+CLI00180,Varejo,0.7226,1,"Risco de Churn: [ALTO] (72.3%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7333)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6322)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6180)"
+CLI00028,Varejo,0.7202,1,"Risco de Churn: [ALTO] (72.0%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.8501)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7141)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3987)"
+CLI00500,Alta Renda,0.7174,1,"Risco de Churn: [ALTO] (71.7%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.4482)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.0669)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.6844)"
+CLI00525,Varejo,0.7147,1,"Risco de Churn: [ALTO] (71.5%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7675)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4533)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4498)"
+CLI00156,Alta Renda,0.7121,1,"Risco de Churn: [ALTO] (71.2%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+1.4609)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.0190)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3655)"
+CLI00807,Wealth,0.7107,1,"Risco de Churn: [ALTO] (71.1%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+1.2922)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.9327)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6160)"
+CLI00881,Alta Renda,0.7102,1,"Risco de Churn: [ALTO] (71.0%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.2420)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.6810)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.6434)"
+CLI00928,Varejo,0.7048,1,"Risco de Churn: [ALTO] (70.5%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.2155)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7214)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7099)"
+CLI00875,Varejo,0.7047,1,"Risco de Churn: [ALTO] (70.5%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.9983)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8843)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8098)"
+CLI00146,Varejo,0.7046,1,"Risco de Churn: [ALTO] (70.5%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.2442)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5529)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3755)"
+CLI00109,Varejo,0.6978,0,"Risco de Churn: [ALTO] (69.8%)
+  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+2.2604)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+1.0869)
+  • Intensidade relativa de movimentação: [-] REDUZ risco (SHAP=-0.2308)"
+CLI00422,Varejo,0.6958,1,"Risco de Churn: [ALTO] (69.6%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.3841)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.3897)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3754)"
+CLI00640,Varejo,0.6951,1,"Risco de Churn: [ALTO] (69.5%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.0296)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6466)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5929)"
+CLI00890,Alta Renda,0.6938,1,"Risco de Churn: [ALTO] (69.4%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.3797)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+1.3457)
+  • Saldo total na custódia: [-] REDUZ risco (SHAP=-0.2925)"
+CLI00872,Varejo,0.6934,1,"Risco de Churn: [ALTO] (69.3%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.9228)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6975)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4561)"
+CLI00469,Wealth,0.6891,1,"Risco de Churn: [ALTO] (68.9%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.4972)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.3670)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-1.0317)"
+CLI00657,Varejo,0.6884,1,"Risco de Churn: [ALTO] (68.8%)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.7801)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7076)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5184)"
+CLI00208,Varejo,0.6867,1,"Risco de Churn: [ALTO] (68.7%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.0492)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5896)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3575)"
+CLI00056,Varejo,0.686,1,"Risco de Churn: [ALTO] (68.6%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8532)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6596)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5157)"
+CLI00133,Varejo,0.6814,1,"Risco de Churn: [ALTO] (68.1%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7627)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7598)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5973)"
+CLI00585,Varejo,0.6791,1,"Risco de Churn: [ALTO] (67.9%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7738)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6393)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5106)"
+CLI00014,Varejo,0.6777,1,"Risco de Churn: [ALTO] (67.8%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.8592)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.6571)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6569)"
+CLI00269,Varejo,0.6754,1,"Risco de Churn: [ALTO] (67.5%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.8485)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7287)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5960)"
+CLI00325,Alta Renda,0.6716,1,"Risco de Churn: [ALTO] (67.2%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.3494)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+1.0019)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3124)"
+CLI00558,Alta Renda,0.666,1,"Risco de Churn: [ALTO] (66.6%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.0313)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.7893)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3270)"
+CLI00614,Alta Renda,0.6652,1,"Risco de Churn: [ALTO] (66.5%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.8999)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.4286)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5521)"
+CLI01071,Varejo,0.6615,1,"Risco de Churn: [ALTO] (66.1%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.8771)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5413)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5253)"
+CLI00118,Wealth,0.6602,1,"Risco de Churn: [ALTO] (66.0%)
+  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+1.8687)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-1.0961)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6114)"
+CLI00590,Varejo,0.6508,1,"Risco de Churn: [ALTO] (65.1%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7201)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6029)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5594)"
+CLI00111,Varejo,0.6443,1,"Risco de Churn: [ALTO] (64.4%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6137)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6078)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4715)"
+CLI00760,Varejo,0.6332,1,"Risco de Churn: [ALTO] (63.3%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7472)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6169)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4945)"
+CLI00064,Varejo,0.6313,1,"Risco de Churn: [ALTO] (63.1%)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.8701)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6999)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5722)"
+CLI00819,Varejo,0.6302,1,"Risco de Churn: [ALTO] (63.0%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.8825)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6579)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6249)"
+CLI00563,Varejo,0.6295,1,"Risco de Churn: [ALTO] (62.9%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7736)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7080)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3866)"
+CLI00547,Alta Renda,0.6289,1,"Risco de Churn: [ALTO] (62.9%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.4981)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.8293)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5986)"
+CLI01046,Varejo,0.6266,1,"Risco de Churn: [ALTO] (62.7%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5125)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4697)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4289)"
+CLI00144,Varejo,0.6227,1,"Risco de Churn: [ALTO] (62.3%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.9109)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6725)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5524)"
+CLI00985,Varejo,0.6223,1,"Risco de Churn: [ALTO] (62.2%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7204)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6451)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3810)"
+CLI00827,Varejo,0.6209,1,"Risco de Churn: [ALTO] (62.1%)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.7399)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6183)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5312)"
+CLI00721,Varejo,0.6207,1,"Risco de Churn: [ALTO] (62.1%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6635)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5911)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4968)"
+CLI00648,Alta Renda,0.6199,1,"Risco de Churn: [ALTO] (62.0%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.5084)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6087)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5655)"
+CLI00372,Varejo,0.6086,1,"Risco de Churn: [ALTO] (60.9%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5518)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4635)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4404)"
+CLI00927,Varejo,0.6071,1,"Risco de Churn: [ALTO] (60.7%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7862)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6847)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6342)"
+CLI01058,Varejo,0.6047,1,"Risco de Churn: [ALTO] (60.5%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7862)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6029)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2789)"
+CLI00005,Varejo,0.602,1,"Risco de Churn: [ALTO] (60.2%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6965)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6759)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3432)"
+CLI01089,Varejo,0.6018,1,"Risco de Churn: [ALTO] (60.2%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8998)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.5472)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.4963)"
+CLI00095,Varejo,0.6002,1,"Risco de Churn: [ALTO] (60.0%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.3234)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5755)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3779)"
+CLI00916,Varejo,0.5966,1,"Risco de Churn: [MEDIO] (59.7%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4672)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4520)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.4264)"
+CLI01131,Varejo,0.5966,1,"Risco de Churn: [MEDIO] (59.7%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5688)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5532)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4285)"
+CLI00243,Varejo,0.5947,1,"Risco de Churn: [MEDIO] (59.5%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5798)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4954)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4343)"
+CLI00266,Alta Renda,0.5915,1,"Risco de Churn: [MEDIO] (59.2%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.8990)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.8417)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6409)"
+CLI00615,Wealth,0.5875,1,"Risco de Churn: [MEDIO] (58.8%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.6867)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.0507)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-1.0211)"
+CLI00357,Varejo,0.5847,1,"Risco de Churn: [MEDIO] (58.5%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6799)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6178)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.5922)"
+CLI00158,Varejo,0.5835,1,"Risco de Churn: [MEDIO] (58.4%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5930)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4202)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.3979)"
+CLI00210,Varejo,0.5823,1,"Risco de Churn: [MEDIO] (58.2%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7051)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5214)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.2661)"
+CLI00748,Wealth,0.5806,1,"Risco de Churn: [MEDIO] (58.1%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.9652)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.8726)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.5893)"
+CLI00232,Varejo,0.5802,1,"Risco de Churn: [MEDIO] (58.0%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7120)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7043)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6148)"
+CLI00704,Varejo,0.5782,1,"Risco de Churn: [MEDIO] (57.8%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8321)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6167)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6154)"
+CLI01177,Varejo,0.572,1,"Risco de Churn: [MEDIO] (57.2%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8049)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6704)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6233)"
+CLI00943,Alta Renda,0.5715,1,"Risco de Churn: [MEDIO] (57.1%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.9946)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.8373)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4265)"
+CLI00738,Varejo,0.568,1,"Risco de Churn: [MEDIO] (56.8%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8540)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.8142)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5159)"
+CLI01005,Alta Renda,0.5629,1,"Risco de Churn: [MEDIO] (56.3%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+1.2360)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5948)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5869)"
+CLI00980,Varejo,0.562,0,"Risco de Churn: [MEDIO] (56.2%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6002)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4908)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4787)"
+CLI00787,Varejo,0.5587,1,"Risco de Churn: [MEDIO] (55.9%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6357)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5122)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3805)"
+CLI00863,Varejo,0.5534,1,"Risco de Churn: [MEDIO] (55.3%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6261)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4174)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.2941)"
+CLI00855,Varejo,0.5509,0,"Risco de Churn: [MEDIO] (55.1%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7285)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5789)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4201)"
+CLI00743,Varejo,0.5506,1,"Risco de Churn: [MEDIO] (55.1%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6096)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5879)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5559)"
+CLI00368,Varejo,0.5471,1,"Risco de Churn: [MEDIO] (54.7%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8968)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5076)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5074)"
+CLI00225,Varejo,0.5463,1,"Risco de Churn: [MEDIO] (54.6%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7126)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6635)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5433)"
+CLI00388,Alta Renda,0.5449,0,"Risco de Churn: [MEDIO] (54.5%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.3649)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5238)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4302)"
+CLI00253,Varejo,0.5425,0,"Risco de Churn: [MEDIO] (54.2%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6575)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5877)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3223)"
+CLI00883,Varejo,0.54,0,"Risco de Churn: [MEDIO] (54.0%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7014)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5882)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3880)"
+CLI01077,Alta Renda,0.5395,1,"Risco de Churn: [MEDIO] (53.9%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.5119)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.4903)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4359)"
+CLI00978,Varejo,0.5367,1,"Risco de Churn: [MEDIO] (53.7%)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5583)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5445)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4066)"
+CLI00692,Varejo,0.5352,1,"Risco de Churn: [MEDIO] (53.5%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.1818)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4680)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.2193)"
+CLI01076,Varejo,0.532,1,"Risco de Churn: [MEDIO] (53.2%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6372)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5866)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3958)"
+CLI00630,Alta Renda,0.5301,1,"Risco de Churn: [MEDIO] (53.0%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.8895)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5944)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.2139)"
+CLI00032,Varejo,0.5179,0,"Risco de Churn: [MEDIO] (51.8%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.8142)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5787)
+  • Saldo total na custódia: [-] REDUZ risco (SHAP=-0.5015)"
+CLI01164,Varejo,0.5167,1,"Risco de Churn: [MEDIO] (51.7%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4695)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3943)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3897)"
+CLI00492,Varejo,0.5155,1,"Risco de Churn: [MEDIO] (51.5%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5840)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3727)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2953)"
+CLI00595,Varejo,0.5129,1,"Risco de Churn: [MEDIO] (51.3%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8805)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.7964)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4574)"
+CLI00604,Varejo,0.5085,1,"Risco de Churn: [MEDIO] (50.8%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6569)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3730)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3634)"
+CLI00449,Varejo,0.5079,1,"Risco de Churn: [MEDIO] (50.8%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7432)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5294)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3985)"
+CLI00223,Varejo,0.507,1,"Risco de Churn: [MEDIO] (50.7%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7744)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4858)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3283)"
+CLI00106,Varejo,0.5065,1,"Risco de Churn: [MEDIO] (50.6%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.0042)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6600)
+  • Tempo como cliente (meses): [-] REDUZ risco (SHAP=-0.3164)"
+CLI00035,Alta Renda,0.505,1,"Risco de Churn: [MEDIO] (50.5%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+1.2970)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6904)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.1773)"
+CLI01147,Alta Renda,0.5041,1,"Risco de Churn: [MEDIO] (50.4%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.3801)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5861)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5479)"
+CLI00030,Varejo,0.5037,1,"Risco de Churn: [MEDIO] (50.4%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7065)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.5282)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5011)"
+CLI00379,Varejo,0.5004,1,"Risco de Churn: [MEDIO] (50.0%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6266)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3351)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3112)"
+CLI01017,Varejo,0.497,1,"Risco de Churn: [MEDIO] (49.7%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.7169)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6283)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.4958)"
+CLI00784,Varejo,0.4876,1,"Risco de Churn: [MEDIO] (48.8%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5607)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4721)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3105)"
+CLI00283,Varejo,0.4865,1,"Risco de Churn: [MEDIO] (48.6%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6533)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5286)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4015)"
+CLI00434,Varejo,0.486,1,"Risco de Churn: [MEDIO] (48.6%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6489)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.3186)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.2678)"
+CLI00476,Varejo,0.4855,1,"Risco de Churn: [MEDIO] (48.5%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5645)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5249)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3274)"
+CLI01030,Varejo,0.4828,0,"Risco de Churn: [MEDIO] (48.3%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6887)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4467)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4007)"
+CLI00374,Varejo,0.4806,1,"Risco de Churn: [MEDIO] (48.1%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6803)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3570)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3274)"
+CLI00885,Varejo,0.4801,0,"Risco de Churn: [MEDIO] (48.0%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6587)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4780)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.2387)"
+CLI01150,Alta Renda,0.4782,1,"Risco de Churn: [MEDIO] (47.8%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+1.1202)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4834)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.2840)"
+CLI00793,Varejo,0.4782,1,"Risco de Churn: [MEDIO] (47.8%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.7310)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4663)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4549)"
+CLI00423,Varejo,0.4758,1,"Risco de Churn: [MEDIO] (47.6%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7626)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5586)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.2890)"
+CLI00706,Varejo,0.4725,0,"Risco de Churn: [MEDIO] (47.2%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.7518)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6444)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6069)"
+CLI00457,Varejo,0.4708,1,"Risco de Churn: [MEDIO] (47.1%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7297)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4569)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3416)"
+CLI00353,Varejo,0.4697,1,"Risco de Churn: [MEDIO] (47.0%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8285)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5616)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3043)"
+CLI00946,Varejo,0.4654,1,"Risco de Churn: [MEDIO] (46.5%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6638)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6513)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4687)"
+CLI00169,Varejo,0.4633,1,"Risco de Churn: [MEDIO] (46.3%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6613)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6495)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2789)"
+CLI00626,Varejo,0.4622,1,"Risco de Churn: [MEDIO] (46.2%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5233)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4555)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.3282)"
+CLI01047,Varejo,0.4593,1,"Risco de Churn: [MEDIO] (45.9%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6976)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6510)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3970)"
+CLI00400,Varejo,0.4578,1,"Risco de Churn: [MEDIO] (45.8%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8140)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6923)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3744)"
+CLI01073,Varejo,0.4565,1,"Risco de Churn: [MEDIO] (45.6%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5710)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3983)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.2861)"
+CLI01194,Varejo,0.456,1,"Risco de Churn: [MEDIO] (45.6%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.5440)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4758)
+  • Tempo como cliente (meses): [-] REDUZ risco (SHAP=-0.1521)"
+CLI00115,Alta Renda,0.4555,1,"Risco de Churn: [MEDIO] (45.6%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+1.1876)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.3622)
+  • Saldo total na custódia: [-] REDUZ risco (SHAP=-0.2302)"
+CLI00428,Varejo,0.4537,1,"Risco de Churn: [MEDIO] (45.4%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5693)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4984)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.2435)"
+CLI00188,Varejo,0.4498,1,"Risco de Churn: [MEDIO] (45.0%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6054)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4994)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3288)"
+CLI00726,Varejo,0.445,1,"Risco de Churn: [MEDIO] (44.5%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6933)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5611)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3026)"
+CLI00782,Varejo,0.4414,0,"Risco de Churn: [MEDIO] (44.1%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7295)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4473)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3667)"
+CLI00896,Varejo,0.4413,1,"Risco de Churn: [MEDIO] (44.1%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.0771)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4200)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.1733)"
+CLI00384,Alta Renda,0.4406,1,"Risco de Churn: [MEDIO] (44.1%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+1.1617)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.6341)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.6083)"
+CLI00639,Varejo,0.4369,1,"Risco de Churn: [MEDIO] (43.7%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5773)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4046)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3775)"
+CLI00382,Varejo,0.4365,1,"Risco de Churn: [MEDIO] (43.6%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.9958)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.3622)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3303)"
+CLI01187,Varejo,0.435,1,"Risco de Churn: [MEDIO] (43.5%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.8069)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6169)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.2876)"
+CLI00915,Varejo,0.4333,0,"Risco de Churn: [MEDIO] (43.3%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4681)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4262)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3743)"
+CLI00770,Varejo,0.4321,1,"Risco de Churn: [MEDIO] (43.2%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6704)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2639)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.2276)"
+CLI01170,Varejo,0.4317,1,"Risco de Churn: [MEDIO] (43.2%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6909)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5143)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3341)"
+CLI00491,Varejo,0.4294,0,"Risco de Churn: [MEDIO] (42.9%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6680)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3659)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2401)"
+CLI00297,Varejo,0.4287,1,"Risco de Churn: [MEDIO] (42.9%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6670)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4216)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.2329)"
+CLI00583,Varejo,0.4248,1,"Risco de Churn: [MEDIO] (42.5%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5720)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4530)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3566)"
+CLI00023,Varejo,0.4206,1,"Risco de Churn: [MEDIO] (42.1%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6501)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3976)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3463)"
+CLI00729,Varejo,0.4202,1,"Risco de Churn: [MEDIO] (42.0%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5994)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5571)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3437)"
+CLI00638,Varejo,0.4187,0,"Risco de Churn: [MEDIO] (41.9%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8937)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5636)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.2254)"
+CLI00878,Varejo,0.4175,1,"Risco de Churn: [MEDIO] (41.8%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7279)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3836)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3748)"
+CLI00114,Varejo,0.4157,1,"Risco de Churn: [MEDIO] (41.6%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5582)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5308)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3223)"
+CLI00696,Varejo,0.4151,1,"Risco de Churn: [MEDIO] (41.5%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6969)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3239)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.2998)"
+CLI01057,Varejo,0.4146,1,"Risco de Churn: [MEDIO] (41.5%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6512)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5894)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4560)"
+CLI00125,Varejo,0.4044,1,"Risco de Churn: [MEDIO] (40.4%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7102)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6347)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3966)"
+CLI00744,Varejo,0.4043,1,"Risco de Churn: [MEDIO] (40.4%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6513)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5256)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3335)"
+CLI00820,Alta Renda,0.403,1,"Risco de Churn: [MEDIO] (40.3%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.5828)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.4679)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.2600)"
+CLI00239,Varejo,0.4,0,"Risco de Churn: [MEDIO] (40.0%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6236)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4241)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2111)"
+CLI00562,Varejo,0.3966,1,"Risco de Churn: [MEDIO] (39.7%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.8775)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5409)
+  • Score de engajamento do cliente: [-] REDUZ risco (SHAP=-0.1689)"
+CLI01095,Varejo,0.3955,0,"Risco de Churn: [MEDIO] (39.6%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5247)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4880)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2880)"
+CLI00880,Varejo,0.3943,1,"Risco de Churn: [MEDIO] (39.4%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4910)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4806)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2095)"
+CLI00609,Alta Renda,0.3882,1,"Risco de Churn: [MEDIO] (38.8%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.9411)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.2394)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.1524)"
+CLI00698,Varejo,0.3857,0,"Risco de Churn: [MEDIO] (38.6%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5613)
+  • Saldo total na custódia: [-] REDUZ risco (SHAP=-0.5236)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4579)"
+CLI00623,Varejo,0.3857,1,"Risco de Churn: [MEDIO] (38.6%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6297)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4796)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.1844)"
+CLI00699,Varejo,0.3792,1,"Risco de Churn: [MEDIO] (37.9%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5117)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.2580)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.2326)"
+CLI00271,Alta Renda,0.3783,0,"Risco de Churn: [MEDIO] (37.8%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.7869)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3047)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.1670)"
+CLI00612,Varejo,0.3779,1,"Risco de Churn: [MEDIO] (37.8%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5917)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4432)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3496)"
+CLI00112,Wealth,0.3776,0,"Risco de Churn: [MEDIO] (37.8%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.4273)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-1.3268)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.3191)"
+CLI00501,Varejo,0.3758,1,"Risco de Churn: [MEDIO] (37.6%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6118)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4492)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4249)"
+CLI00968,Varejo,0.374,0,"Risco de Churn: [MEDIO] (37.4%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6476)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6033)
+  • Saldo total na custódia: [-] REDUZ risco (SHAP=-0.1873)"
+CLI00613,Varejo,0.3725,0,"Risco de Churn: [MEDIO] (37.2%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6152)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4438)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3743)"
+CLI00589,Varejo,0.3709,0,"Risco de Churn: [MEDIO] (37.1%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6513)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5560)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4287)"
+CLI00548,Varejo,0.3665,1,"Risco de Churn: [MEDIO] (36.6%)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6758)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5759)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4252)"
+CLI00135,Varejo,0.3661,1,"Risco de Churn: [MEDIO] (36.6%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6819)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3581)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.0992)"
+CLI00312,Varejo,0.3652,1,"Risco de Churn: [MEDIO] (36.5%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6201)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6178)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3606)"
+CLI00042,Varejo,0.3634,0,"Risco de Churn: [MEDIO] (36.3%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6340)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3633)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3257)"
+CLI00765,Varejo,0.3627,0,"Risco de Churn: [MEDIO] (36.3%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4425)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3726)
+  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3316)"
+CLI00007,Alta Renda,0.3616,0,"Risco de Churn: [MEDIO] (36.2%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.1125)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.4804)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3060)"
+CLI01172,Varejo,0.3538,0,"Risco de Churn: [MEDIO] (35.4%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.7013)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4357)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3559)"
+CLI01009,Varejo,0.3527,1,"Risco de Churn: [MEDIO] (35.3%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.8146)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7125)
+  • Saldo total na custódia: [-] REDUZ risco (SHAP=-0.2239)"
+CLI00610,Varejo,0.3504,1,"Risco de Churn: [MEDIO] (35.0%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6903)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.2505)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2423)"
+CLI00949,Varejo,0.3503,1,"Risco de Churn: [MEDIO] (35.0%)
+  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6042)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2929)
+  • Tempo como cliente (meses): [-] REDUZ risco (SHAP=-0.2912)"

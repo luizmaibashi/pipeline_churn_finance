@@ -1,0 +1,73 @@
+{
+  "run_at": "2026-04-27T20:35:17.437837",
+  "model_version": "v1",
+  "n_ref": 840,
+  "n_curr": 360,
+  "numeric_drift": {
+    "meses_cliente": {
+      "ks_statistic": 0.079,
+      "p_value": 0.0821,
+      "drift_detected": false,
+      "ref_mean": 70.13928571428572,
+      "curr_mean": 76.7167
+    },
+    "qtd_produtos": {
+      "ks_statistic": 0.0528,
+      "p_value": 0.4691,
+      "drift_detected": false,
+      "ref_mean": 4.375,
+      "curr_mean": 4.4694
+    },
+    "retorno_12m_pct": {
+      "ks_statistic": 0.0476,
+      "p_value": 0.6011,
+      "drift_detected": false,
+      "ref_mean": 11.557261904761905,
+      "curr_mean": 11.5012
+    },
+    "freq_contato_mes": {
+      "ks_statistic": 0.0365,
+      "p_value": 0.8784,
+      "drift_detected": false,
+      "ref_mean": 2.808333333333333,
+      "curr_mean": 2.7056
+    },
+    "saldo_bi": {
+      "ks_statistic": 0.0282,
+      "p_value": 0.9852,
+      "drift_detected": false,
+      "ref_mean": 0.39050988095238093,
+      "curr_mean": 0.4421
+    }
+  },
+  "categorical_drift": {
+    "segmento": {
+      "chi2_statistic": 0.0046,
+      "p_value": 0.9999,
+      "drift_detected": false
+    }
+  },
+  "score_drift": {
+    "ks_statistic": 0.0651,
+    "p_value": 0.2268,
+    "drift_detected": false,
+    "mean_score_ref": 0.1913,
+    "mean_score_curr": 0.2147,
+    "delta_mean": 0.0234
+  },
+  "summary": {
+    "status": "ATENCAO",
+    "n_alerts": 1,
+    "alerts": [
+      "TARGET DRIFT — Taxa churn ref=18.21% | curr=24.17% | delta=5.95%"
+    ],
+    "retraining_needed": false,
+    "recommendation": "Monitoramento normal. Verificar novamente na proxima semana."
+  },
+  "target_drift": {
+    "churn_rate_ref": 0.1821,
+    "churn_rate_curr": 0.2417,
+    "delta": 0.0595,
+    "alert": true
+  }
+}

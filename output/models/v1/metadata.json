@@ -1,0 +1,23 @@
+{
+  "version": "v1",
+  "promoted_at": "2026-04-27T20:33:46.591131",
+  "algorithm": "GradientBoostingClassifier",
+  "random_state": 42,
+  "metrics": {
+    "f1_macro": 0.8007,
+    "roc_auc": 0.9327,
+    "threshold": 0.4
+  },
+  "data_profile": {
+    "n_samples": 1200,
+    "churn_rate_pct": 20.0,
+    "n_features": 6,
+    "top_shap_feature": "segmento_enc"
+  },
+  "artifacts": [
+    "gb_pipeline.pkl",
+    "fe_params.json",
+    "metadata.json"
+  ],
+  "notes": "Promovido via version_manager.py. Versao anterior: N/A."
+}

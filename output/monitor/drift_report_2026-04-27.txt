@@ -1,0 +1,26 @@
+============================================================
+DRIFT REPORT — Churn Finance | 2026-04-27
+Modelo em producao: v1
+============================================================
+
+STATUS GERAL: [ATENCAO]
+Alertas detectados: 1
+
+ALERTAS:
+  [!] TARGET DRIFT — Taxa churn ref=18.21% | curr=24.17% | delta=5.95%
+
+FEATURES NUMERICAS (KS-Test):
+  [OK]    meses_cliente            KS=0.0790  mean_ref=70.1393  mean_curr=76.7167
+  [OK]    qtd_produtos             KS=0.0528  mean_ref=4.3750  mean_curr=4.4694
+  [OK]    retorno_12m_pct          KS=0.0476  mean_ref=11.5573  mean_curr=11.5012
+  [OK]    freq_contato_mes         KS=0.0365  mean_ref=2.8083  mean_curr=2.7056
+  [OK]    saldo_bi                 KS=0.0282  mean_ref=0.3905  mean_curr=0.4421
+
+FEATURES CATEGORICAS (Chi-Quadrado):
+  [OK]    segmento                 p=0.9999
+
+SCORE DRIFT (KS): 0.0651 — [OK]
+TARGET DRIFT:      churn_ref=18.21%  churn_curr=24.17%  delta=5.95%
+
+RECOMENDACAO: Monitoramento normal. Verificar novamente na proxima semana.
+============================================================
