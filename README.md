@@ -32,8 +32,9 @@ Inspirado pelos debates recentes na comunidade de MLOps sobre *"The shift from m
 *   📊 `app.py` — Dashboard Streamlit com *Dark Mode Premium* para uso direto pelos Assessores de Investimento.
 *   🛡️ `monitor.py` — Sistema de *Data Drift* semanal usando testes estatísticos robustos (KS-Test, Chi-Quadrado) para detectar se os dados atuais desviaram da base de treino.
 
-### 3. Visão Agêntica (Data Agent PoC)
-*   🤖 `agent.py` & `agent_chat.py` — Um protótipo de Agente LLM (via OpenAI) com chamadas a ferramentas (*function calling*). Ele consome a FastAPI para interpretar resultados de drift, consultar clientes em risco e calcular impactos financeiros através de um chat interativo. *(Requer configuração do `.env`)*.
+### 3. Visão Agêntica e Orquestração Autônoma (Stanford CS230 / Software 3.0)
+*   🤖 **`agent.py` & `agent_chat.py`** — Um protótipo de Agente LLM (via OpenAI) com chamadas a ferramentas (*function calling*). Ele consome a FastAPI para interpretar resultados, consultar clientes e simular ações de retenção.
+*   🧠 **`orchestrator.py`** — Implementação pura do *Mindset Agêntico*. Em vez do PM-Engineer ler dezenas de logs estatísticos de *Data Drift* gerados pelo `monitor.py`, o orquestrador aciona o LLM automaticamente quando o KS-Test ou Chi-Quadrado falha. O Agente "reflete" sobre a anomalia e redige um **Executive Summary Markdown** para a diretoria, explicando o risco do modelo envelhecer.
 
 ### 4. Estudo Original
 *   📓 `notebooks/` — Cadernos originais detalhando a transição do pandas+scikit-learn tradicional até a migração para **PySpark**.
