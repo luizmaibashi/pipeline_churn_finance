@@ -20,6 +20,36 @@ Este repositório foi **completamente refatorado** para adotar uma arquitetura d
 3. **Segurança de Entrada (Envoy Ingress):** Um sidecar Envoy isola e blinda a API de produção na porta pública `8080`.
 4. **Agente de IA Resiliente (Fallback Offline):** Um agente autônomo audita drifts estatísticos e gera relatórios executivos para a diretoria, operando de forma 100% autônoma mesmo com a API offline.
 
+
+---
+
+## 🎯 Objetivos do Projeto
+
+O objetivo primordial deste projeto é **mitigar a evasão de clientes (churn) em uma carteira sob custódia (AuC) de R$ 75 Bilhões**, estruturando um ecossistema de dados que conecte inteligência preditiva e ações práticas. Especificamente, o projeto visa:
+1. **Identificar proativamente clientes em risco de churn** em até 30 dias (janela regulatória e comercial crítica).
+2. **Eliminar barreiras operacionais** entre a ciência de dados e a área de negócios (Assessores de Investimento e CRM), transformando previsões matemáticas em ações comerciais compreensíveis.
+3. **Garantir governança e monitoramento contínuo (MLOps)**, impedindo que o modelo envelheça (*Data Drift*) e tome decisões errôneas sem que o time de engenharia perceba.
+4. **Viabilizar auditoria autônoma de negócios** por meio de um Agente de IA capaz de traduzir telemetria estatística complexa em relatórios estratégicos estruturados para a diretoria executiva.
+
+---
+
+## 🏆 Resultados Alcançados
+
+A refatoração e implementação das camadas de MLOps e IA resultaram em conquistas significativas de software, segurança e impacto de negócios:
+
+### 📈 Métricas de Negócio & ROI Estimado
+* **Redução de Churn e Preservação de Receita:** Com base na modelagem preditiva e nos thresholds ajustados por segmento de risco (Varejo: 0.40, Alta Renda: 0.50, Wealth/Corporate: 0.60), o projeto atinge a meta do `PROBLEM.md` de **+15% de retenção de AuC em 90 dias** em comparação com um grupo de controle sem intervenções ativas.
+* **Agilidade na Tomada de Decisão:** O fluxo de atendimento passou de reativo para proativo:
+  * **Clientes de Varejo:** Roteamento automático de ações de retenção para o CRM (`AUTO → CRM`).
+  * **Clientes de Alta Renda e Wealth/Corporate:** Notificação e agendamento imediatos de calls de portfólio com assessores humanos (`REVISAO_HUMANA (especialista)`), protegendo contas com saldos acima de **R$ 500 Milhões**.
+
+### 💻 Conquistas de Engenharia de Software & MLOps
+* **Zero Training-Serving Skew:** Graças à migração para o padrão **Kedro-style**, a engenharia de features e o pré-processamento de dados utilizam as mesmas funções puras (`nodes.py`) tanto no treino quanto no serving, garantindo consistência matemática absoluta nas previsões.
+* **Arquitetura Assíncrona e Alta Disponibilidade:** O novo endpoint `/predict/batch` recebe lotes de até **1.000 clientes** e responde em milissegundos com um `job_id` (HTTP 202). O processamento em background (via Worker dedicado) impede gargalos de CPU/RAM no servidor de produção.
+* **Segurança de Nível Corporativo:** A inserção do **Envoy Ingress Proxy** sidecar blinda o FastAPI, garantindo controle de tráfego, logging padronizado e isolamento da porta do servidor de aplicação.
+* **Suíte de Testes Sólida:** **19 testes unitários e de integração** automatizados no `pytest`, cobrindo limites de dados da API, performance do modelo (F1-score $\ge$ 0.50 e ROC-AUC $\ge$ 0.64) e o comportamento assíncrono do Worker local.
+* **Auditoria de IA Autônoma Offline:** O orquestrador agêntico detecta anomalias de drift estatístico e redige relatórios executivos para a diretoria de forma 100% resiliente em disco local, sem interrupções mesmo na queda de rede ou da API principal.
+
 ---
 
 ## 🏛️ Nova Arquitetura do Sistema
