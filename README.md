@@ -1,85 +1,134 @@
 # 🚀 Churn Finance Pipeline — De Modelos a Sistemas em Produção
 
-Bem-vindo ao repositório do **Churn Finance Pipeline**. 
+[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.13-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111%2B-green.svg)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/Docker-Compose%20V2-blue.svg)](https://www.docker.com/)
+[![Envoy](https://img.shields.io/badge/Envoy-Proxy%20Ingress-red.svg)](https://www.envoyproxy.io/)
+[![Pytest](https://img.shields.io/badge/Tests-19%20Passed-brightgreen.svg)](https://docs.pytest.org/)
 
-Este projeto foi construído como um laboratório de melhores práticas para resolver um problema clássico: como evoluir de um "modelo de laboratório" (focado apenas em otimizar métricas em um Jupyter Notebook) para um **Sistema de Machine Learning em Produção** (seguro, explicável, monitorado e acessível).
+Bem-vindo ao repositório do **Churn Finance Pipeline**. Este projeto foi construído como um ecossistema de produção para predição de churn de clientes em uma carteira sob custódia (AuC) de **R$ 75 bilhões**, implementando as melhores práticas de MLOps, Engenharia de Software e IA Agêntica.
 
 ---
 
 ## 📖 A Narrativa do Projeto (Por que este repositório existe?)
 
-No mercado financeiro atual, prever quem vai dar churn não é suficiente. As áreas de negócio não consomem modelos `.pkl` nem notebooks. Elas consomem APIs, precisam de explicações claras para fins regulatórios e exigem a garantia de que o modelo não está degradando com o tempo.
+No mercado financeiro de alta renda, as áreas de negócio não consomem modelos `.pkl` soltos ou Jupyter Notebooks. Elas exigem APIs seguras de alta disponibilidade, auditorias de governança (LGPD) e monitoramento contínuo contra a degradação do modelo (*Data Drift*).
 
-Inspirado pelos debates recentes na comunidade de MLOps sobre *"The shift from models to systems"* e na visão de LLMs como *"Reasoning Engines"*, este projeto inverte a lógica tradicional da ciência de dados:
-
-1. **O Contrato Primeiro (`PROBLEM.md`):** Antes de treinar o modelo, defini as regras do jogo. O que é o churn? Quais os *guardrails* para evitar *data leakage*? Como medimos sucesso financeiramente? O foco deixou de ser apenas a "previsão" e passou a ser a "especificação" do problema.
-2. **Explicabilidade Sistêmica:** Utilizando SHAP, o sistema traduz a matemática do modelo em explicações gerenciais. Não é apenas *"Risco Alto"*; é *"Risco Alto porque o assessor não faz contato há 70 dias"*.
-3. **Escala e Robustez:** O modelo não roda solto. Ele é empacotado em um Model Registry (`version_manager.py`), vigiado semanalmente contra degradação (`monitor.py`), e servido para o mundo externo via uma API REST veloz (`api.py`).
-4. **Visão Agêntica (Próximo Passo):** Para coroar a acessibilidade, construí um protótipo de **Data Agent** que consome essas APIs. A ideia é permitir que gestores perguntem em linguagem natural: *"Qual o impacto financeiro salvo no segmento Wealth hoje?"*.
-
----
-
-## 🛠️ Arquitetura e Estrutura do Repositório
-
-### 1. Rigor de Produção e Contratos
-*   📄 `PROBLEM.md` — O documento fundacional que define o conceito de churn, as métricas anti-bs e as regras contra vazamento de dados.
-*   🧠 `pipeline.py` & `transformers.py` — O pipeline de treinamento em Gradient Boosting com feature engineering encapsulado, prevenindo *Training-Serving Skew*.
-*   🔍 `shap_analysis.py` — Módulo de explicabilidade (SHAP) que gera relatórios em linguagem natural por cliente, *LGPD-ready*.
-*   📦 `version_manager.py` — Um *Model Registry* simples que salva métricas, hiperparâmetros e gera *snapshots* do modelo (ex: `v1/`, `v2/`).
-
-### 2. MLOps e Interfaces
-*   📡 `api.py` — API REST com FastAPI (com *Swagger UI* e *ReDoc*) servindo 6 endpoints essenciais para predição e monitoramento em lote e tempo real.
-*   📊 `app.py` — Dashboard Streamlit com *Dark Mode Premium* para uso direto pelos Assessores de Investimento.
-*   🛡️ `monitor.py` — Sistema de *Data Drift* semanal usando testes estatísticos robustos (KS-Test, Chi-Quadrado) para detectar se os dados atuais desviaram da base de treino.
-
-### 3. Visão Agêntica e Orquestração Autônoma (Stanford CS230 / Software 3.0)
-*   🤖 **`agent.py` & `agent_chat.py`** — Um protótipo de Agente LLM (via OpenAI) com chamadas a ferramentas (*function calling*). Ele consome a FastAPI para interpretar resultados, consultar clientes e simular ações de retenção.
-*   🧠 **`orchestrator.py`** — Implementação pura do *Mindset Agêntico*. Em vez do PM-Engineer ler dezenas de logs estatísticos de *Data Drift* gerados pelo `monitor.py`, o orquestrador aciona o LLM automaticamente quando o KS-Test ou Chi-Quadrado falha. O Agente "reflete" sobre a anomalia e redige um **Executive Summary Markdown** para a diretoria, explicando o risco do modelo envelhecer.
-
-### 4. Estudo Original
-*   📓 `notebooks/` — Cadernos originais detalhando a transição do pandas+scikit-learn tradicional até a migração para **PySpark**.
+Este repositório foi **completamente refatorado** para adotar uma arquitetura de sistemas robusta, garantindo:
+1. **Zero Training-Serving Skew:** Separação rígida de I/O e lógica analítica utilizando um catálogo de dados declarativo.
+2. **Inferência Larga e Escalável:** Endpoint assíncrono para processamento em lote que não sobrecarrega a API web, delegando tarefas para um Worker em background.
+3. **Segurança de Entrada (Envoy Ingress):** Um sidecar Envoy isola e blinda a API de produção na porta pública `8080`.
+4. **Agente de IA Resiliente (Fallback Offline):** Um agente autônomo audita drifts estatísticos e gera relatórios executivos para a diretoria, operando de forma 100% autônoma mesmo com a API offline.
 
 ---
 
-## 🖥️ Como Executar a Esteira Completa
+## 🏛️ Nova Arquitetura do Sistema
 
-**1. Preparar o ambiente:**
-```bash
-pip install -r requirements.txt
+A nova estrutura do repositório adota conceitos de **Kedro-style modularity** e microsserviços conteinerizados:
+
+```mermaid
+flowchart TD
+    subgraph Ingress & Web Layer [Camada Web & Proxy]
+        Envoy[Envoy Proxy :8080] -->|Inbound HTTP| API[FastAPI API :8000]
+    end
+
+    subgraph Data & Queue Layer [Fila & Armazenamento]
+        API -->|Enqueue Batch| Queue{Mensageria Dual-Mode}
+        Queue -->|Redis URL se Ativo| Redis[(Redis Queue)]
+        Queue -->|Fallback Local| SQLite[(SQLite jobs.db)]
+    end
+
+    subgraph Processing Layer [Camada de Execução]
+        Worker[Inference Worker] -->|Consome fila| Queue
+        Worker -->|Load Model| Catalog[Data Catalog]
+        API -->|Load Model| Catalog
+        Catalog -->|Leitura Config| YAMLs[conf/base/catalog.yml]
+    end
+
+    subgraph Agent Audit [Auditoria Agêntica]
+        Orchestrator[Orchestrator] -->|Se drift detectado| Agent[IA Agent]
+        Agent -->|Fallback Offline se API Off| local_files[(output/ monitor & shap)]
+    end
 ```
 
-**2. O Fluxo de MLOps (Terminal 1):**
+---
+
+## 🛠️ Detalhes dos Componentes
+
+### 1. Modularidade Estilo Kedro (`conf/` & `src/`)
+* **[catalog.yml](file:///C:/Users/Luiz%20Maibashi/Documents/Base_de_Conhecimento%20(1)/PROJETOS/02_PORTFOLIO/pipeline_churn_finance/conf/base/catalog.yml) & [parameters.yml](file:///C:/Users/Luiz%20Maibashi/Documents/Base_de_Conhecimento%20(1)/PROJETOS/02_PORTFOLIO/pipeline_churn_finance/conf/base/parameters.yml):** Centralização declarativa dos caminhos de dados e hiperparâmetros de modelagem.
+* **[kedro_runner.py](file:///C:/Users/Luiz%20Maibashi/Documents/Base_de_Conhecimento%20(1)/PROJETOS/02_PORTFOLIO/pipeline_churn_finance/src/kedro_runner.py):** Abstração de catálogo (`DataCatalog`) que gerencia I/O para CSVs, Pickles e JSONs de forma automática.
+* **[nodes.py](file:///C:/Users/Luiz%20Maibashi/Documents/Base_de_Conhecimento%20(1)/PROJETOS/02_PORTFOLIO/pipeline_churn_finance/src/data_processing/nodes.py):** Funções analíticas puras e testáveis unitariamente.
+
+### 2. Serving Assíncrono com Redis/SQLite e Sidecar Envoy
+* **Fila Dual-Mode (`src/job_queue.py`):** Suporta mensageria via Redis (para produção) e chave-valor SQLite integrado para desenvolvimento e testes locais offline.
+* **Inference Worker (`worker.py`):** Processador em background assíncrono para previsões de lote pesadas.
+* **FastAPI Async Endpoints (`api.py`):**
+  * `POST /predict/batch` — Recebe o lote de até 1.000 clientes, enfileira e retorna `202 Accepted` com `job_id` imediatamente.
+  * `GET /predict/batch/status/{job_id}` — Permite monitorar o status (`PENDING`, `PROCESSING`, `COMPLETED`, `FAILED`) e obter os resultados finais.
+* **Proxy Ingress (`envoy.yaml`):** Envoy Proxy atuando como API Gateway de borda, mapeando tráfego de entrada na porta `8080`.
+
+### 3. Agente de IA Robusto com Fallback Offline (`agent.py` & `orchestrator.py`)
+* Quando o monitoramento estatístico (`monitor.py`) detecta desvio nos dados (*Data Drift*), o `orchestrator.py` dispara o Agente de IA.
+* O Agente conta com **fallbacks offline automáticos**: caso a API do backend esteja indisponível, ele consulta diretamente os arquivos em disco (`output/shap/*.csv` e `output/monitor/*.json`) de maneira resiliente para formular e salvar o relatório analítico final da diretoria.
+
+---
+
+## 🧪 Suíte de Testes Unitários e de Integração
+
+O repositório possui uma robusta cobertura de testes com **19 testes automatizados** sob a pasta `tests/`:
+
+* **`test_features.py`**: Garante o comportamento correto das lógicas de Feature Engineering.
+* **`test_model.py`**: Valida a integridade do pipeline serializado e garante thresholds mínimos de performance (F1-macro e ROC-AUC).
+* **`test_api.py`**: Valida contratos de API, limites do Pydantic (ex: saldo negativo, quantidade de produtos inválida) e a execução completa da fila assíncrona de lotes via `BackgroundTasks`.
+
 ```bash
-# Treina o modelo inicial
+# Para executar os testes localmente:
+python -m pytest -v
+```
+
+---
+
+## 🖥️ Como Executar o Projeto Conteinerizado (Produção)
+
+Certifique-se de possuir o Docker e Docker Compose instalados no sistema.
+
+**1. Subir a stack completa (Redis + FastAPI + Worker + Envoy Proxy):**
+```bash
+docker compose up --build
+```
+* O **FastAPI** estará exposto com segurança na porta pública via Envoy Proxy: `http://localhost:8080`
+* O Swagger UI interativo estará acessível em: `http://localhost:8080/docs`
+
+**2. Testar Ingestão Assíncrona em Lote:**
+```bash
+# 1. Enviar lote de inferência (Retorna HTTP 202 Accepted + job_id)
+curl -X POST http://localhost:8080/predict/batch \
+     -H "Content-Type: application/json" \
+     -d '{"clientes": [{"cliente_id": "CLI01", "segmento": "Wealth", "meses_cliente": 24, "qtd_produtos": 3, "retorno_12m_pct": 12.5, "freq_contato_mes": 2, "saldo_bi": 0.55}]}'
+
+# 2. Consultar o resultado usando o job_id retornado
+curl -X GET http://localhost:8080/predict/batch/status/{job_id}
+```
+
+---
+
+## 🖥️ Como Executar Localmente (Desenvolvimento / Fallback SQLite)
+
+Caso queira rodar localmente sem Docker, o sistema gerenciará a fila de background automaticamente via SQLite local:
+
+**1. Treinar Modelo & Gerar SHAP e Drift:**
+```bash
+# Roda a esteira de modelagem modular
 python pipeline.py
-
-# Gera as explicações SHAP por cliente
+# Gera explicabilidade SHAP
 python shap_analysis.py
-
-# Empacota o modelo no Model Registry (Cria a versão v1)
-python version_manager.py
-
-# Verifica o estado da base atual (Data Drift)
-python monitor.py
+# Simula monitoramento estatístico e auditoria agêntica offline
+python orchestrator.py
 ```
 
-**3. Subir os Serviços:**
+**2. Subir API Localmente:**
 ```bash
-# Terminal 2 - Iniciar a FastAPI (Backend)
 uvicorn api:app --host 0.0.0.0 --port 8000
-
-# Terminal 3 - Iniciar o Dashboard (Para os assessores)
-streamlit run app.py
-
-# Terminal 4 - Iniciar o Data Agent (Para a diretoria)
-streamlit run agent_chat.py
 ```
-
-*(Dica: acesse a documentação interativa da API em `http://localhost:8000/docs` após subir a FastAPI).*
-
----
-
-## 🔮 O Futuro do Projeto
-
-Este projeto demonstra a infraestrutura mínima para um sistema inteligente. O próximo horizonte envolve validar a **Ação Recomendada** no mundo real.
-Criaremos um *Feedback Loop* onde as interações do CRM com os clientes sinalizados em risco voltarão para alimentar e avaliar se a intervenção de fato impediu o churn, retroalimentando as iterações futuras do modelo e fechando o ciclo de inteligência de negócios.
+*(O sistema executará as tarefas assíncronas do lote em threads locais integradas usando SQLite, dispensando o Redis no setup local).*

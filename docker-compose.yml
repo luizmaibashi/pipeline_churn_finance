@@ -1,0 +1,42 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: churn_redis
+    expose:
+      - 6379
+
+  web:
+    build: .
+    container_name: churn_api
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./output:/app/output
+      - ./conf:/app/conf
+    depends_on:
+      - redis
+    expose:
+      - 8000
+
+  worker:
+    build: .
+    container_name: churn_worker
+    command: python worker.py
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./output:/app/output
+      - ./conf:/app/conf
+    depends_on:
+      - redis
+      - web
+
+  envoy:
+    image: envoyproxy/envoy:v1.28-latest
+    container_name: churn_envoy
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    ports:
+      - "8080:8080"
+    depends_on:
+      - web

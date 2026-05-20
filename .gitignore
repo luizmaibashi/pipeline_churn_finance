@@ -31,3 +31,10 @@ Thumbs.db
 
 # Dados sensíveis (em produção, dados reais NUNCA vão pro git)
 # output/data/*.csv   ← descomente se quiser omitir os dados
+
+# SQLite e fila de mensagens local
+output/*.db
+output/jobs.db
+
+# Cache de testes
+.pytest_cache/

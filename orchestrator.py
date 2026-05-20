@@ -1,8 +1,15 @@
 import os
+import sys
 import subprocess
 import glob
 import json
 from agent import run_agent
+
+if sys.platform.startswith('win'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
 
 # Configurações
 MONITOR_DIR = os.path.join("output", "monitor")
@@ -37,7 +44,7 @@ def orchestrate_drift_and_summary():
         # 3. Engenharia de Prompt para o Agente analisar o contexto
         prompt = (
             f"Fui acionado pelo monitor de MLOps. O status atual do modelo é {status}. "
-            f"Temos {report['summary']['n_alertas']} alertas disparados nas distribuições de dados.\n"
+            f"Temos {report['summary']['n_alerts']} alertas disparados nas distribuições de dados.\n"
             f"Por favor, verifique os alertas_drift na sua base e me gere um resumo executivo "
             f"explicando para a diretoria qual é o impacto comercial desse envelhecimento do modelo "
             f"e o que devemos fazer."

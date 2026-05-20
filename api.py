@@ -30,15 +30,19 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 from typing import Literal, Optional
 from contextlib import asynccontextmanager
 
-# ── Importa o transformer customizado (necessário para unpickle)
+# ── Importa a fila de processamento assíncrono e o transformer
+from src.job_queue import JobQueue
 from transformers import FeatureEngineer   # noqa: F401
+
+# ── Inicializa a fila global de Jobs
+job_queue = JobQueue()
 
 # ── Constantes do PROBLEM.md ─────────────────────────────────
 SEGMENTOS_VALIDOS = ["Varejo", "Alta Renda", "Wealth", "Corporate"]
@@ -392,41 +396,110 @@ async def predict(cliente: ClienteInput):
     return _predict_one(cliente)
 
 
-@app.post("/predict/batch", response_model=BatchResult, tags=["Prediction"])
-async def predict_batch(payload: BatchInput):
+def run_local_worker_task(job_id: str):
+    """Worker local simplificado que roda em thread de background caso o Redis esteja off."""
+    import sqlite3
+    try:
+        job_queue.update_job(job_id, "PROCESSING")
+        
+        # Carrega os dados do banco
+        status_data = job_queue.get_status(job_id)
+        if not status_data:
+            return
+            
+        conn = sqlite3.connect(job_queue.db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT payload FROM jobs WHERE id = ?", (job_id,))
+        payload_str = cursor.fetchone()[0]
+        conn.close()
+        
+        payload_dict = json.loads(payload_str)
+        clientes_list = payload_dict.get("clientes", [])
+        
+        # Roda as predições usando as funções internas do api.py
+        results = []
+        for c_dict in clientes_list:
+            cliente_obj = ClienteInput(**c_dict)
+            pred_res = _predict_one(cliente_obj)
+            results.append(pred_res)
+            
+        alto   = [r for r in results if r.risk_level == "ALTO"]
+        medio  = [r for r in results if r.risk_level == "MEDIO"]
+        baixo  = [r for r in results if r.risk_level == "BAIXO"]
+        humano = [r for r in results if "REVISAO" in r.flow]
+        
+        total_auc_risk = round(sum(r.auc_at_risk_MM for r in alto), 2)
+        
+        summary = {
+            "total_clientes"         : len(results),
+            "alto_risco"             : len(alto),
+            "medio_risco"            : len(medio),
+            "baixo_risco"            : len(baixo),
+            "revisao_humana"         : len(humano),
+            "auc_total_em_risco_MM"  : total_auc_risk,
+            "pct_alto_risco"         : f"{len(alto)/len(results)*100:.1f}%",
+        }
+        
+        batch_result = {
+            "total": len(results),
+            "scored_at": datetime.datetime.now().isoformat(),
+            "model_version": _state.get("version", "N/A"),
+            "results": [r.dict() for r in results],
+            "summary": summary
+        }
+        
+        job_queue.update_job(job_id, "COMPLETED", result=batch_result)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        job_queue.update_job(job_id, "FAILED", error=str(e))
+
+
+class JobStatusResponse(BaseModel):
+    job_id: str
+    status: str
+    created_at: Optional[str] = None
+    completed_at: Optional[str] = None
+    error: Optional[str] = None
+    result: Optional[BatchResult] = None
+
+
+@app.post("/predict/batch", status_code=202, tags=["Prediction"])
+async def predict_batch(payload: BatchInput, background_tasks: BackgroundTasks):
     """
-    Predição de churn em **lote** (até 1.000 clientes por request).
+    Inicia predição de churn em **lote** de forma assíncrona (até 1.000 clientes).
 
-    Retorna resultados individuais + resumo agregado:
-    - total por nível de risco
-    - AuC total em risco
-    - clientes que precisam de revisão humana
+    Retorna um `job_id` com status `202 Accepted` imediatamente.
+    Para obter os resultados, consulte o endpoint `/predict/batch/status/{job_id}`.
     """
-    results = [_predict_one(c) for c in payload.clientes]
+    job_id = job_queue.enqueue(payload.dict())
+    
+    # Se não houver Redis conectado, usa o worker local integrado via BackgroundTasks do FastAPI
+    if job_queue.redis_client is None:
+        background_tasks.add_task(run_local_worker_task, job_id)
+        
+    return {"job_id": job_id, "status": "PENDING"}
 
-    alto   = [r for r in results if r.risk_level == "ALTO"]
-    medio  = [r for r in results if r.risk_level == "MEDIO"]
-    baixo  = [r for r in results if r.risk_level == "BAIXO"]
-    humano = [r for r in results if "REVISAO" in r.flow]
 
-    total_auc_risk = round(sum(r.auc_at_risk_MM for r in alto), 2)
+@app.get("/predict/batch/status/{job_id}", response_model=JobStatusResponse, tags=["Prediction"])
+async def get_batch_status(job_id: str):
+    """
+    Consulta o status e o resultado de uma predição em lote de forma assíncrona.
 
-    summary = {
-        "total_clientes"         : len(results),
-        "alto_risco"             : len(alto),
-        "medio_risco"            : len(medio),
-        "baixo_risco"            : len(baixo),
-        "revisao_humana"         : len(humano),
-        "auc_total_em_risco_MM"  : total_auc_risk,
-        "pct_alto_risco"         : f"{len(alto)/len(results)*100:.1f}%",
-    }
-
-    return BatchResult(
-        total         = len(results),
-        scored_at     = datetime.datetime.now().isoformat(),
-        model_version = _state.get("version", "N/A"),
-        results       = results,
-        summary       = summary,
+    Retorna status: `PENDING`, `PROCESSING`, `COMPLETED` ou `FAILED`.
+    Caso status seja `COMPLETED`, inclui o campo `result` com o `BatchResult` consolidado.
+    """
+    job_data = job_queue.get_status(job_id)
+    if not job_data:
+        raise HTTPException(status_code=404, detail=f"Job {job_id} não encontrado.")
+        
+    return JobStatusResponse(
+        job_id=job_id,
+        status=job_data["status"],
+        created_at=job_data.get("created_at"),
+        completed_at=job_data.get("completed_at"),
+        error=job_data.get("error"),
+        result=job_data.get("result")
     )
 
 

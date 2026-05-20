@@ -1,0 +1,31 @@
+base_clientes:
+  type: pandas.CSVDataSet
+  filepath: output/data/base_clientes.csv
+
+base_feature_eng:
+  type: pandas.CSVDataSet
+  filepath: output/data/base_feature_eng.csv
+
+fe_params:
+  type: json.JSONDataSet
+  filepath: output/models/fe_params.json
+
+benchmark_results:
+  type: pandas.CSVDataSet
+  filepath: output/data/benchmark_results.csv
+
+cv_scores:
+  type: pandas.CSVDataSet
+  filepath: output/data/cv_scores.csv
+
+confusion_matrix:
+  type: pandas.CSVDataSet
+  filepath: output/data/confusion_matrix.csv
+
+feature_importance:
+  type: pandas.CSVDataSet
+  filepath: output/data/feature_importance.csv
+
+gb_pipeline:
+  type: pickle.PickleDataSet
+  filepath: output/models/gb_pipeline.pkl
