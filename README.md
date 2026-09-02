@@ -1,4 +1,4 @@
-# 🚀 Churn Finance Pipeline — De Modelos a Sistemas em Produção
+# Churn Finance Pipeline: De Modelos a Sistemas em Produção
 
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.13-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111%2B-green.svg)](https://fastapi.tiangolo.com/)
@@ -10,7 +10,7 @@ Bem-vindo ao repositório do **Churn Finance Pipeline**. Este projeto foi constr
 
 ---
 
-## 📖 A Narrativa do Projeto (Por que este repositório existe?)
+## A Narrativa do Projeto (Por que este repositório existe?)
 
 No mercado financeiro de alta renda, as áreas de negócio não consomem modelos `.pkl` soltos ou Jupyter Notebooks. Elas exigem APIs seguras de alta disponibilidade, auditorias de governança (LGPD) e monitoramento contínuo contra a degradação do modelo (*Data Drift*).
 
@@ -23,7 +23,7 @@ Este repositório foi **completamente refatorado** para adotar uma arquitetura d
 
 ---
 
-## 🎯 Objetivos do Projeto
+## Objetivos do Projeto
 
 O objetivo primordial deste projeto é **mitigar a evasão de clientes (churn) em uma carteira sob custódia (AuC) de R$ 75 Bilhões**, estruturando um ecossistema de dados que conecte inteligência preditiva e ações práticas. Especificamente, o projeto visa:
 1. **Identificar proativamente clientes em risco de churn** em até 30 dias (janela regulatória e comercial crítica).
@@ -33,17 +33,17 @@ O objetivo primordial deste projeto é **mitigar a evasão de clientes (churn) e
 
 ---
 
-## 🏆 Resultados Alcançados
+## Resultados Alcançados
 
 A refatoração e implementação das camadas de MLOps e IA resultaram em conquistas significativas de software, segurança e impacto de negócios:
 
-### 📈 Métricas de Negócio & ROI Estimado
+### Métricas de Negócio & ROI Estimado
 * **Redução de Churn e Preservação de Receita:** Com base na modelagem preditiva e nos thresholds ajustados por segmento de risco (Varejo: 0.40, Alta Renda: 0.50, Wealth/Corporate: 0.60), o projeto atinge a meta do `PROBLEM.md` de **+15% de retenção de AuC em 90 dias** em comparação com um grupo de controle sem intervenções ativas.
 * **Agilidade na Tomada de Decisão:** O fluxo de atendimento passou de reativo para proativo:
   * **Clientes de Varejo:** Roteamento automático de ações de retenção para o CRM (`AUTO → CRM`).
   * **Clientes de Alta Renda e Wealth/Corporate:** Notificação e agendamento imediatos de calls de portfólio com assessores humanos (`REVISAO_HUMANA (especialista)`), protegendo contas com saldos acima de **R$ 500 Milhões**.
 
-### 💻 Conquistas de Engenharia de Software & MLOps
+### Conquistas de Engenharia de Software & MLOps
 * **Zero Training-Serving Skew:** Graças à migração para o padrão **Kedro-style**, a engenharia de features e o pré-processamento de dados utilizam as mesmas funções puras (`nodes.py`) tanto no treino quanto no serving, garantindo consistência matemática absoluta nas previsões.
 * **Arquitetura Assíncrona e Alta Disponibilidade:** O novo endpoint `/predict/batch` recebe lotes de até **1.000 clientes** e responde em milissegundos com um `job_id` (HTTP 202). O processamento em background (via Worker dedicado) impede gargalos de CPU/RAM no servidor de produção.
 * **Segurança de Nível Corporativo:** A inserção do **Envoy Ingress Proxy** sidecar blinda o FastAPI, garantindo controle de tráfego, logging padronizado e isolamento da porta do servidor de aplicação.
@@ -52,7 +52,7 @@ A refatoração e implementação das camadas de MLOps e IA resultaram em conqui
 
 ---
 
-## 🏛️ Nova Arquitetura do Sistema
+## Nova Arquitetura do Sistema
 
 A nova estrutura do repositório adota conceitos de **Kedro-style modularity** e microsserviços conteinerizados:
 
@@ -83,19 +83,19 @@ flowchart TD
 
 ---
 
-## 🛠️ Detalhes dos Componentes
+## Detalhes dos Componentes
 
 ### 1. Modularidade Estilo Kedro (`conf/` & `src/`)
-* **[catalog.yml](file:///C:/Users/Luiz%20Maibashi/Documents/Base_de_Conhecimento%20(1)/PROJETOS/02_PORTFOLIO/pipeline_churn_finance/conf/base/catalog.yml) & [parameters.yml](file:///C:/Users/Luiz%20Maibashi/Documents/Base_de_Conhecimento%20(1)/PROJETOS/02_PORTFOLIO/pipeline_churn_finance/conf/base/parameters.yml):** Centralização declarativa dos caminhos de dados e hiperparâmetros de modelagem.
-* **[kedro_runner.py](file:///C:/Users/Luiz%20Maibashi/Documents/Base_de_Conhecimento%20(1)/PROJETOS/02_PORTFOLIO/pipeline_churn_finance/src/kedro_runner.py):** Abstração de catálogo (`DataCatalog`) que gerencia I/O para CSVs, Pickles e JSONs de forma automática.
-* **[nodes.py](file:///C:/Users/Luiz%20Maibashi/Documents/Base_de_Conhecimento%20(1)/PROJETOS/02_PORTFOLIO/pipeline_churn_finance/src/data_processing/nodes.py):** Funções analíticas puras e testáveis unitariamente.
+* **[catalog.yml](conf/base/catalog.yml) & [parameters.yml](conf/base/parameters.yml):** Centralização declarativa dos caminhos de dados e hiperparâmetros de modelagem.
+* **[kedro_runner.py](src/kedro_runner.py):** Abstração de catálogo (`DataCatalog`) que gerencia I/O para CSVs, Pickles e JSONs de forma automática.
+* **[nodes.py](src/data_processing/nodes.py):** Funções analíticas puras e testáveis unitariamente.
 
 ### 2. Serving Assíncrono com Redis/SQLite e Sidecar Envoy
 * **Fila Dual-Mode (`src/job_queue.py`):** Suporta mensageria via Redis (para produção) e chave-valor SQLite integrado para desenvolvimento e testes locais offline.
 * **Inference Worker (`worker.py`):** Processador em background assíncrono para previsões de lote pesadas.
 * **FastAPI Async Endpoints (`api.py`):**
-  * `POST /predict/batch` — Recebe o lote de até 1.000 clientes, enfileira e retorna `202 Accepted` com `job_id` imediatamente.
-  * `GET /predict/batch/status/{job_id}` — Permite monitorar o status (`PENDING`, `PROCESSING`, `COMPLETED`, `FAILED`) e obter os resultados finais.
+  * `POST /predict/batch`: recebe o lote de até 1.000 clientes, enfileira e retorna `202 Accepted` com `job_id` imediatamente.
+  * `GET /predict/batch/status/{job_id}`: permite monitorar o status (`PENDING`, `PROCESSING`, `COMPLETED`, `FAILED`) e obter os resultados finais.
 * **Proxy Ingress (`envoy.yaml`):** Envoy Proxy atuando como API Gateway de borda, mapeando tráfego de entrada na porta `8080`.
 
 ### 3. Agente de IA Robusto com Fallback Offline (`agent.py` & `orchestrator.py`)
@@ -104,7 +104,7 @@ flowchart TD
 
 ---
 
-## 🧪 Suíte de Testes Unitários e de Integração
+## Suíte de Testes Unitários e de Integração
 
 O repositório possui uma robusta cobertura de testes com **19 testes automatizados** sob a pasta `tests/`:
 
@@ -119,7 +119,7 @@ python -m pytest -v
 
 ---
 
-## 🖥️ Como Executar o Projeto Conteinerizado (Produção)
+## Como Executar o Projeto Conteinerizado (Produção)
 
 Certifique-se de possuir o Docker e Docker Compose instalados no sistema.
 
@@ -143,7 +143,7 @@ curl -X GET http://localhost:8080/predict/batch/status/{job_id}
 
 ---
 
-## 🖥️ Como Executar Localmente (Desenvolvimento / Fallback SQLite)
+## Como Executar Localmente (Desenvolvimento / Fallback SQLite)
 
 Caso queira rodar localmente sem Docker, o sistema gerenciará a fila de background automaticamente via SQLite local:
 
