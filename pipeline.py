@@ -54,9 +54,9 @@ df_advisors = generate_advisors_data(
     n_advisors=parameters.get("n_advisors", 300),
     seed=parameters.get("random_state", 42)
 )
-catalog.save("base_assessores", df_advisors)
 
-df_v2 = attach_advisor_and_behavioral_features(df, df_advisors, seed=parameters.get("random_state", 42))
+df_v2, df_advisors = attach_advisor_and_behavioral_features(df, df_advisors, seed=parameters.get("random_state", 42))
+catalog.save("base_assessores", df_advisors)
 catalog.save("base_clientes_v2", df_v2)
 
 vc_adv = df_advisors["risco_saida"].value_counts()

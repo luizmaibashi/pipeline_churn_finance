@@ -24,8 +24,8 @@ SEED = 42
 @pytest.fixture(scope="module")
 def dataset_v2():
     df_cli = generate_synthetic_data(1200, seed=SEED)
-    df_adv = generate_advisors_data(300, seed=SEED)
-    df_v2 = attach_advisor_and_behavioral_features(df_cli, df_adv, seed=SEED)
+    df_adv_raw = generate_advisors_data(300, seed=SEED)
+    df_v2, df_adv = attach_advisor_and_behavioral_features(df_cli, df_adv_raw, seed=SEED)
     return df_cli, df_adv, df_v2
 
 
@@ -122,3 +122,20 @@ def test_todo_cliente_tem_assessor_atribuido(dataset_v2):
     _, df_adv, df_v2 = dataset_v2
     assert df_v2["assessor_id"].notna().all()
     assert set(df_v2["assessor_id"]).issubset(set(df_adv["assessor_id"]))
+
+
+def test_qtd_clientes_carteira_bate_com_atribuicao_real(dataset_v2):
+    """
+    Regressão do achado de EDA: qtd_clientes_carteira já foi um campo
+    declarado ANTES da atribuição real (média 17,9 vs. 4,1 real) — uma
+    promessa que os dados não cumpriam. Agora é calculado pós-atribuição;
+    este teste garante que a divergência não volte.
+    """
+    _, df_adv, df_v2 = dataset_v2
+    contagem_real = df_v2["assessor_id"].value_counts()
+    for assessor_id, declarado in df_adv.set_index("assessor_id")["qtd_clientes_carteira"].items():
+        real = contagem_real.get(assessor_id, 0)
+        assert declarado == real, (
+            f"{assessor_id}: qtd_clientes_carteira declarado={declarado} "
+            f"mas atribuição real={real}"
+        )

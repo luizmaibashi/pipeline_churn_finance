@@ -82,14 +82,19 @@ def generate_advisors_data(n_advisors: int, seed: int = 42) -> pd.DataFrame:
             prob_saida[i] = p
             risco_saida[i] = int(np.random.rand() < p)
 
-    qtd_clientes_carteira = np.random.poisson(18, N)
-    qtd_clientes_carteira = np.clip(qtd_clientes_carteira, 3, 80)
+    # Peso de atração de carteira — NÃO é contagem de clientes (isso só se
+    # sabe depois da atribuição real). Assessor sênior atrai carteira maior
+    # e mais consolidada; é usado como peso relativo em attach_advisor_*.
+    # `qtd_clientes_carteira` é preenchido depois, por contagem real, para
+    # nunca divergir do dataset de clientes (achado de EDA: campo declarado
+    # antes da atribuição real batia 17,9 de média contra 4,1 real).
+    peso_atracao_carteira = (1.0 + anos_de_casa * 0.15).round(3)
 
     df = pd.DataFrame({
         "assessor_id"            : [f"ADV{str(i).zfill(4)}" for i in range(N)],
         "canal"                  : canal,
         "anos_de_casa"           : anos_de_casa,
-        "qtd_clientes_carteira"  : qtd_clientes_carteira,
+        "peso_atracao_carteira"  : peso_atracao_carteira,
         "prob_saida_calibrada"   : prob_saida.round(4),
         "risco_saida"            : risco_saida,
     })
@@ -98,7 +103,7 @@ def generate_advisors_data(n_advisors: int, seed: int = 42) -> pd.DataFrame:
 
 def attach_advisor_and_behavioral_features(
     df_clientes: pd.DataFrame, df_advisors: pd.DataFrame, seed: int = 42
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Liga cada cliente a um assessor e gera as features comportamentais
     de early-warning (Direção A, ADR-0001).
@@ -110,12 +115,16 @@ def attach_advisor_and_behavioral_features(
     anti-artefato-de-simulação do ADR-0001 §5). Inclui 1 feature red-herring
     (`qtd_emails_marketing_recebidos`) sem relação causal com o target,
     igual dado real tem ruído que não é sinal.
+
+    Retorna (df_clientes_v2, df_advisors_com_carteira_real) — a contagem de
+    clientes por assessor é calculada aqui, pós-atribuição, para nunca
+    divergir do dataset de clientes (ver nota em generate_advisors_data).
     """
     np.random.seed(seed)
     N = len(df_clientes)
 
-    # Atribuição cliente -> assessor ponderada pela carteira de cada assessor
-    pesos = df_advisors["qtd_clientes_carteira"].values
+    # Atribuição cliente -> assessor ponderada pelo peso de atração
+    pesos = df_advisors["peso_atracao_carteira"].values
     pesos = pesos / pesos.sum()
     assessor_idx = np.random.choice(len(df_advisors), size=N, p=pesos)
     assessor_ids = df_advisors["assessor_id"].values[assessor_idx]
@@ -152,7 +161,17 @@ def attach_advisor_and_behavioral_features(
     out["tempo_resposta_medio_horas"] = tempo_resposta_medio_horas
     out["qtd_emails_marketing_recebidos"] = qtd_emails_marketing_recebidos
 
-    return out
+    # Carteira real por assessor — contagem pós-atribuição, nunca declarada
+    # antes (a divergência anterior era: campo declarado dizia média 17,9,
+    # atribuição real dava média 4,1 — mesma família de "coluna promete e
+    # não é honrada pelo dado" do checklist de EDA).
+    contagem_real = out["assessor_id"].value_counts().rename("qtd_clientes_carteira")
+    df_advisors_out = df_advisors.merge(
+        contagem_real, left_on="assessor_id", right_index=True, how="left"
+    )
+    df_advisors_out["qtd_clientes_carteira"] = df_advisors_out["qtd_clientes_carteira"].fillna(0).astype(int)
+
+    return out, df_advisors_out
 
 
 def split_data(df: pd.DataFrame, test_size: float, random_state: int) -> tuple[pd.DataFrame, pd.DataFrame]:
