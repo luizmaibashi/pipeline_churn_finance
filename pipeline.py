@@ -16,6 +16,8 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from src.kedro_runner import DataCatalog, load_parameters
 from src.data_processing.nodes import (
     generate_synthetic_data,
+    generate_advisors_data,
+    attach_advisor_and_behavioral_features,
     split_data,
     run_feature_engineering
 )
@@ -45,6 +47,21 @@ catalog.save("base_clientes", df)
 
 vc = df["churn"].value_counts()
 print(f"  Shape: {df.shape} | Churn: {vc[1]} ({vc[1]/len(df)*100:.1f}%) | Não-Churn: {vc[0]} ({vc[0]/len(df)*100:.1f}%)")
+
+# ── FASE 1.5: Assessores + Features Comportamentais (ADR-0001) ─
+print("\n[1.5/6] Gerando assessores e features de early-warning (Direção A+B)...")
+df_advisors = generate_advisors_data(
+    n_advisors=parameters.get("n_advisors", 300),
+    seed=parameters.get("random_state", 42)
+)
+catalog.save("base_assessores", df_advisors)
+
+df_v2 = attach_advisor_and_behavioral_features(df, df_advisors, seed=parameters.get("random_state", 42))
+catalog.save("base_clientes_v2", df_v2)
+
+vc_adv = df_advisors["risco_saida"].value_counts()
+print(f"  Assessores: {df_advisors.shape[0]} | Risco de saída: {vc_adv.get(1, 0)} ({vc_adv.get(1, 0)/len(df_advisors)*100:.1f}%)")
+print(f"  AuC exposto (v2): R$ {df_v2['auc_exposto'].sum():.2f}bi de R$ {df_v2['saldo_bi'].sum():.2f}bi total ({df_v2['auc_exposto'].sum()/df_v2['saldo_bi'].sum()*100:.1f}%)")
 
 # ── FASE 2: Split estratificado ANTES da Engenharia de Features
 print("\n[2/6] Split estratificado...")

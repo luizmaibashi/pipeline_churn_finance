@@ -2,6 +2,14 @@ base_clientes:
   type: pandas.CSVDataSet
   filepath: output/data/base_clientes.csv
 
+base_assessores:
+  type: pandas.CSVDataSet
+  filepath: output/data/base_assessores.csv
+
+base_clientes_v2:
+  type: pandas.CSVDataSet
+  filepath: output/data/base_clientes_v2.csv
+
 base_feature_eng:
   type: pandas.CSVDataSet
   filepath: output/data/base_feature_eng.csv
