@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import { predict } from "../../web/infer.mjs";
+const root = new URL("../..", import.meta.url);
+const model = JSON.parse(fs.readFileSync(new URL("web/model.json", root)));
+const cases = JSON.parse(fs.readFileSync(new URL("tests/paridade/casos.json", root)));
+let maximum = 0;
+for (const item of cases) maximum = Math.max(maximum, Math.abs(predict(item.input, model) - item.prob_esperada));
+assert.ok(cases.length >= 3000, `casos insuficientes: ${cases.length}`);
+assert.ok(maximum <= 1e-9, `max |delta|=${maximum}`);
+console.log(`paridade verde: n=${cases.length}, max |delta|=${maximum}`);

@@ -6,13 +6,21 @@ O ponto de partida foi simples: prever churn só pela queda de saldo chega tarde
 
 Isso não é uma demonstração de resultado comercial. É uma demonstração de método: como estruturar um problema de dados sintéticos, separar duas perguntas de negócio e não vender uma métrica offline como impacto financeiro.
 
+## No ar
+
+O dashboard estático é publicado pelo GitHub Pages em
+`https://luizmaibashi.github.io/pipeline_churn_finance/`. Ele não sobe Python
+em runtime: as abas analíticas leem snapshots e o preditor individual executa
+o forward pass do Gradient Boosting no navegador. A equivalência com o modelo
+Python é coberta por 3.000 casos de paridade (`max |delta| <= 1e-9`).
+
 ## O que o projeto entrega
 
 - Um classificador v2 de churn com sinais comportamentais e tratamento de nulos estruturais.
 - Uma tabela por assessor com AuC exposto esperado, calculado a partir da probabilidade de saída do assessor.
 - API FastAPI, dashboard Streamlit, monitor de drift e agente de dados, todos no modelo v2.
 - Artefatos de explicabilidade SHAP do modelo v2.
-- 55 testes de contrato, dado, modelo e API.
+- 58 testes de contrato, dado, modelo, API, build e paridade JS/Python.
 
 ## Retrato atual do dado sintético
 
@@ -41,7 +49,8 @@ Todos os comandos rodam **a partir da raiz do projeto** (os caminhos `output/`,
 ```bash
 python src/pipeline.py          # regenera dados, modelo, thresholds e comparações
 python src/shap_analysis_v2.py  # explicabilidade SHAP do modelo v2
-python -m pytest -q             # 55 testes de contrato, dado, modelo e API
+python tools/build_site.py      # snapshots + página publicada em docs/
+python -m pytest -q             # 58 testes de contrato, dado, modelo, API, build e paridade
 uvicorn src.api:app --port 8000 # API (Swagger em /docs)
 streamlit run src/app.py        # dashboard
 ```

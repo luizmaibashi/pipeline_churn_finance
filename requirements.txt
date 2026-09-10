@@ -15,11 +15,11 @@ streamlit==1.56.0
 shap==0.52.0
 fastapi==0.136.1
 uvicorn[standard]==0.46.0
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 pytest==9.0.3
 
 # Opcionais — não exercitados pelos 55 testes nem pelo caminho DEMO do agente:
 #   openai            : agent.py FULL MODE (function calling), só com OPENAI_API_KEY
 #   python-multipart  : endpoints de formulário/upload do FastAPI (a API só usa JSON hoje)
 openai==2.32.0
-python-multipart==0.0.27
+python-multipart==0.0.31

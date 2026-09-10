@@ -90,9 +90,11 @@ Arquitetura **híbrida Balde 1 + 2a**:
 
 1. `tests/paridade/parity.test.mjs` verde com `max |Δ| ≤ 1e-9` sobre ≥ 3.000 casos.
 2. `pytest -q` continua verde (56+ testes — o de paridade incluído).
-3. `docs/index.html` abre sem servidor (`file://`) e sem console error; as 4 abas
-   renderizam; o preditor responde a mudança de slider client-side.
-4. Nenhum `.pkl` em `docs/`. `model.json` ≤ 150 KB.
+3. `docs/index.html` abre sem console error em servidor HTTP estático ou GitHub
+   Pages; as 4 abas renderizam; o preditor responde a mudança de slider
+   client-side. `file://` não é ambiente válido para `fetch()` de snapshots.
+4. Nenhum `.pkl` em `docs/`. `model.json` ≤ 150 KB gzip (payload transferido);
+   o JSON descompactado pode chegar a ~320 KB pela serialização das árvores.
 5. Lighthouse: sem cold start, first contentful paint < 1,5 s.
 6. Card de enquadramento visível acima da primeira aba.
 7. 0006 fechado: alertas Dependabot triados, `requirements.txt` revalidado.
