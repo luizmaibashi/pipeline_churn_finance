@@ -102,8 +102,9 @@ def _load_model() -> object:
         "adr": "docs/adr/0001-refatoracao-early-warning-advisor-attrition.md",
         "features": FEATURES_V2_BASE,
         "notes": (
-            "Direção A — early-warning comportamental. CV 5-fold recall "
-            "0,2958±0,0358 vs baseline v1 0,0875±0,0306."
+            "Direção A — early-warning comportamental. Métricas citáveis nos CSVs "
+            "regeneráveis: comparacao_v1_v2.csv, cv_scores_v2.csv, feature_importance_v2.csv. "
+            "Dado sintético — não é desempenho de produção."
         ),
     }
     model = joblib.load(MODEL_V2_PKL)
@@ -175,9 +176,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Churn Finance — Prediction API",
     description=(
-        "API de predição de churn para o ecossistema financeiro. "
-        "Baseada em PROBLEM.md v1.0 — define thresholds por segmento, "
-        "janela temporal de 30 dias e explicabilidade LGPD-ready via SHAP."
+        "API de predição de churn de uma gestora de wealth. Modelo v2 "
+        "(early-warning comportamental, ADR-0001 / PROBLEM.md v2.0): thresholds "
+        "calibrados por segmento em reports/thresholds_v2.md e explicabilidade "
+        "LGPD-ready via SHAP. Dado sintético."
     ),
     version="1.0.0",
     lifespan=lifespan,
@@ -456,16 +458,14 @@ async def model_info():
 @app.post("/predict", response_model=PredictionResult, tags=["Prediction"])
 async def predict(cliente: ClienteInput):
     """
-    Predição de churn para **um único cliente**.
+    Predição de churn para **um único cliente** (schema v2 early-warning).
 
-    - Aplica threshold específico por segmento (PROBLEM.md Seção 4.3)
+    - Aplica o threshold calibrado do segmento (reports/thresholds_v2.md)
     - Retorna probabilidade + nível de risco + ação recomendada + fluxo operacional
     - Busca explicações SHAP pré-computadas se disponíveis
 
-    **Thresholds por segmento:**
-    - Varejo: ≥ 0.40 → AUTO → CRM
-    - Alta Renda: ≥ 0.50 → CRM + Notificação Assessor
-    - Wealth / Corporate: ≥ 0.60 → Revisão humana obrigatória
+    Segmentos: Alta Renda, Private, Wealth, Family Office. Wealth / Family Office
+    (ou AuC ≥ R$ 250 mi) vão para revisão humana.
     """
     return _predict_one(cliente)
 
@@ -610,7 +610,7 @@ async def high_risk_clients(
     if shap_df is None:
         raise HTTPException(
             status_code=404,
-            detail="Explicações SHAP não disponíveis. Execute 'python shap_analysis.py'."
+            detail="Explicações SHAP não disponíveis. Execute 'python shap_analysis_v2.py'."
         )
 
     df = shap_df[shap_df["churn_prob"] >= 0.35].copy()
@@ -635,7 +635,7 @@ async def high_risk_clients(
         seg     = str(row.get("segmento", "N/A"))
         auc_milhoes = float(row.get("auc_milhoes", 0))
         risk    = _risk_level(prob, seg)
-        flow    = _flow(seg, saldo)
+        flow    = _flow(seg, auc_milhoes)
         clientes.append({
             "cliente_id"          : row["cliente_id"],
             "segmento"            : seg,

@@ -258,9 +258,9 @@ with st.sidebar:
         drift_color  = {"OK": "#51cf66", "ATENCAO": "#ffd43b", "CRITICO": "#ff6b6b"}.get(drift_status, "#8b95b0")
         st.markdown(f"""
         <div style='background:#1e2130; border:1px solid #2d3250; border-radius:10px; padding:12px 14px; font-size:12px;'>
-            <div style='color:#e8ecf4; font-weight:600;'>v{info.get('version','?')}</div>
-            <div style='color:#8b95b0; margin-top:4px;'>ROC-AUC: <b style='color:#74c0fc;'>{info.get('metrics',{{}}).get('roc_auc','?')}</b></div>
-            <div style='color:#8b95b0;'>F1-macro: <b style='color:#74c0fc;'>{info.get('metrics',{{}}).get('f1_macro','?')}</b></div>
+            <div style='color:#e8ecf4; font-weight:600;'>{info.get('version','?')} — early-warning comportamental</div>
+            <div style='color:#8b95b0; margin-top:4px;'>{info.get('algorithm','?')}</div>
+            <div style='color:#8b95b0; margin-top:4px; line-height:1.5;'>{info.get('notes','')}</div>
             <div style='margin-top:6px;'>Drift: <b style='color:{drift_color};'>{drift_status}</b></div>
         </div>
         """, unsafe_allow_html=True)
@@ -273,12 +273,12 @@ with st.sidebar:
     st.markdown("<div style='color:#8b95b0; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;'>Perguntas Rápidas</div>", unsafe_allow_html=True)
 
     QUICK_QUESTIONS = [
-        "Quanto de AuC estamos salvando no segmento Wealth?",
+        "Qual o AuC em risco no segmento Wealth?",
         "Quais são os 5 clientes mais críticos da carteira?",
         "Como está o status do modelo em produção?",
         "Há alertas de Data Drift esta semana?",
-        "Qual o risco de churn para um cliente Varejo com retorno de 6%?",
-        "Liste os clientes prioritários do segmento Alta Renda.",
+        "Qual o risco de churn de um cliente Private sem contato há 60 dias e cadência caindo 30%?",
+        "Liste os clientes prioritários do segmento Family Office.",
     ]
 
     for q in QUICK_QUESTIONS:

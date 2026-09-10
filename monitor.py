@@ -41,18 +41,29 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+# FeatureEngineer + StructuralNullImputer são necessários para unpicklear o
+# Pipeline v2 (ADR-0001, Direção A early-warning).
+from transformers import FeatureEngineer, StructuralNullImputer  # noqa: F401
+
 # ── Configuração ─────────────────────────────────────────────
 MONITOR_DIR  = os.path.join("output", "monitor")
 DATA_DIR     = os.path.join("output", "data")
 MODELS_DIR   = os.path.join("output", "models")
-POINTER_FILE = os.path.join(MODELS_DIR, "current_version.txt")
+MODEL_V2_PKL = os.path.join(MODELS_DIR, "gb_pipeline_v2.pkl")
 
-# Features numéricas e categóricas do contrato (PROBLEM.md)
+# Schema v2 (ADR-0001 / spec 0002): early-warning comportamental + AuC em milhões.
+# O modelo de produção é o v2; o monitor observa as features que ele consome.
 NUMERIC_FEATURES = [
     "meses_cliente", "qtd_produtos", "retorno_12m_pct",
-    "freq_contato_mes", "saldo_bi"
+    "freq_contato_mes", "auc_milhoes",
+    "dias_desde_ultimo_contato", "variacao_freq_contato_3m",
+    "tempo_resposta_medio_horas",
 ]
 CATEGORICAL_FEATURES = ["segmento"]
+
+# Features completas do Pipeline v2 (inclui as flags de nulo estrutural).
+FEATURES_V2 = NUMERIC_FEATURES + ["segmento",
+                                  "sem_historico_12m", "cliente_novo_sem_contato_hist"]
 
 # Thresholds definidos no PROBLEM.md — Seção 6.3
 KS_DRIFT_THRESHOLD   = 0.20   # > 20% de drift em features numéricas → alerta
@@ -69,15 +80,16 @@ def build_reference_profile(df_train: pd.DataFrame) -> dict:
     for col in NUMERIC_FEATURES:
         if col not in df_train.columns:
             continue
+        serie = df_train[col].dropna()   # nulo estrutural (ex.: retorno_12m_pct) fora do KS
         profile["numeric"][col] = {
-            "mean"   : float(df_train[col].mean()),
-            "std"    : float(df_train[col].std()),
-            "min"    : float(df_train[col].min()),
-            "max"    : float(df_train[col].max()),
-            "p25"    : float(df_train[col].quantile(0.25)),
-            "p50"    : float(df_train[col].quantile(0.50)),
-            "p75"    : float(df_train[col].quantile(0.75)),
-            "values" : df_train[col].tolist(),   # para KS-Test
+            "mean"   : float(serie.mean()),
+            "std"    : float(serie.std()),
+            "min"    : float(serie.min()),
+            "max"    : float(serie.max()),
+            "p25"    : float(serie.quantile(0.25)),
+            "p50"    : float(serie.quantile(0.50)),
+            "p75"    : float(serie.quantile(0.75)),
+            "values" : serie.tolist(),   # para KS-Test
         }
 
     for col in CATEGORICAL_FEATURES:
@@ -145,11 +157,8 @@ def chi2_test_feature(ref_dist: dict, curr_series: pd.Series) -> dict:
 def score_drift(df_ref: pd.DataFrame, df_curr: pd.DataFrame,
                 pipeline) -> dict:
     """Compara a distribuição dos scores do modelo entre ref e atual."""
-    FEATURES = ["segmento", "meses_cliente", "qtd_produtos",
-                "retorno_12m_pct", "freq_contato_mes", "saldo_bi"]
-
-    scores_ref  = pipeline.predict_proba(df_ref[FEATURES])[:, 1]
-    scores_curr = pipeline.predict_proba(df_curr[FEATURES])[:, 1]
+    scores_ref  = pipeline.predict_proba(df_ref[FEATURES_V2])[:, 1]
+    scores_curr = pipeline.predict_proba(df_curr[FEATURES_V2])[:, 1]
 
     result = ks_test_feature(scores_ref.tolist(), scores_curr.tolist())
     result["mean_score_ref"]  = round(float(scores_ref.mean()),  4)
@@ -169,7 +178,7 @@ def run_monitor(ref_version: str | None = None, alert_only: bool = False):
 
     # Carrega dados base (simula "dados de hoje" com sample)
     print("\n[1/4] Carregando dados...")
-    df_full  = pd.read_csv(os.path.join(DATA_DIR, "base_clientes.csv"))
+    df_full  = pd.read_csv(os.path.join(DATA_DIR, "base_clientes_v2_limpo.csv"))
 
     # Simula split treino/referência vs. produção atual
     # Em produção real: df_ref = dados de treino, df_curr = dados da semana
@@ -180,21 +189,17 @@ def run_monitor(ref_version: str | None = None, alert_only: bool = False):
     print(f"  Referencia (treino proxy): {len(df_ref)} amostras")
     print(f"  Atual (producao proxy):    {len(df_curr)} amostras")
 
-    # Carrega pipeline de produção
+    # Carrega pipeline de produção (v2 early-warning — decisão travada ADR-0001)
     print("\n[2/4] Carregando modelo de producao...")
     import joblib
 
-    if os.path.exists(POINTER_FILE):
-        with open(POINTER_FILE) as f:
-            current_ver = f.read().strip()
-        pkl = os.path.join(MODELS_DIR, current_ver, "gb_pipeline.pkl")
-        print(f"  Versao de producao: {current_ver}")
-    else:
-        pkl = os.path.join(MODELS_DIR, "gb_pipeline.pkl")
-        current_ver = "N/A"
-        print("  Usando modelo padrao (sem versao)")
-
-    pipeline = joblib.load(pkl)
+    if not os.path.exists(MODEL_V2_PKL):
+        raise FileNotFoundError(
+            f"Modelo v2 nao encontrado em {MODEL_V2_PKL}. Execute 'python pipeline.py' primeiro."
+        )
+    current_ver = "v2"
+    print(f"  Versao de producao: {current_ver} ({MODEL_V2_PKL})")
+    pipeline = joblib.load(MODEL_V2_PKL)
 
     # Constrói perfil de referência
     print("\n[3/4] Executando testes de drift...")
@@ -218,7 +223,7 @@ def run_monitor(ref_version: str | None = None, alert_only: bool = False):
         if col not in df_curr.columns:
             continue
         ref_vals  = ref_profile["numeric"][col]["values"]
-        curr_vals = df_curr[col].tolist()
+        curr_vals = df_curr[col].dropna().tolist()
         result    = ks_test_feature(ref_vals, curr_vals)
         result["ref_mean"]  = ref_profile["numeric"][col]["mean"]
         result["curr_mean"] = round(float(df_curr[col].mean()), 4)

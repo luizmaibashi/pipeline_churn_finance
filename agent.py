@@ -14,8 +14,11 @@
 
 import os
 import json
+import datetime
 import requests
-from typing import Generator
+from functools import lru_cache
+
+import pandas as pd
 
 try:
     from dotenv import load_dotenv
@@ -28,6 +31,60 @@ API_BASE       = os.getenv("API_BASE",       "http://localhost:8000")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 LLM_MODEL      = os.getenv("LLM_MODEL",      "gpt-4o-mini")
 DEMO_MODE      = not bool(OPENAI_API_KEY)
+
+# Schema v2 (ADR-0001 / spec 0002): segmentos de wealth, AuC em milhões de reais.
+SEGMENTOS_V2   = ["Alta Renda", "Private", "Wealth", "Family Office"]
+_SEG_ENUM      = SEGMENTOS_V2 + ["todos"]   # enums das ferramentas que aceitam "carteira toda"
+PCT_PERDA_CHURN = 0.30   # queda de AuC que define churn no PROBLEM.md v2.0 §2
+SHAP_V2_CSV    = os.path.join("output", "shap", "v2", "client_explanations.csv")
+BASE_V2_CSV    = os.path.join("output", "data", "base_clientes_v2_limpo.csv")
+THRESHOLDS_CSV = os.path.join("output", "data", "thresholds_v2.csv")
+COMPARACAO_CSV = os.path.join("output", "data", "comparacao_v1_v2.csv")
+
+
+@lru_cache(maxsize=1)
+def _threshold_map() -> dict:
+    """Thresholds calibrados por segmento (reports/thresholds_v2.md). Sem regra v1 embutida.
+    Lido uma vez por processo (cache) — é chamado por linha nos fallbacks offline."""
+    try:
+        t = pd.read_csv(THRESHOLDS_CSV)
+        return {r["segmento"]: float(r["threshold"]) for _, r in t.iterrows()}
+    except FileNotFoundError:
+        print(f"[Agent] {THRESHOLDS_CSV} ausente — rode 'python pipeline.py'. Usando corte 0,5.")
+        return {}
+
+
+def _risk_from_threshold(prob: float, segmento: str, thr_map: dict | None = None) -> str:
+    thr = (thr_map if thr_map is not None else _threshold_map()).get(segmento)
+    if thr is None:
+        return "ALTO" if prob >= 0.5 else "BAIXO"
+    if prob >= thr:
+        return "ALTO"
+    if prob >= thr * 0.6:
+        return "MEDIO"
+    return "BAIXO"
+
+
+def _flow_v2(segmento: str, auc_milhoes: float) -> str:
+    if segmento in {"Wealth", "Family Office"} or auc_milhoes >= 250:
+        return "REVISAO_HUMANA (especialista)"
+    return "AUTO → CRM"
+
+
+def _carregar_base_risco_offline(segmento: str) -> "pd.DataFrame | None":
+    """Fallback quando a API está fora: SHAP v2 + AuC do book limpo, filtrado por
+    `churn_prob >= 0.35` e por segmento. Usado por `consultar_auc_segmento` e
+    `listar_clientes_prioritarios` — mantém a leitura de disco num lugar só."""
+    if not os.path.exists(SHAP_V2_CSV):
+        return None
+    df = pd.read_csv(SHAP_V2_CSV)
+    df = df[df["churn_prob"] >= 0.35].copy()
+    if os.path.exists(BASE_V2_CSV):
+        cols = ["cliente_id", "auc_milhoes"] + (["segmento"] if "segmento" not in df.columns else [])
+        df = df.merge(pd.read_csv(BASE_V2_CSV, usecols=cols), on="cliente_id", how="left")
+    if segmento and segmento.lower() != "todos" and "segmento" in df.columns:
+        df = df[df["segmento"] == segmento]
+    return df
 
 # ── Helpers HTTP ─────────────────────────────────────────────
 
@@ -68,43 +125,21 @@ def consultar_auc_segmento(segmento: str) -> dict:
     # Fallback offline para leitura direta do disco local
     if "error" in result:
         print("[Agent Fallback] API indisponível. Carregando dados de AuC diretamente do disco local...")
-        shap_csv = os.path.join("output", "shap", "client_explanations.csv")
-        base_csv = os.path.join("output", "data", "base_clientes.csv")
-        if os.path.exists(shap_csv):
-            import pandas as pd
-            df = pd.read_csv(shap_csv)
-            df = df[df["churn_prob"] >= 0.35].copy()
-            
-            if os.path.exists(base_csv):
-                base = pd.read_csv(base_csv)[["cliente_id", "segmento", "saldo_bi"]]
-                df = df.merge(base, on="cliente_id", how="left")
-                
-            if segmento and segmento.lower() != "todos" and "segmento" in df.columns:
-                df = df[df["segmento"] == segmento]
-                
-            clientes = []
-            for _, row in df.iterrows():
-                prob = float(row["churn_prob"])
-                seg = str(row.get("segmento", "N/A"))
-                saldo = float(row.get("saldo_bi", 0))
-                
-                # Risco
-                if prob >= 0.60:
-                    risk = "ALTO"
-                elif prob >= 0.35:
-                    risk = "MEDIO"
-                else:
-                    risk = "BAIXO"
-                    
-                clientes.append({
-                    "cliente_id"    : row["cliente_id"],
-                    "risk_level"    : risk,
-                    "auc_at_risk_MM": round(saldo * 1000 * 0.012 * prob, 2)
-                })
-            
-            result = {"clientes": clientes}
-        else:
+        df = _carregar_base_risco_offline(segmento)
+        if df is None:
             return result
+        thr_map = _threshold_map()
+        clientes = [
+            {
+                "cliente_id"    : row["cliente_id"],
+                "risk_level"    : _risk_from_threshold(float(row["churn_prob"]),
+                                                       str(row.get("segmento", "N/A")), thr_map),
+                "auc_at_risk_MM": round(float(row.get("auc_milhoes", 0)) * PCT_PERDA_CHURN
+                                        * float(row["churn_prob"]), 2),
+            }
+            for _, row in df.iterrows()
+        ]
+        result = {"clientes": clientes}
 
     clientes = result.get("clientes", [])
     alto  = [c for c in clientes if c.get("risk_level") == "ALTO"]
@@ -137,65 +172,34 @@ def listar_clientes_prioritarios(segmento: str = "todos", limit: int = 10) -> di
     # Fallback offline para leitura direta do disco local
     if "error" in result:
         print("[Agent Fallback] API indisponível. Carregando lista de prioridade diretamente do disco local...")
-        shap_csv = os.path.join("output", "shap", "client_explanations.csv")
-        base_csv = os.path.join("output", "data", "base_clientes.csv")
-        if os.path.exists(shap_csv):
-            import pandas as pd
-            df = pd.read_csv(shap_csv)
-            df = df[df["churn_prob"] >= 0.35].copy()
-            
-            if os.path.exists(base_csv):
-                base = pd.read_csv(base_csv)[["cliente_id", "segmento", "saldo_bi"]]
-                df = df.merge(base, on="cliente_id", how="left")
-                
-            if segmento and segmento.lower() != "todos" and "segmento" in df.columns:
-                df = df[df["segmento"] == segmento]
-                
-            df = df.sort_values("churn_prob", ascending=False).head(limit)
-            
-            import datetime
-            clientes = []
-            for _, row in df.iterrows():
-                prob = float(row["churn_prob"])
-                seg = str(row.get("segmento", "N/A"))
-                saldo = float(row.get("saldo_bi", 0))
-                
-                # Risco
-                if prob >= 0.60:
-                    risk = "ALTO"
-                elif prob >= 0.35:
-                    risk = "MEDIO"
-                else:
-                    risk = "BAIXO"
-                    
-                # Fluxo
-                if seg == "Wealth" or saldo >= 0.5:
-                    flow = "REVISAO_HUMANA (especialista)"
-                else:
-                    flow = "AUTO → CRM"
-                    
-                # Ação recomendada simplificada
-                action = "Contato imediato para revisão de portfólio" if risk == "ALTO" else "Acompanhamento de rotina"
-                
-                clientes.append({
-                    "cliente_id"          : row["cliente_id"],
-                    "segmento"            : seg,
-                    "churn_probability"   : round(prob, 4),
-                    "churn_probability_pct": f"{prob*100:.1f}%",
-                    "risk_level"          : risk,
-                    "churn_real"          : int(row.get("churn_real", -1)),
-                    "auc_at_risk_MM"      : round(saldo * 1000 * 0.012 * prob, 2),
-                    "flow"                : flow,
-                    "explicacao"          : str(row.get("explicacao", "")),
-                })
-                
-            return {
-                "total"         : len(clientes),
-                "filter_segment": segmento,
-                "model_version" : "flat (offline)",
-                "generated_at"  : datetime.datetime.now().isoformat(),
-                "clientes"      : clientes,
-            }
+        df = _carregar_base_risco_offline(segmento)
+        if df is None:
+            return result
+        df = df.sort_values("churn_prob", ascending=False).head(limit)
+        thr_map = _threshold_map()
+        clientes = []
+        for _, row in df.iterrows():
+            prob = float(row["churn_prob"])
+            seg = str(row.get("segmento", "N/A"))
+            auc_milhoes = float(row.get("auc_milhoes", 0))
+            clientes.append({
+                "cliente_id"          : row["cliente_id"],
+                "segmento"            : seg,
+                "churn_probability"   : round(prob, 4),
+                "churn_probability_pct": f"{prob*100:.1f}%",
+                "risk_level"          : _risk_from_threshold(prob, seg, thr_map),
+                "churn_real"          : int(row.get("churn_real", -1)),
+                "auc_at_risk_MM"      : round(auc_milhoes * PCT_PERDA_CHURN * prob, 2),
+                "flow"                : _flow_v2(seg, auc_milhoes),
+                "explicacao"          : str(row.get("explicacao", "")),
+            })
+        return {
+            "total"         : len(clientes),
+            "filter_segment": segmento,
+            "model_version" : "flat (offline)",
+            "generated_at"  : datetime.datetime.now().isoformat(),
+            "clientes"      : clientes,
+        }
     return result
 
 
@@ -203,22 +207,30 @@ def prever_churn_cliente(
     segmento: str,
     meses_cliente: int,
     qtd_produtos: int,
-    retorno_12m_pct: float,
-    freq_contato_mes: int,
-    saldo_bi: float,
+    freq_contato_mes: float,
+    auc_milhoes: float,
+    variacao_freq_contato_3m: float,
+    retorno_12m_pct: float | None = None,
+    dias_desde_ultimo_contato: float | None = None,
+    tempo_resposta_medio_horas: float | None = None,
 ) -> dict:
     """
-    Prevê a probabilidade de churn de um cliente com o perfil fornecido.
+    Prevê a probabilidade de churn de um cliente com o perfil fornecido (schema v2).
+    `retorno_12m_pct`, `dias_desde_ultimo_contato` e `tempo_resposta_medio_horas`
+    são opcionais (nulo estrutural = cliente sem histórico).
     Retorna: probabilidade, nível de risco, ação recomendada e fluxo operacional.
     """
     return _post("/predict", {
-        "cliente_id"      : "AGENT_QUERY",
-        "segmento"        : segmento,
-        "meses_cliente"   : meses_cliente,
-        "qtd_produtos"    : qtd_produtos,
-        "retorno_12m_pct" : retorno_12m_pct,
-        "freq_contato_mes": freq_contato_mes,
-        "saldo_bi"        : saldo_bi,
+        "cliente_id"                : "AGENT_QUERY",
+        "segmento"                  : segmento,
+        "meses_cliente"             : meses_cliente,
+        "qtd_produtos"              : qtd_produtos,
+        "retorno_12m_pct"           : retorno_12m_pct,
+        "freq_contato_mes"          : freq_contato_mes,
+        "auc_milhoes"               : auc_milhoes,
+        "dias_desde_ultimo_contato" : dias_desde_ultimo_contato,
+        "variacao_freq_contato_3m"  : variacao_freq_contato_3m,
+        "tempo_resposta_medio_horas": tempo_resposta_medio_horas,
     })
 
 
@@ -229,22 +241,25 @@ def status_modelo() -> dict:
     """
     result = _get("/model/info")
     
-    # Fallback offline para leitura direta do disco local
+    # Fallback offline: lê as métricas v2 do CSV regenerável (comparacao_v1_v2.csv),
+    # nunca números hardcoded — acceptance do Bloco 4 da spec 0002.
     if "error" in result:
         print("[Agent Fallback] API indisponível. Carregando metadados do modelo diretamente do disco local...")
-        pointer_file = os.path.join("output", "models", "current_version.txt")
-        if os.path.exists(pointer_file):
-            with open(pointer_file) as f:
-                version = f.read().strip()
-            meta_path = os.path.join("output", "models", version, "metadata.json")
-            if os.path.exists(meta_path):
-                with open(meta_path, encoding="utf-8") as f:
-                    return json.load(f)
-        return {
-            "message": "Modelo em produção (versão local plana).",
-            "version": "flat",
-            "metrics": {"f1_macro": 0.5673, "roc_auc": 0.6431}
-        }
+        try:
+            cmp = pd.read_csv(COMPARACAO_CSV)
+            v2 = cmp[cmp["modelo"] == "v2_early_warning_advisor"].iloc[0]
+            return {
+                "message": "Modelo v2 (early-warning comportamental, ADR-0001) — leitura offline.",
+                "version": "v2",
+                "metrics": {
+                    "roc_auc": round(float(v2["roc_auc"]), 4),
+                    "recall_churn": round(float(v2["recall_churn"]), 4),
+                    "f1_churn": round(float(v2["f1_churn"]), 4),
+                    "n_teste": int(v2["n_teste"]),
+                },
+            }
+        except Exception as e:
+            return {"error": f"comparacao_v1_v2.csv indisponível: {e}. Execute python pipeline.py."}
     return result
 
 
@@ -285,8 +300,10 @@ def alertas_drift() -> dict:
 
 def economia_auc_segmento(segmento: str, taxa_retencao_pct: float = 15.0) -> dict:
     """
-    Estima o AuC que pode ser salvo com ações de retenção.
-    Meta do PROBLEM.md: 15% de AuC retido em 90 dias vs. grupo de controle.
+    Calculadora what-if: aplica uma taxa de retenção HIPOTÉTICA (fornecida pelo
+    usuário) sobre o AuC em risco para dar ordem de grandeza. NÃO é um efeito
+    medido — o dado é sintético e o projeto não estima retenção real
+    (ADR-0001 §5, PROBLEM.md v2.0 §7).
     """
     dados = consultar_auc_segmento(segmento)
     if "error" in dados:
@@ -298,11 +315,11 @@ def economia_auc_segmento(segmento: str, taxa_retencao_pct: float = 15.0) -> dic
     return {
         "segmento"              : segmento,
         "auc_em_risco_MM"       : total_auc,
-        "taxa_retencao_aplicada": f"{taxa_retencao_pct}%",
-        "auc_salvo_estimado_MM" : economia,
+        "taxa_retencao_hipotetica": f"{taxa_retencao_pct}%",
+        "auc_salvo_hipotetico_MM" : economia,
         "clientes_em_risco"     : dados["total_clientes_em_risco"],
         "clientes_alto_risco"   : dados["clientes_alto_risco"],
-        "baseline_contratual"   : "PROBLEM.md Seção 6.2: +15% AuC retido em 90 dias vs. controle",
+        "nota"                  : "Cenário ilustrativo sobre dado sintético; não é retenção observada.",
     }
 
 
@@ -328,7 +345,7 @@ TOOLS_SCHEMA = [
                 "properties": {
                     "segmento": {
                         "type": "string",
-                        "enum": ["Varejo", "Alta Renda", "Wealth", "Corporate", "todos"],
+                        "enum": _SEG_ENUM,
                         "description": "Segmento a consultar. Use 'todos' para carteira completa."
                     }
                 },
@@ -346,7 +363,7 @@ TOOLS_SCHEMA = [
                 "properties": {
                     "segmento": {
                         "type": "string",
-                        "enum": ["Varejo", "Alta Renda", "Wealth", "Corporate", "todos"],
+                        "enum": _SEG_ENUM,
                         "description": "Filtrar por segmento. Use 'todos' para todos os segmentos."
                     },
                     "limit": {
@@ -363,18 +380,21 @@ TOOLS_SCHEMA = [
         "type": "function",
         "function": {
             "name": "prever_churn_cliente",
-            "description": "Prevê a probabilidade de churn de um cliente com o perfil informado. Use quando o usuário descrever um cliente hipotético.",
+            "description": "Prevê a probabilidade de churn de um cliente (schema v2 early-warning). Use quando o usuário descrever um cliente hipotético.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "segmento"        : {"type": "string", "enum": ["Varejo", "Alta Renda", "Wealth", "Corporate"]},
-                    "meses_cliente"   : {"type": "integer",  "description": "Tempo como cliente em meses"},
-                    "qtd_produtos"    : {"type": "integer",  "description": "Quantidade de produtos ativos"},
-                    "retorno_12m_pct" : {"type": "number",   "description": "Retorno da carteira em 12 meses (%)"},
-                    "freq_contato_mes": {"type": "integer",  "description": "Contatos com assessor por mês"},
-                    "saldo_bi"        : {"type": "number",   "description": "Saldo em R$ bilhões"},
+                    "segmento"        : {"type": "string", "enum": SEGMENTOS_V2},
+                    "meses_cliente"   : {"type": "integer", "description": "Tempo como cliente em meses (mínimo 6)"},
+                    "qtd_produtos"    : {"type": "integer", "description": "Quantidade de produtos ativos"},
+                    "freq_contato_mes": {"type": "number",  "description": "Contatos com assessor no último mês"},
+                    "auc_milhoes"     : {"type": "number",  "description": "AuC sob custódia em R$ milhões"},
+                    "variacao_freq_contato_3m": {"type": "number", "description": "Early-warning: variação relativa da cadência de contato nos últimos 3 meses (-0,3 = caiu 30%)"},
+                    "retorno_12m_pct" : {"type": "number",  "description": "Retorno da carteira em 12 meses (%). Omitir se o cliente não tem histórico de 12m"},
+                    "dias_desde_ultimo_contato": {"type": "number", "description": "Early-warning: dias desde o último contato cliente-assessor. Omitir se cliente novo"},
+                    "tempo_resposta_medio_horas": {"type": "number", "description": "Early-warning: latência média de resposta do cliente ao assessor (horas). Opcional"},
                 },
-                "required": ["segmento","meses_cliente","qtd_produtos","retorno_12m_pct","freq_contato_mes","saldo_bi"]
+                "required": ["segmento","meses_cliente","qtd_produtos","freq_contato_mes","auc_milhoes","variacao_freq_contato_3m"]
             }
         }
     },
@@ -404,11 +424,11 @@ TOOLS_SCHEMA = [
                 "properties": {
                     "segmento": {
                         "type": "string",
-                        "enum": ["Varejo", "Alta Renda", "Wealth", "Corporate", "todos"]
+                        "enum": _SEG_ENUM
                     },
                     "taxa_retencao_pct": {
                         "type": "number",
-                        "description": "Taxa de retenção esperada (%). Default: 15 conforme PROBLEM.md",
+                        "description": "Taxa de retenção hipotética (%) para o cenário what-if. Default: 15",
                         "default": 15.0
                     }
                 },
@@ -422,16 +442,21 @@ TOOLS_SCHEMA = [
 SYSTEM_PROMPT = """Você é o **Data Agent** de uma gestora de investimentos.
 Sua função é responder perguntas estratégicas de Diretores e Gestores sobre churn de clientes, risco de AuC e performance do modelo de ML.
 
-Você tem acesso a um modelo Gradient Boosting em produção (ROC-AUC 0.93) que monitora clientes com base em comportamento de carteira, contato com assessores e retorno relativo.
+Você tem acesso a um modelo Gradient Boosting v2 (early-warning comportamental, ADR-0001) que
+prioriza sinais de relacionamento — dias desde o último contato, variação de cadência e latência
+de resposta — antes da queda de AuC. O dado é sintético; as métricas medem a coerência do
+pipeline, não desempenho em produção. Consulte `status_modelo` para os números atuais (ROC-AUC e
+recall vêm do CSV regenerável, nunca de memória).
 
 **Regras de comportamento:**
 1. SEMPRE chame as ferramentas para buscar dados atualizados antes de responder — nunca invente números.
-2. Quantifique em R$ sempre que possível. Fale o idioma do negócio, não de data science.
+2. Quantifique em R$ (milhões de AuC) sempre que possível. Fale o idioma do negócio, não de data science.
 3. Seja direto e executivo. Responda como um Chief Data Officer em reunião de diretoria.
 4. Quando identificar clientes em risco, sugira a ação de retenção adequada ao segmento.
 5. Se a pergunta não puder ser respondida com as ferramentas disponíveis, informe claramente.
-6. Use formatação markdown: **negrito** para números importantes, tabelas quando útil.
-7. Responda em Português do Brasil."""
+6. Não apresente cenários what-if de retenção como efeito medido — o projeto não estima retenção real.
+7. Use formatação markdown: **negrito** para números importantes, tabelas quando útil.
+8. Responda em Português do Brasil."""
 
 
 # ═══════════════════════════════════════════════════════════
@@ -444,10 +469,10 @@ def _detect_intent(question: str) -> tuple[str, dict]:
     q = question.lower()
 
     seg = "todos"
-    if "wealth"      in q: seg = "Wealth"
+    if "family office" in q or "family-office" in q: seg = "Family Office"
+    elif "wealth"     in q: seg = "Wealth"
+    elif "private"    in q: seg = "Private"
     elif "alta renda" in q: seg = "Alta Renda"
-    elif "varejo"     in q: seg = "Varejo"
-    elif "corporate"  in q: seg = "Corporate"
 
     if any(w in q for w in ["salvar", "salvando", "economi", "reter", "retenção"]):
         return "economia", {"segmento": seg}
@@ -472,15 +497,13 @@ def _format_demo_response(intent: str, args: dict, result: dict) -> str:
 
     if intent == "economia":
         return (
-            f"Com base nos dados atuais {seg_text}:\n\n"
+            f"Cenário **ilustrativo** {seg_text} (dado sintético, não é retenção observada):\n\n"
             f"- **AuC total em risco:** R$ {result.get('auc_em_risco_MM', 0):.1f}M\n"
             f"- **Clientes em risco:** {result.get('clientes_em_risco', 0)}\n"
-            f"- **Estimativa de AuC salvo** (meta {result.get('taxa_retencao_aplicada','15%')}): "
-            f"**R$ {result.get('auc_salvo_estimado_MM', 0):.1f}M**\n\n"
-            f"Esta estimativa segue o critério contratual do PROBLEM.md: "
-            f"+15% de AuC retido em 90 dias vs. grupo de controle (A/B Test).\n\n"
-            f"> Recomendação: Acione os assessores para os **{result.get('clientes_alto_risco', 0)} "
-            f"clientes de alto risco** imediatamente."
+            f"- **AuC salvo se a retenção fosse {result.get('taxa_retencao_hipotetica','15%')}** "
+            f"(hipótese, não medição): **R$ {result.get('auc_salvo_hipotetico_MM', 0):.1f}M**\n\n"
+            f"> Recomendação: priorizar contato dos assessores com os "
+            f"**{result.get('clientes_alto_risco', 0)} clientes de alto risco**."
         )
     elif intent == "auc":
         top3 = result.get("top3_clientes", [])
@@ -524,18 +547,18 @@ def _format_demo_response(intent: str, args: dict, result: dict) -> str:
         return resp
     elif intent == "modelo":
         m = result.get("metrics", {})
-        d = result.get("data_profile", {})
+        n_teste = m.get("n_teste", "?")
         return (
-            f"**Modelo em produção: v{result.get('version','?')}**\n\n"
-            f"| Métrica | Valor | Meta |\n"
-            f"|---------|-------|------|\n"
-            f"| F1-macro | **{m.get('f1_macro','?')}** | ≥ 0.55 |\n"
-            f"| ROC-AUC | **{m.get('roc_auc','?')}** | ≥ 0.80 |\n"
-            f"| Threshold | {m.get('threshold','?')} | — |\n\n"
-            f"- **Amostras de treino:** {d.get('n_samples','?')} clientes\n"
-            f"- **Taxa de churn base:** {d.get('churn_rate_pct','?')}%\n"
-            f"- **Feature mais importante (SHAP):** `{d.get('top_shap_feature','?')}`\n"
-            f"- **Promovido em:** {result.get('promoted_at','?')[:10]}"
+            f"**Modelo em produção: {result.get('version','?')}** "
+            f"(early-warning comportamental, ADR-0001)\n\n"
+            f"| Métrica (split de teste) | Valor |\n"
+            f"|---------|-------|\n"
+            f"| ROC-AUC | **{m.get('roc_auc','?')}** |\n"
+            f"| Recall (churn) | **{m.get('recall_churn','?')}** |\n"
+            f"| F1 (churn) | {m.get('f1_churn','?')} |\n\n"
+            f"- Base de teste: n={n_teste} relações. Dado sintético — a métrica mede a "
+            f"coerência do pipeline, não desempenho em produção.\n"
+            f"- Thresholds calibrados por segmento em `reports/thresholds_v2.md`."
         )
     return json.dumps(result, indent=2, ensure_ascii=False)
 

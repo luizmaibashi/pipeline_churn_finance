@@ -8,13 +8,12 @@ warnings.filterwarnings("ignore")
 
 import streamlit as st
 import pandas as pd
-import numpy as np
 import joblib
 import os
 import plotly.graph_objects as go
 import plotly.express as px
 
-from transformers import FeatureEngineer  # Necessário para unpicklear o Pipeline
+from transformers import FeatureEngineer, StructuralNullImputer  # noqa: F401 — unpickle do Pipeline v2
 
 # ── Configuração da página ────────────────────────────────────
 st.set_page_config(
@@ -191,32 +190,73 @@ html, body, [class*="css"] {
 
 
 # ── Helpers ───────────────────────────────────────────────────
-FEATURES = [
-    "meses_cliente", "qtd_produtos", "retorno_12m_pct",
-    "freq_contato_mes", "saldo_bi",
-    "engajamento_score", "retorno_relativo", "flag_risco",
-    "intensidade_rel", "segmento_enc"
+# Schema v2 (ADR-0001 / spec 0002): early-warning comportamental + AuC em milhões.
+SEGMENTOS_V2 = ["Alta Renda", "Private", "Wealth", "Family Office"]
+PCT_PERDA_CHURN = 0.30   # queda de AuC que caracteriza churn (PROBLEM.md v2.0 §2)
+
+# Colunas cruas que o Pipeline v2 consome (idêntico a api.py FEATURES_V2_BASE).
+FEATURES_V2_BASE = [
+    "segmento", "meses_cliente", "qtd_produtos",
+    "retorno_12m_pct", "freq_contato_mes", "auc_milhoes",
+    "dias_desde_ultimo_contato", "variacao_freq_contato_3m",
+    "tempo_resposta_medio_horas",
+    "sem_historico_12m", "cliente_novo_sem_contato_hist",
 ]
 
 FEAT_LABELS = {
-    "saldo_bi":           "Saldo (R$ bi)",
-    "intensidade_rel":    "Intensidade Relacionamento",
-    "meses_cliente":      "Meses como Cliente",
-    "retorno_relativo":   "Retorno Relativo à Média",
-    "segmento_enc":       "Segmento",
-    "retorno_12m_pct":    "Retorno 12m (%)",
-    "engajamento_score":  "Score de Engajamento",
-    "qtd_produtos":       "Qtd. Produtos",
-    "freq_contato_mes":   "Freq. Contato/Mês",
-    "flag_risco":         "Flag de Risco"
+    "variacao_freq_contato_3m":   "Variação de cadência de contato (3m)",
+    "dias_desde_ultimo_contato":  "Dias desde o último contato",
+    "tempo_resposta_medio_horas": "Latência de resposta do cliente (h)",
+    "auc_milhoes":                "AuC sob custódia (R$ mi)",
+    "retorno_12m_pct":            "Retorno 12m (%)",
+    "meses_cliente":              "Meses como Cliente",
+    "retorno_relativo":           "Retorno Relativo à Média",
+    "engajamento_score":          "Score de Engajamento",
+    "intensidade_rel":            "Intensidade Relacionamento",
+    "qtd_produtos":               "Qtd. Produtos",
+    "freq_contato_mes":           "Freq. Contato/Mês",
+    "segmento_enc":               "Segmento",
+    "flag_risco":                 "Flag de Risco",
+    "sem_historico_12m":          "Sem histórico de 12m",
+    "cliente_novo_sem_contato_hist": "Cliente novo (sem histórico de contato)",
 }
 
 SEG_COLORS = {
-    "Varejo":      "#f03e3e",
-    "Alta Renda":  "#ffd43b",
-    "Wealth":      "#74c0fc",
-    "Corporate":   "#63e6be"
+    "Alta Renda":    "#ffd43b",
+    "Private":       "#74c0fc",
+    "Wealth":        "#63e6be",
+    "Family Office": "#f783ac",
 }
+
+
+@st.cache_data
+def load_thresholds_table():
+    """Tabela completa de thresholds v2 (reports/thresholds_v2.md) — lida uma vez."""
+    return pd.read_csv("output/data/thresholds_v2.csv")
+
+
+def load_thresholds_v2():
+    """{segmento: threshold} calibrado por segmento. Sem regra v1 embutida."""
+    t = load_thresholds_table()
+    return {r["segmento"]: float(r["threshold"]) for _, r in t.iterrows()}
+
+
+RISK_MID_FACTOR = 0.6   # fronteira MÉDIO = fração do threshold ALTO (mesma regra de api._risk_level)
+
+
+def risco_por_threshold(prob, segmento, thr_map):
+    """ALTO >= threshold do segmento; MÉDIO >= RISK_MID_FACTOR*threshold; senão BAIXO."""
+    thr = thr_map.get(segmento, 0.5)
+    if prob >= thr:
+        return "Alto"
+    if prob >= thr * RISK_MID_FACTOR:
+        return "Médio"
+    return "Baixo"
+
+
+def band_color(prob, thr, high="#f03e3e", mid="#ffd43b", low="#51cf66"):
+    """Cor da faixa de risco para o mesmo corte ALTO/MÉDIO/BAIXO."""
+    return high if prob >= thr else mid if prob >= thr * RISK_MID_FACTOR else low
 
 PLOTLY_DARK = dict(
     paper_bgcolor="#1a1f2e",
@@ -228,35 +268,32 @@ PLOTLY_DARK = dict(
 
 @st.cache_resource
 def load_artifacts():
-    """Carrega o Pipeline formal do scikit-learn."""
-    model  = joblib.load("output/models/gb_pipeline.pkl")
+    """Carrega o Pipeline v2 (early-warning comportamental, ADR-0001)."""
+    model  = joblib.load("output/models/gb_pipeline_v2.pkl")
     return model
 
 
 @st.cache_data
 def load_data():
-    """Carrega os CSVs gerados pelo pipeline."""
-    df_fe = pd.read_csv("output/data/base_feature_eng.csv")
-    imp   = pd.read_csv("output/data/feature_importance.csv")
-    bench = pd.read_csv("output/data/benchmark_results.csv")
-    cv    = pd.read_csv("output/data/cv_scores.csv")
-    cm_df = pd.read_csv("output/data/confusion_matrix.csv")
-    return df_fe, imp, bench, cv, cm_df
+    """Carrega os CSVs v2 gerados pelo pipeline."""
+    df_cli = pd.read_csv("output/data/base_clientes_v2_limpo.csv")
+    imp    = pd.read_csv("output/data/feature_importance_v2.csv")
+    cmp    = pd.read_csv("output/data/comparacao_v1_v2.csv")
+    cv     = pd.read_csv("output/data/cv_scores_v2.csv")
+    return df_cli, imp, cmp, cv
 
 
 
-
-
-def risk_badge(prob):
-    if prob >= 0.55:
+def risk_badge(prob, thr=0.5):
+    if prob >= thr:
         return '<span class="badge-alto">🔴 Alto Risco</span>'
-    elif prob >= 0.30:
+    elif prob >= thr * RISK_MID_FACTOR:
         return '<span class="badge-medio">🟡 Médio Risco</span>'
     else:
         return '<span class="badge-baixo">🟢 Baixo Risco</span>'
 
 
-def gauge_chart(prob):
+def gauge_chart(prob, thr=0.5):
     fig = go.Figure(go.Indicator(
         mode="gauge+number+delta",
         value=prob * 100,
@@ -265,17 +302,17 @@ def gauge_chart(prob):
                "decreasing": {"color": "#51cf66"}},
         gauge={
             "axis":    {"range": [0, 100], "tickcolor": "#8b95b0", "tickfont": {"color": "#8b95b0"}},
-            "bar":     {"color": "#f03e3e" if prob >= 0.55 else "#ffd43b" if prob >= 0.30 else "#51cf66", "thickness": 0.28},
+            "bar":     {"color": band_color(prob, thr), "thickness": 0.28},
             "bgcolor": "#252a3d",
             "bordercolor": "#2d3250",
             "steps": [
-                {"range": [0,  30],  "color": "rgba(81,207,102,0.08)"},
-                {"range": [30, 55],  "color": "rgba(255,212,59,0.08)"},
-                {"range": [55, 100], "color": "rgba(240,62,62,0.08)"},
+                {"range": [0,  thr * RISK_MID_FACTOR * 100],  "color": "rgba(81,207,102,0.08)"},
+                {"range": [thr * RISK_MID_FACTOR * 100, thr * 100],  "color": "rgba(255,212,59,0.08)"},
+                {"range": [thr * 100, 100], "color": "rgba(240,62,62,0.08)"},
             ],
-            "threshold": {"line": {"color": "#a9b4d0", "width": 2}, "value": 20}
+            "threshold": {"line": {"color": "#a9b4d0", "width": 2}, "value": thr * 100}
         },
-        title={"text": "Probabilidade de Churn", "font": {"size": 14, "color": "#8b95b0"}}
+        title={"text": f"Prob. de churn · corte do segmento {thr*100:.0f}%", "font": {"size": 13, "color": "#8b95b0"}}
     ))
     fig.update_layout(height=280, paper_bgcolor="#1a1f2e", margin=dict(t=20, b=20, l=40, r=40))
     return fig
@@ -283,12 +320,12 @@ def gauge_chart(prob):
 
 # ── Verificação de artefatos ──────────────────────────────────
 artifacts_ok = all(os.path.exists(p) for p in [
-    "output/models/gb_pipeline.pkl",
-    "output/data/base_feature_eng.csv",
-    "output/data/feature_importance.csv",
-    "output/data/benchmark_results.csv",
-    "output/data/cv_scores.csv",
-    "output/data/confusion_matrix.csv",
+    "output/models/gb_pipeline_v2.pkl",
+    "output/data/base_clientes_v2_limpo.csv",
+    "output/data/feature_importance_v2.csv",
+    "output/data/comparacao_v1_v2.csv",
+    "output/data/cv_scores_v2.csv",
+    "output/data/thresholds_v2.csv",
 ])
 
 # ── SIDEBAR ───────────────────────────────────────────────────
@@ -305,10 +342,10 @@ with st.sidebar:
     st.markdown("<div style='color:#8b95b0; font-size:11px; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;'>Status dos Artefatos</div>", unsafe_allow_html=True)
 
     checks = {
-        "Pipeline Final":    "output/models/gb_pipeline.pkl",
-        "Dados (FE)":        "output/data/base_feature_eng.csv",
-        "Feature Importance":"output/data/feature_importance.csv",
-        "Benchmark":         "output/data/benchmark_results.csv",
+        "Pipeline v2":       "output/models/gb_pipeline_v2.pkl",
+        "Base v2 (limpa)":   "output/data/base_clientes_v2_limpo.csv",
+        "Feature Importance v2": "output/data/feature_importance_v2.csv",
+        "Thresholds v2":     "output/data/thresholds_v2.csv",
     }
     for name, path in checks.items():
         ok = os.path.exists(path)
@@ -331,11 +368,15 @@ with st.sidebar:
     st.markdown("<div style='color:#8b95b0; font-size:11px; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;'>Contexto do Negócio</div>", unsafe_allow_html=True)
     st.markdown("""
     <div style='font-size:12px; color:#c1c8de; line-height:1.8;'>
-        🏢 Ecossistema financeiro<br>
-        💰 ~R$75bi sob custódia<br>
-        👥 ~12.000 clientes<br>
-        📈 4 segmentos de carteira<br>
-        ⚠️ 12% churn atual
+        🏢 Gestora de wealth (private banking / multi-family office)<br>
+        💰 ~R$76 bi de AuC gerado<br>
+        👥 ~1.200 grupos econômicos · ~50 assessores<br>
+        📈 Alta Renda · Private · Wealth · Family Office<br>
+        ⚠️ ~11,7% de churn no dado sintético
+    </div>
+    <div style='font-size:11px; color:#6b7590; margin-top:8px; line-height:1.6;'>
+        Dado 100% sintético e calibrado ao mercado (ANBIMA). Métricas medem a
+        coerência do pipeline, não desempenho em produção.
     </div>
     """, unsafe_allow_html=True)
 
@@ -347,7 +388,7 @@ st.markdown("""
         Pipeline de Predição de Churn
     </h1>
     <p style='color:#8b95b0; margin:6px 0 0 0; font-size:14px;'>
-        Ecossistema Financeiro — Gradient Boosting com Feature Engineering
+        Gestora de wealth — early-warning comportamental (v2, ADR-0001) sobre Gradient Boosting
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -366,14 +407,15 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # ==============================================================
 with tab1:
     st.markdown('<p class="section-header">Preditor de Churn — Cliente Individual</p>', unsafe_allow_html=True)
-    st.markdown('<p class="section-sub">Insira o perfil do cliente para calcular a probabilidade de churn nos próximos 30 dias.</p>', unsafe_allow_html=True)
+    st.markdown('<p class="section-sub">Perfil do cliente + sinais de <b>early-warning comportamental</b> (v2). O corte de risco é o threshold calibrado do segmento (<code>reports/thresholds_v2.md</code>).</p>', unsafe_allow_html=True)
 
     if not artifacts_ok:
         st.error("⚠️ Artefatos de modelo não encontrados. Execute `python pipeline.py` primeiro.")
     else:
         model = load_artifacts()
-        df_fe, _, _, _, _ = load_data()
-        media_retorno = df_fe["retorno_12m_pct"].mean()
+        df_cli, _, _, _ = load_data()
+        thr_map = load_thresholds_v2()
+        media_retorno = df_cli["retorno_12m_pct"].mean()
 
         col_form, col_result = st.columns([1, 1], gap="large")
 
@@ -381,74 +423,88 @@ with tab1:
             st.markdown("<div style='color:#8b95b0; font-size:12px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:14px;'>Perfil do Cliente</div>", unsafe_allow_html=True)
 
             with st.container():
-                segmento = st.selectbox(
-                    "Segmento",
-                    ["Varejo", "Alta Renda", "Wealth", "Corporate"],
-                    key="pred_segmento"
-                )
+                segmento = st.selectbox("Segmento", SEGMENTOS_V2, key="pred_segmento")
                 col_a, col_b = st.columns(2)
                 with col_a:
-                    meses = st.slider("Tempo como cliente (meses)", 1, 144, 36, key="pred_meses")
-                    qtd_prod = st.slider("Nº de produtos", 1, 8, 3, key="pred_qtd")
+                    meses = st.slider("Tempo como cliente (meses)", 6, 360, 48, key="pred_meses")
+                    qtd_prod = st.slider("Nº de produtos", 1, 12, 4, key="pred_qtd")
+                    freq = st.slider("Contatos no último mês", 0, 15, 3, key="pred_freq")
                 with col_b:
-                    retorno = st.slider("Retorno 12m (%)", 0.0, 30.0, 11.5, 0.1, key="pred_retorno")
-                    freq = st.slider("Contatos/mês com assessor", 0, 15, 3, key="pred_freq")
+                    auc_milhoes = st.slider("AuC sob custódia (R$ mi)", 3.0, 2000.0, 120.0, 1.0,
+                                            key="pred_auc", format="R$ %.0f mi")
+                    tem_retorno = st.checkbox("Tem histórico de retorno 12m", value=True, key="pred_tem_ret")
+                    retorno = st.slider("Retorno 12m (%)", -20.0, 40.0, 11.5, 0.1, key="pred_retorno",
+                                        disabled=not tem_retorno)
 
-                saldo = st.slider("Saldo sob custódia (R$ bi)", 0.01, 5.0, 0.5, 0.01, key="pred_saldo",
-                                  format="R$ %.2f bi")
+                st.markdown("<div style='color:#8b95b0; font-size:11px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; margin:10px 0 4px 0;'>Early-warning comportamental</div>", unsafe_allow_html=True)
+                col_c, col_d = st.columns(2)
+                with col_c:
+                    tem_contato = st.checkbox("Tem histórico de contato", value=True, key="pred_tem_cont")
+                    dias_contato = st.slider("Dias desde o último contato", 0, 200, 15, key="pred_dias",
+                                             disabled=not tem_contato)
+                with col_d:
+                    variacao = st.slider("Variação de cadência 3m (−0,3 = caiu 30%)", -0.9, 0.9, -0.02, 0.01,
+                                         key="pred_var")
+                    resposta = st.slider("Latência de resposta do cliente (h)", 0.0, 120.0, 16.0, 0.5,
+                                         key="pred_resp")
 
-                # Predição em tempo real c/ Pipeline (elimina Training-Serving Skew)
+                retorno_val = retorno if tem_retorno else None
+                dias_val = dias_contato if tem_contato else None
+
                 X_new = pd.DataFrame([{
                     "segmento": segmento,
                     "meses_cliente": meses,
                     "qtd_produtos": qtd_prod,
-                    "retorno_12m_pct": retorno,
+                    "retorno_12m_pct": retorno_val,
                     "freq_contato_mes": freq,
-                    "saldo_bi": saldo
-                }])
+                    "auc_milhoes": auc_milhoes,
+                    "dias_desde_ultimo_contato": dias_val,
+                    "variacao_freq_contato_3m": variacao,
+                    "tempo_resposta_medio_horas": resposta,
+                    "sem_historico_12m": int(retorno_val is None),
+                    "cliente_novo_sem_contato_hist": int(dias_val is None),
+                }])[FEATURES_V2_BASE]
                 prob = model.predict_proba(X_new)[0][1]
-                pred = int(prob >= 0.5)
+                thr = thr_map.get(segmento, 0.5)
 
         with col_result:
             st.markdown("<div style='color:#8b95b0; font-size:12px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:14px;'>Resultado da Predição</div>", unsafe_allow_html=True)
 
-            # Gauge
-            st.plotly_chart(gauge_chart(prob), use_container_width=True, key="gauge")
+            st.plotly_chart(gauge_chart(prob, thr), use_container_width=True, key="gauge")
 
-            # Badge de risco
             st.markdown(
-                f"<div style='text-align:center; margin: -10px 0 16px 0;'>{risk_badge(prob)}</div>",
+                f"<div style='text-align:center; margin: -10px 0 16px 0;'>{risk_badge(prob, thr)}</div>",
                 unsafe_allow_html=True
             )
 
-            # Insights
             insights = []
+            if dias_val is not None and dias_val > 45:
+                insights.append(f"⚠️ {dias_val} dias sem contato — sinal antecedente de deterioração")
+            if variacao < -0.2:
+                insights.append(f"⚠️ Cadência de contato caindo {abs(variacao)*100:.0f}% — early-warning")
+            if resposta > 40:
+                insights.append("⚠️ Latência de resposta alta — engajamento em queda")
             if freq == 0:
-                insights.append("⚠️ Nenhum contato com assessor — maior fator de abandono")
-            if retorno < media_retorno:
+                insights.append("⚠️ Nenhum contato no último mês")
+            if tem_retorno and retorno < media_retorno:
                 insights.append(f"⚠️ Retorno abaixo da média da carteira ({media_retorno:.1f}%)")
             if qtd_prod == 1:
-                insights.append("⚠️ Monoproduto — menor fidelização do cliente")
-            if meses < 12:
-                insights.append("⚠️ Cliente recente (<12 meses) — maior risco de saída")
-            if saldo < 0.1:
-                insights.append("⚠️ Saldo baixo — menor custo de saída para o cliente")
-            if segmento == "Varejo":
-                insights.append("📌 Segmento Varejo — maior taxa histórica de churn (25%+)")
+                insights.append("⚠️ Monoproduto — menor fidelização")
 
             if insights:
                 st.markdown("<div class='alert-box'><b style='color:#ffa8a8; font-size:13px;'>Fatores de Risco Identificados</b><br><div style='font-size:12px; color:#ffcdd2; line-height:2; margin-top:6px;'>" + "<br>".join(insights) + "</div></div>", unsafe_allow_html=True)
             else:
                 st.markdown("<div class='alert-box-green'><b style='color:#a9e34b; font-size:13px;'>✅ Perfil de baixo risco</b><br><span style='font-size:12px; color:#cbf078;'>Nenhum fator de risco crítico identificado para este cliente.</span></div>", unsafe_allow_html=True)
 
-            # ROI rápido
-            auc_risco = saldo * 0.012
+            auc_risco_mm = auc_milhoes * PCT_PERDA_CHURN * prob
+            fluxo = "REVISÃO HUMANA (especialista)" if segmento in ("Wealth", "Family Office") or auc_milhoes >= 250 else "AUTO → CRM"
             st.markdown(f"""
             <div class='insight-box' style='margin-top:12px;'>
-                <div style='font-weight:600; color:#e8ecf4; margin-bottom:6px;'>💼 Impacto financeiro estimado</div>
-                <div>Saldo sob custódia: <b style='color:#74c0fc;'>R$ {saldo:.2f} bi</b></div>
-                <div>Receita anual em risco: <b style='color:{'#ff6b6b' if prob >= 0.55 else '#ffd43b' if prob >= 0.30 else '#51cf66'};'>R$ {auc_risco*1000:.1f}M/ano</b></div>
-                <div style='margin-top:6px; font-size:11px; color:#6b7590;'>* 1,2% do AuC como proxy de receita anual</div>
+                <div style='font-weight:600; color:#e8ecf4; margin-bottom:6px;'>💼 AuC em risco</div>
+                <div>AuC sob custódia: <b style='color:#74c0fc;'>R$ {auc_milhoes:.0f} mi</b></div>
+                <div>AuC em risco: <b style='color:{band_color(prob, thr, high="#ff6b6b")};'>R$ {auc_risco_mm:.1f} mi</b>
+                    <span style='font-size:11px; color:#6b7590;'>(AuC × 30% × prob)</span></div>
+                <div style='margin-top:6px; font-size:11px; color:#6b7590;'>Fluxo operacional: {fluxo}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -459,28 +515,38 @@ with tab1:
         p1, p2, p3 = st.columns(3)
         profiles = [
             {
-                "label": "🔴 Alto Risco",
-                "desc": "Varejo | 3 meses | 1 produto | Retorno 6% | 0 contatos | R$0.05bi",
+                "label": "🔴 Alto Risco (early-warning)",
+                "desc": "Private | 30m | 3 prod | 70 dias sem contato | cadência −45% | resposta 60h | R$25 mi",
                 "color": "#ff6b6b",
-                "vals": {"segmento":"Varejo", "meses_cliente":3, "qtd_produtos":1, "retorno_12m_pct":6.0, "freq_contato_mes":0, "saldo_bi":0.05}
+                "vals": {"segmento":"Private", "meses_cliente":30, "qtd_produtos":3, "retorno_12m_pct":6.0,
+                         "freq_contato_mes":0, "auc_milhoes":25.0, "dias_desde_ultimo_contato":70.0,
+                         "variacao_freq_contato_3m":-0.45, "tempo_resposta_medio_horas":60.0,
+                         "sem_historico_12m":0, "cliente_novo_sem_contato_hist":0},
             },
             {
                 "label": "🟡 Médio Risco",
-                "desc": "Alta Renda | 24 meses | 3 produtos | Retorno 10% | 2 contatos | R$0.8bi",
+                "desc": "Alta Renda | 24m | 3 prod | 30 dias sem contato | cadência −15% | R$8 mi",
                 "color": "#ffd43b",
-                "vals": {"segmento":"Alta Renda", "meses_cliente":24, "qtd_produtos":3, "retorno_12m_pct":10.0, "freq_contato_mes":2, "saldo_bi":0.8}
+                "vals": {"segmento":"Alta Renda", "meses_cliente":24, "qtd_produtos":3, "retorno_12m_pct":9.0,
+                         "freq_contato_mes":1, "auc_milhoes":8.0, "dias_desde_ultimo_contato":30.0,
+                         "variacao_freq_contato_3m":-0.15, "tempo_resposta_medio_horas":24.0,
+                         "sem_historico_12m":0, "cliente_novo_sem_contato_hist":0},
             },
             {
                 "label": "🟢 Baixo Risco",
-                "desc": "Wealth | 72 meses | 7 produtos | Retorno 15% | 5 contatos | R$3bi",
+                "desc": "Wealth | 96m | 6 prod | contato recente | cadência estável | R$150 mi",
                 "color": "#51cf66",
-                "vals": {"segmento":"Wealth", "meses_cliente":72, "qtd_produtos":7, "retorno_12m_pct":15.0, "freq_contato_mes":5, "saldo_bi":3.0}
-            }
+                "vals": {"segmento":"Wealth", "meses_cliente":96, "qtd_produtos":6, "retorno_12m_pct":14.0,
+                         "freq_contato_mes":5, "auc_milhoes":150.0, "dias_desde_ultimo_contato":6.0,
+                         "variacao_freq_contato_3m":0.05, "tempo_resposta_medio_horas":8.0,
+                         "sem_historico_12m":0, "cliente_novo_sem_contato_hist":0},
+            },
         ]
-        for col, prof in zip([p1, p2, p3], profiles):
+        probs_perfis = model.predict_proba(
+            pd.DataFrame([p["vals"] for p in profiles])[FEATURES_V2_BASE]
+        )[:, 1]
+        for col, prof, p_val in zip([p1, p2, p3], profiles, probs_perfis):
             with col:
-                x = pd.DataFrame([prof["vals"]])
-                p_val = model.predict_proba(x)[0][1]
                 st.markdown(f"""
                 <div style='background:#1e2130; border:1px solid #2d3250; border-left:3px solid {prof["color"]};
                             border-radius:10px; padding:16px; height:130px;'>
@@ -502,37 +568,30 @@ with tab2:
         st.error("⚠️ Dados não encontrados. Execute `python pipeline.py` primeiro.")
     else:
         model = load_artifacts()
-        df_fe, imp, bench, cv_df, cm_df = load_data()
-        media_retorno_base = df_fe["retorno_12m_pct"].mean()
+        df_cli, imp, cmp, cv_df = load_data()
+        thr_map = load_thresholds_v2()
 
-        FEATURES_BASE = [
-            "segmento", "meses_cliente", "qtd_produtos", 
-            "retorno_12m_pct", "freq_contato_mes", "saldo_bi"
+        # Scoring ao vivo da carteira v2 com as features de early-warning
+        df_plot = df_cli.copy()
+        df_plot["prob_churn"] = model.predict_proba(df_plot[FEATURES_V2_BASE])[:, 1]
+        df_plot["risco"] = [
+            risco_por_threshold(p, s, thr_map)
+            for p, s in zip(df_plot["prob_churn"], df_plot["segmento"])
         ]
-        
-        # Calcular probabilidades para toda a carteira
-        X_all = df_fe[FEATURES_BASE]
-        df_plot = df_fe.copy()
-        df_plot["prob_churn"] = model.predict_proba(X_all)[:, 1]
-        df_plot["risco"] = pd.cut(
-            df_plot["prob_churn"],
-            bins=[0, 0.30, 0.55, 1.0],
-            labels=["Baixo", "Médio", "Alto"]
-        )
 
         # KPIs
         total = len(df_plot)
         alto_risco = (df_plot["risco"] == "Alto").sum()
         medio_risco = (df_plot["risco"] == "Médio").sum()
         churn_real = df_plot["churn"].sum()
-        auc_risco = df_plot.loc[df_plot["risco"] == "Alto", "saldo_bi"].sum()
+        auc_risco_bi = df_plot.loc[df_plot["risco"] == "Alto", "auc_milhoes"].sum() / 1000
 
         k1, k2, k3, k4 = st.columns(4)
         kpis = [
-            (k1, "Total Clientes", f"{total:,}", ""),
+            (k1, "Total de relações", f"{total:,}", ""),
             (k2, "Alto Risco (modelo)", f"{alto_risco}", f"{alto_risco/total*100:.1f}% da carteira"),
             (k3, "Churn Real (base)", f"{churn_real}", f"{churn_real/total*100:.1f}% da base"),
-            (k4, "AuC em Risco (alto)", f"R${auc_risco:.1f}bi", "clientes flag alto risco"),
+            (k4, "AuC em relações de alto risco", f"R${auc_risco_bi:.1f}bi", "AuC sob custódia"),
         ]
         colors = ["#74c0fc", "#ff6b6b", "#ffd43b", "#f03e3e"]
         for col, (label, value, delta) in zip([k1, k2, k3, k4], [(k[1], k[2], k[3]) for k in kpis]):
@@ -616,43 +675,41 @@ with tab2:
         gc3, gc4 = st.columns([1.2, 0.8], gap="medium")
 
         with gc3:
-            # Scatter: saldo vs prob_churn
+            # Scatter: dias sem contato (early-warning) vs prob_churn
             fig_scatter = px.scatter(
                 df_plot,
-                x="saldo_bi",
+                x="dias_desde_ultimo_contato",
                 y="prob_churn",
                 color="segmento",
                 color_discrete_map=SEG_COLORS,
-                hover_data=["cliente_id", "meses_cliente", "qtd_produtos"],
+                size="auc_milhoes",
+                size_max=22,
+                hover_data=["cliente_id", "variacao_freq_contato_3m", "auc_milhoes"],
                 opacity=0.7,
-                labels={"saldo_bi": "Saldo (R$ bi)", "prob_churn": "Prob. Churn", "segmento": "Segmento"}
+                labels={"dias_desde_ultimo_contato": "Dias desde o último contato",
+                        "prob_churn": "Prob. Churn", "segmento": "Segmento"}
             )
-            fig_scatter.add_hline(y=0.55, line_dash="dot", line_color="#ff6b6b",
-                                  annotation_text="Limiar alto risco (55%)")
-            fig_scatter.add_hline(y=0.30, line_dash="dot", line_color="#ffd43b",
-                                  annotation_text="Limiar médio risco (30%)")
             fig_scatter.update_layout(
-                title="Saldo vs Probabilidade de Churn",
+                title="Early-warning: dias sem contato vs prob. de churn (tamanho = AuC)",
                 **PLOTLY_DARK,
                 height=340,
-                xaxis=dict(type="log", title="Saldo (R$ bi) — escala log"),
+                xaxis_title="Dias desde o último contato",
                 yaxis_title="Prob. Churn"
             )
             st.plotly_chart(fig_scatter, use_container_width=True, key="scatter")
 
         with gc4:
-            # Top 15 clientes em risco
             top_risco = (
                 df_plot[df_plot["risco"] == "Alto"]
                 .sort_values("prob_churn", ascending=False)
-                .head(10)[["cliente_id", "segmento", "prob_churn", "saldo_bi"]]
+                .head(10)[["cliente_id", "segmento", "prob_churn", "auc_milhoes"]]
             )
-            st.markdown("<div style='color:#8b95b0; font-size:12px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:10px;'>🔴 Top 10 Clientes — Maior Risco</div>", unsafe_allow_html=True)
+            st.markdown("<div style='color:#8b95b0; font-size:12px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:10px;'>🔴 Top 10 relações — Maior Risco</div>", unsafe_allow_html=True)
             if len(top_risco) > 0:
                 top_risco_display = top_risco.copy()
                 top_risco_display["prob_churn"] = top_risco_display["prob_churn"].apply(lambda x: f"{x*100:.1f}%")
-                top_risco_display["saldo_bi"]   = top_risco_display["saldo_bi"].apply(lambda x: f"R${x:.2f}bi")
-                top_risco_display.columns = ["ID", "Segmento", "Prob. Churn", "Saldo"]
+                top_risco_display["auc_milhoes"] = top_risco_display["auc_milhoes"].apply(lambda x: f"R${x:.0f} mi")
+                top_risco_display.columns = ["ID", "Segmento", "Prob. Churn", "AuC"]
                 st.dataframe(
                     top_risco_display.reset_index(drop=True),
                     use_container_width=True,
@@ -666,184 +723,113 @@ with tab2:
 # TAB 3 — PERFORMANCE DO MODELO
 # ==============================================================
 with tab3:
-    st.markdown('<p class="section-header">Performance e Avaliação do Modelo</p>', unsafe_allow_html=True)
-    st.markdown('<p class="section-sub">Gradient Boosting treinado com 5-Fold Cross-Validation estratificado. Meta: F1-macro ≥ 0.55 | ROC-AUC ≥ 0.70</p>', unsafe_allow_html=True)
+    st.markdown('<p class="section-header">Performance e Avaliação do Modelo v2</p>', unsafe_allow_html=True)
+    st.markdown('<p class="section-sub">Early-warning comportamental (ADR-0001) contra a baseline reativa v1, no mesmo split. Dado sintético — as métricas medem a coerência do pipeline, não desempenho de produção. Números lidos de <code>comparacao_v1_v2.csv</code>, <code>feature_importance_v2.csv</code>, <code>cv_scores_v2.csv</code>.</p>', unsafe_allow_html=True)
 
     if not artifacts_ok:
         st.error("⚠️ Dados não encontrados. Execute `python pipeline.py` primeiro.")
     else:
-        _, imp, bench, cv_df, cm_df = load_data()
+        _, imp, cmp, cv_df = load_data()
+        thr_map = load_thresholds_v2()
+        thr_tbl = load_thresholds_table()
 
-        # KPIs do modelo final
-        gb_row = bench[bench["modelo"] == "Gradient Boosting"].iloc[0]
-        tn, fp, fn, tp = int(cm_df["tn"][0]), int(cm_df["fp"][0]), int(cm_df["fn"][0]), int(cm_df["tp"][0])
-        recall_churn = tp / (tp + fn) if (tp + fn) > 0 else 0
+        v1 = cmp[cmp["modelo"] == "v1_baseline_reativa"].iloc[0]
+        v2 = cmp[cmp["modelo"] == "v2_early_warning_advisor"].iloc[0]
+        n_teste = int(v2["n_teste"])
+        comport = ["variacao_freq_contato_3m", "dias_desde_ultimo_contato", "tempo_resposta_medio_horas"]
+        imp_comport = imp[imp["feature"].isin(comport)]["importance"].sum()
+        cv_mean = cv_df["recall_churn"].mean()
+        cv_std  = cv_df["recall_churn"].std()
+        n_seg = int((thr_tbl["origem_threshold"] == "segmento").sum())
 
         m1, m2, m3, m4 = st.columns(4)
         mets = [
-            ("F1-macro (GB)", f"{gb_row['f1_macro']:.4f}", "Meta ≥ 0.55", gb_row['f1_macro'] >= 0.55),
-            ("ROC-AUC (GB)",  f"{gb_row['roc_auc']:.4f}",  "Meta ≥ 0.70", gb_row['roc_auc'] >= 0.70),
-            ("Recall Churn",  f"{recall_churn*100:.1f}%",   f"TP={tp} de {tp+fn} churns", True),
-            ("Acurácia",      f"{gb_row['acuracia']:.4f}",  "⚠️ Não é métrica principal", False),
+            ("ROC-AUC v2", f"{v2['roc_auc']:.4f}", f"v1 baseline: {v1['roc_auc']:.4f}"),
+            ("Recall churn v2", f"{v2['recall_churn']*100:.1f}%", f"split de teste n={n_teste}, ~28 eventos"),
+            ("Importância comportamental", f"{imp_comport*100:.1f}%", "3 sinais de early-warning"),
+            ("Thresholds calibrados", f"{n_seg}/4 por segmento", "resto: fallback global"),
         ]
-        for col, (label, val, note, ok) in zip([m1, m2, m3, m4], mets):
+        for col, (label, val, note) in zip([m1, m2, m3, m4], mets):
             with col:
-                color = "#51cf66" if ok else "#ffd43b"
                 st.markdown(f"""
                 <div class='metric-card'>
                     <div class='metric-label'>{label}</div>
-                    <div class='metric-value' style='color:{color};'>{val}</div>
+                    <div class='metric-value' style='color:#74c0fc;'>{val}</div>
                     <div style='font-size:11px; color:#6b7590; margin-top:4px;'>{note}</div>
                 </div>
                 """, unsafe_allow_html=True)
 
-        row1, row2 = st.columns([1.3, 0.7], gap="medium")
+        row1, row2 = st.columns([1, 1], gap="medium")
 
         with row1:
-            # Benchmark de modelos
-            cores = ["#adb5bd", "#74c0fc", "#63e6be", "#ffd43b", "#f03e3e"]
-            fig_bench = go.Figure()
-            fig_bench.add_trace(go.Bar(
-                name="F1-macro",
-                x=bench["modelo"],
-                y=bench["f1_macro"],
-                text=[f"{v:.3f}" for v in bench["f1_macro"]],
-                textposition="outside",
-                marker_color=cores
-            ))
-            fig_bench.add_trace(go.Bar(
-                name="ROC-AUC",
-                x=bench["modelo"],
-                y=bench["roc_auc"],
-                text=[f"{v:.3f}" for v in bench["roc_auc"]],
-                textposition="outside",
-                marker_color=["rgba(0,0,0,0.2)"] * 5,
-                marker_line_color=cores,
-                marker_line_width=2
-            ))
-            fig_bench.add_hline(y=0.55, line_dash="dot", line_color="#ff6b6b",
-                                annotation_text="Meta F1 ≥ 0.55")
-            fig_bench.add_hline(y=0.70, line_dash="dot", line_color="#ffd43b",
-                                annotation_text="Meta ROC ≥ 0.70")
-            fig_bench.update_layout(
-                title="Benchmark de Modelos — F1-macro vs ROC-AUC",
-                barmode="group",
-                **PLOTLY_DARK,
-                height=360,
-                legend=dict(orientation="h", y=1.05, x=0.5, xanchor="center"),
-                yaxis_range=[0, 0.82],
-                xaxis_title="Modelo",
-                yaxis_title="Score"
-            )
-            st.plotly_chart(fig_bench, use_container_width=True, key="bench_chart")
+            metricas = ["recall_churn", "f1_churn", "roc_auc"]
+            rotulos  = ["Recall (churn)", "F1 (churn)", "ROC-AUC"]
+            fig_cmp = go.Figure()
+            fig_cmp.add_trace(go.Bar(name="v1 reativa", x=rotulos, y=[v1[m] for m in metricas],
+                                     text=[f"{v1[m]:.3f}" for m in metricas], textposition="outside",
+                                     marker_color="#8b95b0"))
+            fig_cmp.add_trace(go.Bar(name="v2 early-warning", x=rotulos, y=[v2[m] for m in metricas],
+                                     text=[f"{v2[m]:.3f}" for m in metricas], textposition="outside",
+                                     marker_color="#63e6be"))
+            fig_cmp.update_layout(title=f"v1 reativa vs v2 early-warning (mesmo split, n={n_teste})",
+                                  barmode="group", **PLOTLY_DARK, height=360,
+                                  legend=dict(orientation="h", y=1.08, x=0.5, xanchor="center"),
+                                  yaxis_range=[0, 1.0], xaxis_title="Métrica", yaxis_title="Valor")
+            st.plotly_chart(fig_cmp, use_container_width=True, key="cmp_chart")
 
         with row2:
-            # Confusion Matrix
-            cm_arr = np.array([[tn, fp], [fn, tp]])
-            fig_cm = go.Figure(go.Heatmap(
-                z=cm_arr,
-                x=["Ficou (0)", "Churnou (1)"],
-                y=["Ficou (0)", "Churnou (1)"],
-                text=[[str(v) for v in row] for row in cm_arr],
-                texttemplate="<b>%{text}</b>",
-                textfont=dict(size=28, color="white"),
-                colorscale=[[0, "#1e2130"], [0.5, "#1971c2"], [1, "#1864ab"]],
-                showscale=False
-            ))
-            fig_cm.update_layout(
-                title=f"Matriz de Confusão (Gradient Boosting)",
-                **PLOTLY_DARK,
-                height=360,
-                xaxis_title="Predito",
-                yaxis_title="Real"
-            )
-            st.plotly_chart(fig_cm, use_container_width=True, key="cm_chart")
-
-        row3, row4 = st.columns([1, 1], gap="medium")
-
-        with row3:
-            # Feature Importance
-            imp_plot = imp.copy()
-            imp_plot["label"] = imp_plot["feature"].map(FEAT_LABELS)
-            imp_plot = imp_plot.sort_values("importance")
-
-            fig_imp = go.Figure(go.Bar(
-                x=imp_plot["importance"],
-                y=imp_plot["label"],
-                orientation="h",
-                text=[f"{v:.3f}" for v in imp_plot["importance"]],
-                textposition="outside",
-                cliponaxis=False,
-                marker_color=["#f03e3e" if v > 0.15 else "#ffd43b" if v > 0.08 else "#74c0fc"
-                              for v in imp_plot["importance"]],
-                marker_line_color="#2d3250",
-                marker_line_width=1
-            ))
-            fig_imp.update_layout(
-                title="Feature Importance — Gradient Boosting",
-                **PLOTLY_DARK,
-                height=380,
-                margin=dict(t=60, b=40, l=140, r=70),
-                xaxis_title="Importância",
-                xaxis_range=[0, imp_plot["importance"].max() * 1.35]
-            )
-            st.plotly_chart(fig_imp, use_container_width=True, key="imp_chart")
-
-        with row4:
-            # Cross-Validation 5-Fold
+            cv_mean_pct = cv_mean * 100
             fig_cv = go.Figure(go.Bar(
-                x=cv_df["fold"],
-                y=cv_df["f1_macro"],
-                text=[f"{v:.4f}" for v in cv_df["f1_macro"]],
-                textposition="outside",
-                marker_color="#74c0fc",
-                marker_line_color="#4dabf7",
-                marker_line_width=1.5
+                x=cv_df["fold"], y=cv_df["recall_churn"] * 100,
+                text=[f"{v*100:.1f}%" for v in cv_df["recall_churn"]], textposition="outside",
+                marker_color="#74c0fc", marker_line_color="#4dabf7", marker_line_width=1.5,
             ))
-            mean_cv = cv_df["f1_macro"].mean()
-            std_cv  = cv_df["f1_macro"].std()
-            fig_cv.add_hline(y=mean_cv, line_dash="dash", line_color="#1971c2",
-                             annotation_text=f"Média={mean_cv:.4f} ±{std_cv:.4f}",
+            fig_cv.add_hline(y=cv_mean_pct, line_dash="dash", line_color="#1971c2",
+                             annotation_text=f"Média={cv_mean_pct:.1f}% ±{cv_std*100:.1f} p.p.",
                              annotation_position="top left")
-            fig_cv.update_layout(
-                title="Cross-Validation 5-Fold — F1-macro",
-                **PLOTLY_DARK,
-                height=380,
-                xaxis_title="Fold",
-                yaxis_title="F1-macro",
-                yaxis_range=[cv_df["f1_macro"].min() - 0.04, cv_df["f1_macro"].max() + 0.06]
-            )
+            fig_cv.update_layout(title="Cross-Validation 5-Fold v2 — Recall (churn)",
+                                 **PLOTLY_DARK, height=360, xaxis_title="Fold", yaxis_title="Recall (%)",
+                                 yaxis_range=[0, cv_df["recall_churn"].max() * 100 + 8])
             st.plotly_chart(fig_cv, use_container_width=True, key="cv_chart")
 
-        # ROI financeiro
-        st.markdown("<hr style='border-color:#2d3250; margin:24px 0 16px 0;'>", unsafe_allow_html=True)
-        st.markdown("<div style='color:#8b95b0; font-size:12px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:14px;'>💰 Análise de ROI Financeiro</div>", unsafe_allow_html=True)
+        # Feature importance v2
+        imp_plot = imp.copy()
+        imp_plot["label"] = imp_plot["feature"].map(FEAT_LABELS).fillna(imp_plot["feature"])
+        imp_plot = imp_plot.sort_values("importance")
+        fig_imp = go.Figure(go.Bar(
+            x=imp_plot["importance"], y=imp_plot["label"], orientation="h",
+            text=[f"{v:.3f}" for v in imp_plot["importance"]], textposition="outside", cliponaxis=False,
+            marker_color=["#63e6be" if f in comport else "#74c0fc" for f in imp_plot["feature"]],
+            marker_line_color="#2d3250", marker_line_width=1,
+        ))
+        fig_imp.update_layout(
+            title="Feature Importance — modelo v2 (verde = early-warning comportamental)",
+            **PLOTLY_DARK, height=440,
+            xaxis_title="Importância (impurity-based)",
+            xaxis_range=[0, imp_plot["importance"].max() * 1.35],
+        )
+        fig_imp.update_layout(margin=dict(t=60, b=40, l=220, r=70))
+        st.plotly_chart(fig_imp, use_container_width=True, key="imp_chart")
 
-        ticket_medio_mi = 6.7
-        custo_contato   = 0.5       # R$ mil
-        receita_retida  = 0.012     # 1.2% AuC
+        # Thresholds calibrados
+        st.markdown("<hr style='border-color:#2d3250; margin:20px 0 12px 0;'>", unsafe_allow_html=True)
+        st.markdown("<div style='color:#8b95b0; font-size:12px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:10px;'>Thresholds por segmento — <code>reports/thresholds_v2.md</code></div>", unsafe_allow_html=True)
+        st.dataframe(thr_tbl, use_container_width=True, hide_index=True)
 
-        alertados       = tp + fp
-        auc_risco_roi   = tp * ticket_medio_mi
-        receita_prot    = auc_risco_roi * receita_retida
-        custo_total     = alertados * custo_contato / 1000
-        roi_mi          = receita_prot - custo_total
-
-        r1, r2, r3, r4 = st.columns(4)
-        roi_kpis = [
-            ("Clientes Alertados", str(alertados), "#74c0fc"),
-            ("Churns Capturados", f"{tp} / {tp+fn}", "#ffd43b"),
-            ("Receita Protegida/ano", f"R${receita_prot:.2f}mi", "#51cf66"),
-            ("ROI Líquido Estimado", f"R${roi_mi:.2f}mi", "#51cf66"),
-        ]
-        for col, (label, val, color) in zip([r1, r2, r3, r4], roi_kpis):
-            with col:
-                st.markdown(f"""
-                <div class='metric-card'>
-                    <div class='metric-label'>{label}</div>
-                    <div class='metric-value' style='font-size:22px; color:{color};'>{val}</div>
-                </div>
-                """, unsafe_allow_html=True)
+        # Leitura honesta (substitui a antiga seção de "ROI estimado")
+        diff_pp = (v2["recall_churn"] - v1["recall_churn"]) * 100
+        st.markdown(f"""
+        <div class='insight-box' style='margin-top:14px;'>
+            <div style='font-weight:600; color:#e8ecf4; margin-bottom:6px;'>O que este projeto demonstra</div>
+            <div style='line-height:1.7;'>
+            Contrato de dados temporal, separação de produtos analíticos (churn de cliente vs. exposição de carteira),
+            calibração de threshold por custo assimétrico e serving com schema versionado.
+            A v2 supera a v1 em recall no mesmo split (+{diff_pp:.1f} p.p.), mas com ~28 eventos de churn no teste
+            o IC95% da diferença inclui zero — <b>não é um ganho robusto</b>, e o dado é sintético.
+            Nenhum número aqui é efeito de negócio observado.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 # ==============================================================
 # TAB 4 — CARTEIRA EXPOSTA POR ASSESSOR  (Direção B, ADR-0001)
@@ -882,7 +868,7 @@ with tab4:
         k1, k2, k3, k4 = st.columns(4)
         kpis = [
             ("Assessores", f"{len(view)}", "#74c0fc"),
-            ("AuC exposto total", f"R$ {view['auc_exposto_total'].sum():.1f} bi", "#ff6b6b"),
+            ("AuC exposto total", f"R$ {view['auc_exposto_total'].sum()/1000:.1f} bi", "#ff6b6b"),
             ("Em risco de saída", f"{int((view['risco_saida'] == 1).sum())}", "#ffd43b"),
             ("Clientes cobertos", f"{int(view['qtd_clientes'].sum())}", "#63e6be"),
         ]
@@ -898,11 +884,12 @@ with tab4:
         gcol1, gcol2 = st.columns([1.2, 0.8], gap="medium")
         with gcol1:
             top = view.head(15).sort_values("auc_exposto_total")
+            top_bi = top["auc_exposto_total"] / 1000
             fig_top = go.Figure(go.Bar(
-                x=top["auc_exposto_total"],
+                x=top_bi,
                 y=top["assessor_id"],
                 orientation="h",
-                text=[f"R$ {v:.2f} bi" for v in top["auc_exposto_total"]],
+                text=[f"R$ {v:.2f} bi" for v in top_bi],
                 textposition="outside",
                 cliponaxis=False,
                 marker_color=["#f03e3e" if r == 1 else "#74c0fc" for r in top["risco_saida"]],
@@ -913,10 +900,10 @@ with tab4:
                 title="Top 15 — AuC exposto (vermelho = risco de saída)",
                 **PLOTLY_DARK,
                 height=420,
-                margin=dict(t=60, b=40, l=90, r=90),
                 xaxis_title="AuC exposto (R$ bi)",
-                xaxis_range=[0, top["auc_exposto_total"].max() * 1.25] if len(top) else [0, 1],
+                xaxis_range=[0, top_bi.max() * 1.25] if len(top) else [0, 1],
             )
+            fig_top.update_layout(margin=dict(t=60, b=40, l=90, r=90))
             st.plotly_chart(fig_top, use_container_width=True, key="cart_top")
 
         with gcol2:
@@ -943,9 +930,9 @@ with tab4:
 
         st.markdown("<div style='color:#8b95b0; font-size:12px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; margin:8px 0 10px 0;'>Detalhe por assessor</div>", unsafe_allow_html=True)
         tbl = view.copy()
-        tbl["auc_total_carteira"] = tbl["auc_total_carteira"].apply(lambda v: f"R$ {v:.2f} bi")
-        tbl["auc_exposto_total"]  = tbl["auc_exposto_total"].apply(lambda v: f"R$ {v:.2f} bi")
-        tbl["pct_carteira_exposta"] = tbl["pct_carteira_exposta"].apply(lambda v: f"{v*100:.0f}%")
+        tbl["auc_total_carteira"] = tbl["auc_total_carteira"].apply(lambda v: f"R$ {v/1000:.2f} bi")
+        tbl["auc_exposto_total"]  = tbl["auc_exposto_total"].apply(lambda v: f"R$ {v/1000:.2f} bi")
+        tbl["pct_carteira_exposta"] = tbl["pct_carteira_exposta"].apply(lambda v: f"{v*100:.1f}%")
         tbl["risco_saida"] = tbl["risco_saida"].map({1: "🔴 sim", 0: "—"})
         tbl.columns = ["Assessor", "Clientes", "AuC carteira", "AuC exposto", "% exposta", "Canal", "Anos de casa", "Risco saída"]
         st.dataframe(tbl.reset_index(drop=True), use_container_width=True, height=340)
@@ -955,6 +942,6 @@ with tab4:
 st.markdown("---")
 st.markdown("""
 <div style='text-align:center; color:#6b7590; font-size:12px; padding:8px 0;'>
-    Pipeline Churn Finance · Gradient Boosting · Tech Challenge · 2025
+    Pipeline Churn Finance · v2 early-warning comportamental · dado sintético · 2026
 </div>
 """, unsafe_allow_html=True)
