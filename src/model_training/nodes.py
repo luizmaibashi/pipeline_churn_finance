@@ -99,10 +99,10 @@ def train_final_model(train_df: pd.DataFrame, parameters: dict) -> Pipeline:
     return gb_final
 
 
-def evaluate_final_model(model: Pipeline, test_df: pd.DataFrame) -> tuple[dict, pd.DataFrame, pd.DataFrame]:
+def evaluate_final_model(model: Pipeline, test_df: pd.DataFrame) -> tuple[dict, pd.DataFrame]:
     """
     Avalia o pipeline final treinado.
-    Retorna métricas consolidadas, matriz de confusão e pontuações de validação cruzada.
+    Retorna métricas consolidadas e matriz de confusão.
     """
     X_test, y_test = test_df[FEATURES_BASE], test_df["churn"]
     

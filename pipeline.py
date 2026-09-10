@@ -18,6 +18,7 @@ from src.data_processing.nodes import (
     generate_synthetic_data,
     generate_advisors_data,
     attach_advisor_and_behavioral_features,
+    inject_data_quality_issues,
     split_data,
     run_feature_engineering
 )
@@ -62,6 +63,16 @@ catalog.save("base_clientes_v2", df_v2)
 vc_adv = df_advisors["risco_saida"].value_counts()
 print(f"  Assessores: {df_advisors.shape[0]} | Risco de saída: {vc_adv.get(1, 0)} ({vc_adv.get(1, 0)/len(df_advisors)*100:.1f}%)")
 print(f"  AuC exposto (v2): R$ {df_v2['auc_exposto'].sum():.2f}bi de R$ {df_v2['saldo_bi'].sum():.2f}bi total ({df_v2['auc_exposto'].sum()/df_v2['saldo_bi'].sum()*100:.1f}%)")
+
+# ── FASE 1.6: Injeção de sujeira de dado realista (Etapa 1, aprovada) ─
+print("\n[1.6/6] Injetando problemas de qualidade de dado (dataset bruto)...")
+df_v2_bruto, df_advisors_bruto = inject_data_quality_issues(
+    df_v2, df_advisors, seed=parameters.get("random_state", 42)
+)
+catalog.save("base_clientes_v2_bruto", df_v2_bruto)
+catalog.save("base_assessores_bruto", df_advisors_bruto)
+print(f"  Shape bruto: {df_v2_bruto.shape} (v2 limpo: {df_v2.shape}) — {df_v2_bruto.shape[0] - df_v2.shape[0]} linha(s) duplicada(s)")
+print(f"  Nulos introduzidos: {df_v2_bruto.isna().sum().sum()} células | dataset limpo permanece em base_clientes_v2 (não sobrescrito)")
 
 # ── FASE 2: Split estratificado ANTES da Engenharia de Features
 print("\n[2/6] Split estratificado...")

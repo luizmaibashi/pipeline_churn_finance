@@ -174,6 +174,82 @@ def attach_advisor_and_behavioral_features(
     return out, df_advisors_out
 
 
+def inject_data_quality_issues(
+    df_clientes: pd.DataFrame, df_advisors: pd.DataFrame, seed: int = 42
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Etapa 1 (proposta aprovada pelo Luiz): injeta 6 tipos de sujeira de dado,
+    cada um ancorado numa causa de negócio plausível de gestora de alta
+    renda com sistemas legados — não é ruído aleatório sem motivo.
+
+    Deliberadamente NÃO trata nada aqui (sem imputação, sem dedup, sem
+    correção de escala). Tratamento é Etapa 2, separada, sobre um EDA
+    escrito em cima deste dataset sujo — a separação existe para que o
+    processo de descoberta fique documentado, não escondido atrás de uma
+    função que suja e limpa na mesma passada.
+
+    1. Duplicata de cliente — onboarding por dois assessores diferentes
+       ou migração de sistema legado pós-fusão (mesmo cliente_id, um
+       campo levemente divergente — o caso difícil de pegar).
+    2. Nulo em freq_contato_mes — log de CRM incompleto; assessor mais
+       sênior/menos digital registra menos contato (viés deliberado:
+       correlaciona com anos_de_casa do assessor, não é MCAR).
+    3. Nulo estrutural em dias_desde_ultimo_contato/tempo_resposta —
+       cliente novo (<60 dias) ainda não acumulou histórico suficiente
+       para a métrica existir.
+    4. Outlier por erro de digitação em saldo_bi — assessor erra escala
+       (casa decimal) ao digitar, valor sai 1000x maior.
+    5. Sentinela mascarada em retorno_12m_pct — sistema legado usa -999
+       em vez de NULL quando cliente não completou 12 meses de histórico.
+    6. canal do assessor sujo — cadastro manual inconsistente
+       ("RIA" / "R.I.A." / "ria").
+    """
+    rng = np.random.default_rng(seed)
+    df = df_clientes.copy()
+    adv = df_advisors.copy()
+    N = len(df)
+
+    # 1. Duplicata de cliente (~1,5% da base) — mesmo ID, saldo_bi levemente
+    #    divergente (recadastro capturou saldo num dia diferente)
+    n_dup = max(1, int(N * 0.015))
+    idx_dup = rng.choice(N, size=n_dup, replace=False)
+    linhas_dup = df.iloc[idx_dup].copy()
+    linhas_dup["saldo_bi"] = (linhas_dup["saldo_bi"] * rng.uniform(0.97, 1.03, n_dup)).round(4)
+    df = pd.concat([df, linhas_dup], ignore_index=True)
+
+    # 2. Nulo em freq_contato_mes — probabilidade de nulo cresce com
+    #    anos_de_casa do assessor (assessor sênior digitaliza menos)
+    anos_por_cliente = df["assessor_id"].map(adv.set_index("assessor_id")["anos_de_casa"])
+    prob_nulo_contato = np.clip(0.03 + anos_por_cliente.fillna(0) * 0.012, 0, 0.45)
+    mask_nulo_contato = rng.random(len(df)) < prob_nulo_contato.values
+    df.loc[mask_nulo_contato, "freq_contato_mes"] = np.nan
+
+    # 3. Nulo estrutural — cliente novo sem histórico suficiente
+    mask_cliente_novo = df["meses_cliente"] < 2
+    df.loc[mask_cliente_novo, "dias_desde_ultimo_contato"] = np.nan
+    df.loc[mask_cliente_novo, "tempo_resposta_medio_horas"] = np.nan
+
+    # 4. Outlier por erro de digitação em saldo_bi (~0,4% da base)
+    n_erro_escala = max(1, int(len(df) * 0.004))
+    idx_erro_escala = rng.choice(len(df), size=n_erro_escala, replace=False)
+    df.loc[df.index[idx_erro_escala], "saldo_bi"] = df.loc[df.index[idx_erro_escala], "saldo_bi"] * 1000
+
+    # 5. Sentinela mascarada em retorno_12m_pct para cliente sem 12 meses
+    mask_sem_12m = df["meses_cliente"] < 12
+    idx_sem_12m = df.index[mask_sem_12m]
+    frac_sentinela = rng.random(len(idx_sem_12m)) < 0.6
+    df.loc[idx_sem_12m[frac_sentinela], "retorno_12m_pct"] = -999.0
+
+    # 6. canal do assessor sujo — variantes de string para ~10% dos "RIA"
+    idx_ria = adv.index[adv["canal"] == "RIA"]
+    n_sujo = max(1, int(len(idx_ria) * 0.10))
+    idx_sujo = rng.choice(idx_ria, size=min(n_sujo, len(idx_ria)), replace=False)
+    variantes = rng.choice(["R.I.A.", "ria"], size=len(idx_sujo))
+    adv.loc[idx_sujo, "canal"] = variantes
+
+    return df, adv
+
+
 def split_data(df: pd.DataFrame, test_size: float, random_state: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Divide o dataset de entrada de forma estratificada pelo target churn."""
     from sklearn.model_selection import train_test_split

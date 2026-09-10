@@ -10,6 +10,14 @@ base_clientes_v2:
   type: pandas.CSVDataSet
   filepath: output/data/base_clientes_v2.csv
 
+base_clientes_v2_bruto:
+  type: pandas.CSVDataSet
+  filepath: output/data/base_clientes_v2_bruto.csv
+
+base_assessores_bruto:
+  type: pandas.CSVDataSet
+  filepath: output/data/base_assessores_bruto.csv
+
 base_feature_eng:
   type: pandas.CSVDataSet
   filepath: output/data/base_feature_eng.csv
