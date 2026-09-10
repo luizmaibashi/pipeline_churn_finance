@@ -1,0 +1,16 @@
+feature,importance
+variacao_freq_contato_3m,0.253912330972748
+dias_desde_ultimo_contato,0.19914816325168816
+tempo_resposta_medio_horas,0.17940988604736233
+auc_milhoes,0.08591698290153685
+retorno_12m_pct,0.0570679442636422
+meses_cliente,0.05333243358419555
+retorno_relativo,0.04874276087140255
+engajamento_score,0.03576377948250439
+intensidade_rel,0.035701369407145134
+qtd_produtos,0.026460435191827083
+freq_contato_mes,0.014496140316909649
+segmento_enc,0.009898852651270607
+sem_historico_12m,0.00013347530405107875
+flag_risco,1.544575371642684e-05
+cliente_novo_sem_contato_hist,0.0

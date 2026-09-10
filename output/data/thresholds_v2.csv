@@ -1,0 +1,5 @@
+segmento,threshold,recall,precision,fn,fp,n_valid,origem_threshold
+Alta Renda,0.1,0.5,0.25,10,30,136,segmento
+Family Office,0.1,0.0,0.0,1,0,13,global_fallback
+Private,0.07,0.8181818181818182,0.25,2,27,111,segmento
+Wealth,0.1,0.6666666666666666,0.4,1,3,40,global_fallback

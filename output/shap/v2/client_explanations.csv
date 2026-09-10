@@ -1,913 +1,513 @@
 cliente_id,segmento,churn_prob,churn_real,explicacao
-CLI00232,Varejo,0.9793,1,"Risco de Churn: [ALTO] (97.9%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.2866)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0320)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5645)"
-CLI00169,Varejo,0.9662,1,"Risco de Churn: [ALTO] (96.6%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.3550)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9393)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5438)"
-CLI00930,Varejo,0.9651,1,"Risco de Churn: [ALTO] (96.5%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.5346)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3203)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+1.3174)"
-CLI01177,Varejo,0.9601,1,"Risco de Churn: [ALTO] (96.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.0489)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5204)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6030)"
-CLI00133,Varejo,0.9561,1,"Risco de Churn: [ALTO] (95.6%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.5593)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4194)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.3547)"
-CLI00760,Varejo,0.9558,1,"Risco de Churn: [ALTO] (95.6%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.2892)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0016)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6547)"
-CLI00098,Varejo,0.9551,1,"Risco de Churn: [ALTO] (95.5%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.8609)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9960)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3987)"
-CLI01086,Varejo,0.9546,1,"Risco de Churn: [ALTO] (95.5%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.7266)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5313)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4922)"
-CLI00764,Varejo,0.9538,1,"Risco de Churn: [ALTO] (95.4%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.3530)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4638)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3946)"
-CLI00875,Varejo,0.9474,1,"Risco de Churn: [ALTO] (94.7%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.0631)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.7431)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4759)"
-CLI01159,Varejo,0.9428,1,"Risco de Churn: [ALTO] (94.3%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6457)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2159)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4701)"
-CLI00181,Varejo,0.9324,1,"Risco de Churn: [ALTO] (93.2%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5035)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.7678)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.6843)"
-CLI00412,Wealth,0.9308,1,"Risco de Churn: [ALTO] (93.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5957)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9812)
-  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.5251)"
-CLI00558,Alta Renda,0.9298,1,"Risco de Churn: [ALTO] (93.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.3438)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.5911)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5198)"
-CLI00721,Varejo,0.9259,1,"Risco de Churn: [ALTO] (92.6%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.3651)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4324)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3631)"
-CLI00056,Varejo,0.9214,1,"Risco de Churn: [ALTO] (92.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.1311)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5646)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3783)"
-CLI00925,Varejo,0.9199,1,"Risco de Churn: [ALTO] (92.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.1494)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8008)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5224)"
-CLI00338,Varejo,0.919,1,"Risco de Churn: [ALTO] (91.9%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.5923)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.4160)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.2885)"
-CLI00696,Varejo,0.9177,1,"Risco de Churn: [ALTO] (91.8%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.3097)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0078)
-  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.4385)"
-CLI00064,Varejo,0.9093,1,"Risco de Churn: [ALTO] (90.9%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.4638)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4473)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.4428)"
-CLI00297,Varejo,0.9023,1,"Risco de Churn: [ALTO] (90.2%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.6281)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4304)
-  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.3991)"
-CLI00477,Varejo,0.9013,1,"Risco de Churn: [ALTO] (90.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5188)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6482)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5695)"
-CLI00369,Varejo,0.9002,1,"Risco de Churn: [ALTO] (90.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.4825)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0062)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3602)"
-CLI00005,Varejo,0.8962,1,"Risco de Churn: [ALTO] (89.6%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2796)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9422)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.4465)"
-CLI00243,Varejo,0.8921,1,"Risco de Churn: [ALTO] (89.2%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.3324)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3044)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.1893)"
-CLI00111,Varejo,0.8877,1,"Risco de Churn: [ALTO] (88.8%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.8812)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0037)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4635)"
-CLI00827,Varejo,0.8814,1,"Risco de Churn: [ALTO] (88.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4556)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.3009)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6134)"
-CLI01009,Varejo,0.8794,1,"Risco de Churn: [ALTO] (87.9%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4709)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2891)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8327)"
-CLI00058,Varejo,0.8759,1,"Risco de Churn: [ALTO] (87.6%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.8528)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.7488)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.4751)"
-CLI00946,Varejo,0.8751,1,"Risco de Churn: [ALTO] (87.5%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.1094)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.6186)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5204)"
-CLI01174,Varejo,0.8703,1,"Risco de Churn: [ALTO] (87.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.0629)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9187)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.7312)"
-CLI00547,Alta Renda,0.8682,1,"Risco de Churn: [ALTO] (86.8%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.8418)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5710)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5988)"
-CLI01162,Varejo,0.8643,1,"Risco de Churn: [ALTO] (86.4%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7141)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.9382)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3358)"
-CLI00850,Varejo,0.8638,1,"Risco de Churn: [ALTO] (86.4%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5852)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.4269)
-  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+0.7089)"
-CLI00865,Varejo,0.8624,1,"Risco de Churn: [ALTO] (86.2%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5446)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.1415)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5123)"
-CLI00882,Varejo,0.8623,1,"Risco de Churn: [ALTO] (86.2%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.6597)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5208)
-  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3493)"
-CLI00563,Varejo,0.862,1,"Risco de Churn: [ALTO] (86.2%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6611)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.7146)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5157)"
-CLI00844,Varejo,0.8619,1,"Risco de Churn: [ALTO] (86.2%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.5752)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.5080)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4574)"
-CLI00595,Varejo,0.8614,1,"Risco de Churn: [ALTO] (86.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6504)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1716)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5322)"
-CLI00812,Varejo,0.8607,1,"Risco de Churn: [ALTO] (86.1%)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+1.1733)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9219)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.7812)"
-CLI00610,Varejo,0.8564,1,"Risco de Churn: [ALTO] (85.6%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.0230)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4987)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3364)"
-CLI00135,Varejo,0.8554,1,"Risco de Churn: [ALTO] (85.5%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.3745)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1759)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6259)"
-CLI00585,Varejo,0.855,1,"Risco de Churn: [ALTO] (85.5%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.3936)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4904)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4713)"
-CLI00699,Varejo,0.8522,1,"Risco de Churn: [ALTO] (85.2%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1424)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.0008)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6578)"
-CLI00343,Varejo,0.8473,1,"Risco de Churn: [ALTO] (84.7%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.9964)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8796)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3950)"
-CLI01046,Varejo,0.8467,1,"Risco de Churn: [ALTO] (84.7%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2697)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.1510)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6452)"
-CLI00158,Varejo,0.8462,1,"Risco de Churn: [ALTO] (84.6%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6885)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1942)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3988)"
-CLI00639,Varejo,0.8449,1,"Risco de Churn: [ALTO] (84.5%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.5625)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4129)
-  • Tempo como cliente (meses): [-] REDUZ risco (SHAP=-0.1721)"
-CLI00890,Alta Renda,0.8443,1,"Risco de Churn: [ALTO] (84.4%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.0429)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.3617)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6739)"
-CLI00457,Varejo,0.842,1,"Risco de Churn: [ALTO] (84.2%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5191)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1074)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4607)"
-CLI00380,Varejo,0.8398,1,"Risco de Churn: [ALTO] (84.0%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3736)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.3237)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4824)"
-CLI00985,Varejo,0.8363,1,"Risco de Churn: [ALTO] (83.6%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.9290)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8272)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5299)"
-CLI00593,Varejo,0.8287,1,"Risco de Churn: [ALTO] (82.9%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.9902)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5482)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4789)"
-CLI00014,Varejo,0.8283,1,"Risco de Churn: [ALTO] (82.8%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.8081)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.7940)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5144)"
-CLI00022,Varejo,0.828,1,"Risco de Churn: [ALTO] (82.8%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5947)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4354)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5011)"
-CLI00374,Varejo,0.8267,1,"Risco de Churn: [ALTO] (82.7%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.6741)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5041)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.1905)"
-CLI01076,Varejo,0.822,1,"Risco de Churn: [ALTO] (82.2%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.0889)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.9332)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3680)"
-CLI00270,Alta Renda,0.819,1,"Risco de Churn: [ALTO] (81.9%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.1841)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0027)
-  • Saldo total na custódia: [-] REDUZ risco (SHAP=-0.3067)"
-CLI00229,Varejo,0.8176,1,"Risco de Churn: [ALTO] (81.8%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7431)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7418)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4494)"
-CLI01066,Varejo,0.8144,1,"Risco de Churn: [ALTO] (81.4%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.1874)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4150)
-  • Tempo como cliente (meses): [-] REDUZ risco (SHAP=-0.1395)"
-CLI00268,Varejo,0.8142,1,"Risco de Churn: [ALTO] (81.4%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.9175)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.5038)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3755)"
-CLI00323,Varejo,0.8067,1,"Risco de Churn: [ALTO] (80.7%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7070)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5238)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4459)"
-CLI00269,Varejo,0.7984,1,"Risco de Churn: [ALTO] (79.8%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.9617)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.6148)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4514)"
-CLI00368,Varejo,0.7924,1,"Risco de Churn: [ALTO] (79.2%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8259)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.9756)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4679)"
-CLI00000,Varejo,0.7909,1,"Risco de Churn: [ALTO] (79.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5246)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4363)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4396)"
-CLI00423,Varejo,0.7894,1,"Risco de Churn: [ALTO] (78.9%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4659)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7544)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.5806)"
-CLI00824,Varejo,0.7881,1,"Risco de Churn: [ALTO] (78.8%)
-  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+1.1568)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.8486)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6729)"
-CLI00626,Varejo,0.7851,1,"Risco de Churn: [ALTO] (78.5%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4413)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3610)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4487)"
-CLI00030,Varejo,0.7845,1,"Risco de Churn: [ALTO] (78.5%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7305)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8151)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5392)"
-CLI00940,Varejo,0.7831,1,"Risco de Churn: [ALTO] (78.3%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3199)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8863)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4959)"
-CLI00279,Alta Renda,0.7822,1,"Risco de Churn: [ALTO] (78.2%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3259)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7641)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5185)"
-CLI00888,Varejo,0.7822,1,"Risco de Churn: [ALTO] (78.2%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3964)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2616)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4491)"
-CLI00943,Alta Renda,0.7799,1,"Risco de Churn: [ALTO] (78.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.2892)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.3202)
-  • Saldo total na custódia: [-] REDUZ risco (SHAP=-0.1858)"
-CLI00648,Alta Renda,0.7749,1,"Risco de Churn: [ALTO] (77.5%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.9655)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.9039)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5370)"
-CLI00881,Alta Renda,0.765,1,"Risco de Churn: [ALTO] (76.5%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8146)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6484)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.6010)"
-CLI00748,Wealth,0.7619,1,"Risco de Churn: [ALTO] (76.2%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4429)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.4003)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3674)"
-CLI00623,Varejo,0.7609,1,"Risco de Churn: [ALTO] (76.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6758)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0182)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3347)"
-CLI00500,Alta Renda,0.7609,1,"Risco de Churn: [ALTO] (76.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4928)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.9026)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8005)"
-CLI00525,Varejo,0.7602,1,"Risco de Churn: [ALTO] (76.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9970)
-  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.6873)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6139)"
-CLI00023,Varejo,0.7566,1,"Risco de Churn: [ALTO] (75.7%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.2919)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8318)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4278)"
-CLI00692,Varejo,0.7549,1,"Risco de Churn: [ALTO] (75.5%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4675)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1171)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5246)"
-CLI01059,Varejo,0.7544,1,"Risco de Churn: [ALTO] (75.4%)
-  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+1.2607)
-  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.6297)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4122)"
-CLI00662,Varejo,0.7528,1,"Risco de Churn: [ALTO] (75.3%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.1854)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8218)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3750)"
-CLI00591,Varejo,0.7498,1,"Risco de Churn: [ALTO] (75.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.9372)
-  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.3806)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3238)"
-CLI00040,Varejo,0.7497,1,"Risco de Churn: [ALTO] (75.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.9981)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4485)
-  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.3843)"
-CLI00973,Varejo,0.7496,1,"Risco de Churn: [ALTO] (75.0%)
-  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+1.1370)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.8313)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6690)"
-CLI01058,Varejo,0.7491,1,"Risco de Churn: [ALTO] (74.9%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6783)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4476)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4240)"
-CLI00840,Varejo,0.7472,1,"Risco de Churn: [ALTO] (74.7%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5836)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2208)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5345)"
-CLI00790,Varejo,0.74,1,"Risco de Churn: [ALTO] (74.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.1674)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3709)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3501)"
-CLI00949,Varejo,0.7395,1,"Risco de Churn: [ALTO] (74.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.0456)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4244)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4039)"
-CLI00459,Varejo,0.7335,1,"Risco de Churn: [ALTO] (73.4%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8640)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.7470)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6977)"
-CLI01139,Varejo,0.7331,1,"Risco de Churn: [ALTO] (73.3%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6565)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5441)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5222)"
-CLI00797,Varejo,0.7299,1,"Risco de Churn: [ALTO] (73.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.3688)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5669)
-  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.4564)"
-CLI00019,Varejo,0.7292,1,"Risco de Churn: [ALTO] (72.9%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8768)
-  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.8027)
-  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.5553)"
-CLI00614,Alta Renda,0.7276,1,"Risco de Churn: [ALTO] (72.8%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6504)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.9128)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.6044)"
-CLI00106,Varejo,0.7276,1,"Risco de Churn: [ALTO] (72.8%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9582)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8577)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6234)"
-CLI00928,Varejo,0.7191,1,"Risco de Churn: [ALTO] (71.9%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.5755)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5223)
-  • Tempo médio de resposta do cliente ao assessor: [-] REDUZ risco (SHAP=-0.3055)"
-CLI00168,Varejo,0.7148,1,"Risco de Churn: [ALTO] (71.5%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6023)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4760)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.2701)"
-CLI00312,Varejo,0.7148,1,"Risco de Churn: [ALTO] (71.5%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8121)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.7668)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4229)"
-CLI00144,Varejo,0.7119,1,"Risco de Churn: [ALTO] (71.2%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6000)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4060)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4034)"
-CLI00325,Alta Renda,0.7078,1,"Risco de Churn: [ALTO] (70.8%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9789)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.9349)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5534)"
-CLI01047,Varejo,0.7069,1,"Risco de Churn: [ALTO] (70.7%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9395)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8020)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5929)"
-CLI01077,Alta Renda,0.7061,1,"Risco de Churn: [ALTO] (70.6%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.2769)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7706)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.4869)"
-CLI00067,Alta Renda,0.7054,1,"Risco de Churn: [ALTO] (70.5%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.4979)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.3651)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5068)"
-CLI00428,Varejo,0.7027,1,"Risco de Churn: [ALTO] (70.3%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.9143)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1455)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3577)"
-CLI00095,Varejo,0.701,1,"Risco de Churn: [ALTO] (70.1%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9495)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.9494)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.7375)"
-CLI00161,Varejo,0.6996,1,"Risco de Churn: [ALTO] (70.0%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0331)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0276)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4362)"
-CLI00704,Varejo,0.6967,1,"Risco de Churn: [ALTO] (69.7%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9185)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6177)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.4160)"
-CLI00125,Varejo,0.6897,1,"Risco de Churn: [ALTO] (69.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6757)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4810)
-  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.3724)"
-CLI00676,Varejo,0.6895,1,"Risco de Churn: [ALTO] (69.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0597)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.7235)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4971)"
-CLI00384,Alta Renda,0.6865,1,"Risco de Churn: [ALTO] (68.7%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.9869)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1982)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5574)"
-CLI00976,Varejo,0.6845,1,"Risco de Churn: [ALTO] (68.5%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8738)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4758)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3642)"
-CLI00652,Varejo,0.6834,1,"Risco de Churn: [ALTO] (68.3%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1098)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0539)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4730)"
-CLI01118,Varejo,0.683,1,"Risco de Churn: [ALTO] (68.3%)
-  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+1.6067)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.6357)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6330)"
-CLI00635,Varejo,0.6802,1,"Risco de Churn: [ALTO] (68.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.8205)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4106)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3685)"
-CLI00455,Varejo,0.6733,1,"Risco de Churn: [ALTO] (67.3%)
-  • Frequência de contato com assessor (meses): [+] AUMENTA risco (SHAP=+1.0593)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7891)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4923)"
-CLI01175,Varejo,0.6729,1,"Risco de Churn: [ALTO] (67.3%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.2099)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1509)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3773)"
-CLI00357,Varejo,0.6692,1,"Risco de Churn: [ALTO] (66.9%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2060)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.5210)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4698)"
-CLI00146,Varejo,0.6671,1,"Risco de Churn: [ALTO] (66.7%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1728)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4460)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4154)"
-CLI00738,Varejo,0.6669,1,"Risco de Churn: [ALTO] (66.7%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5003)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6393)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4375)"
-CLI00225,Varejo,0.6646,1,"Risco de Churn: [ALTO] (66.5%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8988)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6856)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5508)"
-CLI00849,Varejo,0.6633,1,"Risco de Churn: [ALTO] (66.3%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0665)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.8614)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4526)"
-CLI00275,Varejo,0.6587,1,"Risco de Churn: [ALTO] (65.9%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3032)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.8592)
-  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.5703)"
-CLI00657,Varejo,0.6575,1,"Risco de Churn: [ALTO] (65.8%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.7754)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.7037)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4951)"
-CLI00085,Varejo,0.6558,1,"Risco de Churn: [ALTO] (65.6%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.2369)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7661)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4668)"
-CLI00188,Varejo,0.6538,1,"Risco de Churn: [ALTO] (65.4%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7905)
-  • Tempo médio de resposta do cliente ao assessor: [-] REDUZ risco (SHAP=-0.8504)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8069)"
-CLI01071,Varejo,0.6515,1,"Risco de Churn: [ALTO] (65.1%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2833)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.4108)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3312)"
-CLI00550,Varejo,0.6489,1,"Risco de Churn: [ALTO] (64.9%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6385)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5706)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5276)"
-CLI00028,Varejo,0.647,1,"Risco de Churn: [ALTO] (64.7%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9000)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5447)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4301)"
-CLI00365,Varejo,0.6393,1,"Risco de Churn: [ALTO] (63.9%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0327)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6794)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5173)"
-CLI00609,Alta Renda,0.639,1,"Risco de Churn: [ALTO] (63.9%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4636)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8796)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.4790)"
-CLI00514,Varejo,0.634,1,"Risco de Churn: [ALTO] (63.4%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1378)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4679)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.3874)"
-CLI00422,Varejo,0.6333,1,"Risco de Churn: [ALTO] (63.3%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.2292)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5029)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4121)"
-CLI00480,Varejo,0.6316,1,"Risco de Churn: [ALTO] (63.2%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0720)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.9249)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4269)"
-CLI00867,Varejo,0.6314,1,"Risco de Churn: [ALTO] (63.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4631)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8163)
-  • Tempo médio de resposta do cliente ao assessor: [-] REDUZ risco (SHAP=-0.3890)"
-CLI00204,Varejo,0.6238,1,"Risco de Churn: [ALTO] (62.4%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5264)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.5546)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3288)"
-CLI00703,Varejo,0.6206,1,"Risco de Churn: [ALTO] (62.1%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7573)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6529)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5232)"
-CLI00223,Varejo,0.6203,1,"Risco de Churn: [ALTO] (62.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.8312)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3526)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3397)"
-CLI00958,Varejo,0.6198,1,"Risco de Churn: [ALTO] (62.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.3009)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.9079)
-  • Tempo médio de resposta do cliente ao assessor: [-] REDUZ risco (SHAP=-0.8453)"
-CLI00713,Varejo,0.6144,1,"Risco de Churn: [ALTO] (61.4%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5548)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.7441)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4369)"
-CLI00880,Varejo,0.6099,1,"Risco de Churn: [ALTO] (61.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0891)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8284)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.3593)"
-CLI01109,Varejo,0.6074,1,"Risco de Churn: [ALTO] (60.7%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0236)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5124)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.3896)"
-CLI01196,Corporate,0.6047,1,"Risco de Churn: [ALTO] (60.5%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.4652)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.7890)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.6546)"
-CLI00372,Varejo,0.6011,1,"Risco de Churn: [ALTO] (60.1%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5109)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4151)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3357)"
-CLI00355,Varejo,0.5979,1,"Risco de Churn: [MEDIO] (59.8%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.2777)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9736)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3909)"
-CLI00400,Varejo,0.5941,1,"Risco de Churn: [MEDIO] (59.4%)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.9559)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6967)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3549)"
-CLI00437,Alta Renda,0.5938,1,"Risco de Churn: [MEDIO] (59.4%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5875)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.7532)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.5076)"
-CLI00353,Varejo,0.5909,1,"Risco de Churn: [MEDIO] (59.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.1077)
-  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.4568)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4080)"
-CLI00049,Varejo,0.5857,1,"Risco de Churn: [MEDIO] (58.6%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9568)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6126)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4171)"
-CLI00974,Varejo,0.5837,1,"Risco de Churn: [MEDIO] (58.4%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0844)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.9472)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4684)"
-CLI00283,Varejo,0.5821,1,"Risco de Churn: [MEDIO] (58.2%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.3706)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4867)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.3922)"
-CLI00861,Varejo,0.582,1,"Risco de Churn: [MEDIO] (58.2%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1807)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5419)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4070)"
-CLI00063,Varejo,0.5818,1,"Risco de Churn: [MEDIO] (58.2%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.9606)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4391)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.2744)"
-CLI00604,Varejo,0.5795,1,"Risco de Churn: [MEDIO] (58.0%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.7313)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4608)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4468)"
-CLI00872,Varejo,0.5647,1,"Risco de Churn: [MEDIO] (56.5%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9694)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4488)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3971)"
-CLI00640,Varejo,0.5638,1,"Risco de Churn: [MEDIO] (56.4%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.2382)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6279)
-  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.3246)"
-CLI00029,Varejo,0.5605,1,"Risco de Churn: [MEDIO] (56.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0355)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4453)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4383)"
-CLI00669,Varejo,0.5604,1,"Risco de Churn: [MEDIO] (56.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6365)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3728)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.2817)"
-CLI00819,Varejo,0.5583,1,"Risco de Churn: [MEDIO] (55.8%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4563)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.6180)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4647)"
-CLI01051,Varejo,0.558,1,"Risco de Churn: [MEDIO] (55.8%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.6992)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.2328)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.1294)"
-CLI01089,Varejo,0.5533,1,"Risco de Churn: [MEDIO] (55.3%)
-  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.6580)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4721)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3838)"
-CLI00520,Varejo,0.5493,0,"Risco de Churn: [MEDIO] (54.9%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1431)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.7633)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4422)"
-CLI01073,Varejo,0.5446,1,"Risco de Churn: [MEDIO] (54.5%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9583)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.4102)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3920)"
-CLI00903,Varejo,0.5443,1,"Risco de Churn: [MEDIO] (54.4%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9465)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6959)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3570)"
-CLI00726,Varejo,0.5359,1,"Risco de Churn: [MEDIO] (53.6%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8681)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4297)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3764)"
-CLI00017,Varejo,0.53,1,"Risco de Churn: [MEDIO] (53.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9225)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6915)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5355)"
-CLI00807,Wealth,0.5277,1,"Risco de Churn: [MEDIO] (52.8%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.7024)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.6348)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6041)"
-CLI00492,Varejo,0.5242,1,"Risco de Churn: [MEDIO] (52.4%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9837)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5413)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.4226)"
-CLI00180,Varejo,0.5205,1,"Risco de Churn: [MEDIO] (52.0%)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6781)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5598)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4123)"
-CLI00449,Varejo,0.5185,1,"Risco de Churn: [MEDIO] (51.8%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0059)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5833)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5334)"
-CLI00578,Varejo,0.5137,1,"Risco de Churn: [MEDIO] (51.4%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1897)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9779)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.2923)"
-CLI00590,Varejo,0.5093,1,"Risco de Churn: [MEDIO] (50.9%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1725)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5581)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5369)"
-CLI00469,Wealth,0.5067,1,"Risco de Churn: [MEDIO] (50.7%)
-  • Cliente sem 12 meses de histórico de retorno: [+] AUMENTA risco (SHAP=+0.4988)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3878)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3648)"
-CLI00744,Varejo,0.5051,1,"Risco de Churn: [MEDIO] (50.5%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8244)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4350)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4149)"
-CLI00997,Varejo,0.5028,1,"Risco de Churn: [MEDIO] (50.3%)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.9168)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.5575)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4295)"
-CLI00910,Varejo,0.5027,1,"Risco de Churn: [MEDIO] (50.3%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.9723)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6751)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.2597)"
-CLI00497,Varejo,0.5012,0,"Risco de Churn: [MEDIO] (50.1%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8626)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5133)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3053)"
-CLI00461,Varejo,0.4998,1,"Risco de Churn: [MEDIO] (50.0%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4293)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3403)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3251)"
-CLI00695,Varejo,0.4901,1,"Risco de Churn: [MEDIO] (49.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5508)
-  • Tempo médio de resposta do cliente ao assessor: [-] REDUZ risco (SHAP=-0.3708)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3487)"
-CLI00020,Varejo,0.4842,0,"Risco de Churn: [MEDIO] (48.4%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8778)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5059)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3720)"
-CLI00732,Alta Renda,0.4839,1,"Risco de Churn: [MEDIO] (48.4%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.0216)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9114)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.6194)"
-CLI00219,Alta Renda,0.471,1,"Risco de Churn: [MEDIO] (47.1%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.8058)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.6909)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5238)"
-CLI00035,Alta Renda,0.4703,1,"Risco de Churn: [MEDIO] (47.0%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6822)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.6336)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4847)"
-CLI01170,Varejo,0.4646,1,"Risco de Churn: [MEDIO] (46.5%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9181)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4579)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3279)"
-CLI00969,Varejo,0.4592,0,"Risco de Churn: [MEDIO] (45.9%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6187)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3485)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.1678)"
-CLI00863,Varejo,0.4586,1,"Risco de Churn: [MEDIO] (45.9%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.5178)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4249)
-  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.3426)"
-CLI00630,Alta Renda,0.4584,1,"Risco de Churn: [MEDIO] (45.8%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8500)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.5321)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3718)"
-CLI01082,Varejo,0.4531,1,"Risco de Churn: [MEDIO] (45.3%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1146)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3776)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.3470)"
-CLI01164,Varejo,0.4523,1,"Risco de Churn: [MEDIO] (45.2%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0165)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4161)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3972)"
-CLI00649,Varejo,0.4453,0,"Risco de Churn: [MEDIO] (44.5%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4387)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8537)
-  • Saldo total na custódia: [-] REDUZ risco (SHAP=-0.5662)"
-CLI00420,Alta Renda,0.4437,1,"Risco de Churn: [MEDIO] (44.4%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4623)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.7552)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.4168)"
-CLI00006,Varejo,0.4423,1,"Risco de Churn: [MEDIO] (44.2%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3819)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4186)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3655)"
-CLI01017,Varejo,0.4397,1,"Risco de Churn: [MEDIO] (44.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.4437)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.3597)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3026)"
-CLI01172,Varejo,0.4326,0,"Risco de Churn: [MEDIO] (43.3%)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4656)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4518)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3365)"
-CLI00927,Varejo,0.4294,1,"Risco de Churn: [MEDIO] (42.9%)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4069)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4035)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3935)"
-CLI01131,Varejo,0.429,1,"Risco de Churn: [MEDIO] (42.9%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4647)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3676)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.2996)"
-CLI01199,Varejo,0.4275,0,"Risco de Churn: [MEDIO] (42.8%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6056)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4088)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.2544)"
-CLI00193,Varejo,0.4262,0,"Risco de Churn: [MEDIO] (42.6%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0571)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8494)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.5221)"
-CLI01150,Alta Renda,0.4231,1,"Risco de Churn: [MEDIO] (42.3%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4588)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4454)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.3811)"
-CLI00118,Wealth,0.423,1,"Risco de Churn: [MEDIO] (42.3%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9079)
-  • Cliente sem 12 meses de histórico de retorno: [+] AUMENTA risco (SHAP=+0.5232)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5132)"
-CLI00042,Varejo,0.4186,0,"Risco de Churn: [MEDIO] (41.9%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.7282)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4423)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3406)"
-CLI00562,Varejo,0.4176,1,"Risco de Churn: [MEDIO] (41.8%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1139)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4627)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.2345)"
-CLI00115,Alta Renda,0.4137,1,"Risco de Churn: [MEDIO] (41.4%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.2723)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8748)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.4831)"
-CLI01143,Varejo,0.4132,0,"Risco de Churn: [MEDIO] (41.3%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.5965)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.5157)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.4298)"
-CLI00407,Varejo,0.4125,1,"Risco de Churn: [MEDIO] (41.2%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.7038)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5416)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4368)"
-CLI00838,Varejo,0.4097,0,"Risco de Churn: [MEDIO] (41.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.0020)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3176)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.2573)"
-CLI00896,Varejo,0.4075,1,"Risco de Churn: [MEDIO] (40.8%)
-  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+1.1225)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.8843)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.2816)"
-CLI01091,Varejo,0.4017,1,"Risco de Churn: [MEDIO] (40.2%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3528)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3817)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.1357)"
-CLI00612,Varejo,0.4004,1,"Risco de Churn: [MEDIO] (40.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9414)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5024)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3646)"
-CLI01043,Varejo,0.3982,0,"Risco de Churn: [MEDIO] (39.8%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9237)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3822)
-  • Intensidade relativa de movimentação: [-] REDUZ risco (SHAP=-0.3069)"
-CLI00416,Varejo,0.3944,0,"Risco de Churn: [MEDIO] (39.4%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8870)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.5124)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4534)"
-CLI00622,Varejo,0.3941,0,"Risco de Churn: [MEDIO] (39.4%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8432)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.7680)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3484)"
-CLI01119,Varejo,0.3932,0,"Risco de Churn: [MEDIO] (39.3%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.3097)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3828)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3209)"
-CLI00210,Varejo,0.3846,1,"Risco de Churn: [MEDIO] (38.5%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.3785)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3206)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.2893)"
-CLI00901,Varejo,0.3802,0,"Risco de Churn: [MEDIO] (38.0%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8984)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3405)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.3153)"
-CLI00793,Varejo,0.3773,1,"Risco de Churn: [MEDIO] (37.7%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.2774)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3210)
-  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.2838)"
-CLI00266,Alta Renda,0.3753,1,"Risco de Churn: [MEDIO] (37.5%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.7106)
-  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.5964)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.5256)"
-CLI01138,Varejo,0.3753,0,"Risco de Churn: [MEDIO] (37.5%)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4311)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3802)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.3499)"
-CLI00460,Varejo,0.3735,0,"Risco de Churn: [MEDIO] (37.4%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0202)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4595)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3863)"
-CLI00978,Varejo,0.3718,1,"Risco de Churn: [MEDIO] (37.2%)
-  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4887)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4667)
-  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.3732)"
-CLI00916,Varejo,0.3718,1,"Risco de Churn: [MEDIO] (37.2%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.4453)
-  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.3233)
-  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.2346)"
-CLI00941,Varejo,0.3689,0,"Risco de Churn: [MEDIO] (36.9%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.0514)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4400)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3695)"
-CLI00765,Varejo,0.3651,0,"Risco de Churn: [MEDIO] (36.5%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8733)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4372)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.3817)"
-CLI00227,Varejo,0.3626,0,"Risco de Churn: [MEDIO] (36.3%)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0754)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8006)
-  • Variação da cadência de contato (últimos 3 meses): [-] REDUZ risco (SHAP=-0.4194)"
-CLI00728,Varejo,0.3597,0,"Risco de Churn: [MEDIO] (36.0%)
-  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5227)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.3955)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3211)"
-CLI00235,Alta Renda,0.3584,1,"Risco de Churn: [MEDIO] (35.8%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+1.1687)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3783)
-  • Intensidade relativa de movimentação: [-] REDUZ risco (SHAP=-0.1428)"
-CLI00977,Varejo,0.3576,1,"Risco de Churn: [MEDIO] (35.8%)
-  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.8963)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6352)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.4386)"
-CLI00382,Varejo,0.3571,1,"Risco de Churn: [MEDIO] (35.7%)
-  • Saldo total na custódia: [+] AUMENTA risco (SHAP=+0.7577)
-  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4318)
-  • Segmento do cliente: [+] AUMENTA risco (SHAP=+0.2919)"
+CLI00528,Alta Renda,0.978,1,"Risco de Churn: [ALTO] (97.8%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+4.3955)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.5268)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.3735)"
+CLI00090,Alta Renda,0.9686,1,"Risco de Churn: [ALTO] (96.9%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+5.1298)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.3146)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.2810)"
+CLI00926,Alta Renda,0.9648,1,"Risco de Churn: [ALTO] (96.5%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+4.2818)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.7270)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.6189)"
+CLI00764,Alta Renda,0.964,1,"Risco de Churn: [ALTO] (96.4%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+4.8815)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.4603)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.4357)"
+CLI01004,Private,0.9639,1,"Risco de Churn: [ALTO] (96.4%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+4.4949)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0820)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.3898)"
+CLI00081,Private,0.963,1,"Risco de Churn: [ALTO] (96.3%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+5.0728)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2432)
+  • Tempo médio de resposta do cliente ao assessor: [-] REDUZ risco (SHAP=-0.7459)"
+CLI00213,Alta Renda,0.9376,1,"Risco de Churn: [ALTO] (93.8%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+5.0958)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.2719)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.2128)"
+CLI01027,Wealth,0.9275,1,"Risco de Churn: [ALTO] (92.8%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+4.5531)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.6785)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.5025)"
+CLI00613,Alta Renda,0.9242,1,"Risco de Churn: [ALTO] (92.4%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+4.4671)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3448)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.2886)"
+CLI00531,Family Office,0.9231,1,"Risco de Churn: [ALTO] (92.3%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.6426)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.9577)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.8277)"
+CLI00132,Alta Renda,0.9215,1,"Risco de Churn: [ALTO] (92.2%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+4.6402)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5992)
+  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.4958)"
+CLI00639,Alta Renda,0.9182,1,"Risco de Churn: [ALTO] (91.8%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+5.2846)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.4275)
+  • AuC total sob custódia (R$ milhões): [-] REDUZ risco (SHAP=-0.3752)"
+CLI00838,Private,0.9099,1,"Risco de Churn: [ALTO] (91.0%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.9095)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.5564)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.4208)"
+CLI00920,Wealth,0.9021,1,"Risco de Churn: [ALTO] (90.2%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+4.7058)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.5257)
+  • AuC total sob custódia (R$ milhões): [-] REDUZ risco (SHAP=-0.5199)"
+CLI00601,Alta Renda,0.8941,1,"Risco de Churn: [ALTO] (89.4%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.9130)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.6862)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.4548)"
+CLI00311,Alta Renda,0.8745,1,"Risco de Churn: [ALTO] (87.5%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.9807)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5489)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.7390)"
+CLI00229,Private,0.8648,1,"Risco de Churn: [ALTO] (86.5%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+2.9186)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4441)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.6590)"
+CLI00201,Alta Renda,0.8645,1,"Risco de Churn: [ALTO] (86.5%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.1451)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.6324)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6638)"
+CLI00000,Alta Renda,0.8615,1,"Risco de Churn: [ALTO] (86.2%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.8238)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4887)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.3078)"
+CLI00330,Alta Renda,0.8549,1,"Risco de Churn: [ALTO] (85.5%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.1906)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.4166)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3382)"
+CLI00497,Alta Renda,0.849,1,"Risco de Churn: [ALTO] (84.9%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8024)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6265)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9024)"
+CLI00527,Alta Renda,0.8469,1,"Risco de Churn: [ALTO] (84.7%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.7634)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8086)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3956)"
+CLI00917,Wealth,0.8405,1,"Risco de Churn: [ALTO] (84.0%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5982)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+1.5807)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+1.2703)"
+CLI00514,Alta Renda,0.8356,1,"Risco de Churn: [ALTO] (83.6%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.6442)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.4422)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.8599)"
+CLI01157,Wealth,0.8347,1,"Risco de Churn: [ALTO] (83.5%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+4.9632)
+  • AuC total sob custódia (R$ milhões): [-] REDUZ risco (SHAP=-0.3594)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.2083)"
+CLI00545,Alta Renda,0.8345,1,"Risco de Churn: [ALTO] (83.5%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+3.0323)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6193)
+  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.2051)"
+CLI00884,Private,0.8335,1,"Risco de Churn: [ALTO] (83.4%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.2075)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.5760)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.2988)"
+CLI01046,Alta Renda,0.8277,1,"Risco de Churn: [ALTO] (82.8%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5345)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4509)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.8630)"
+CLI01129,Alta Renda,0.8269,1,"Risco de Churn: [ALTO] (82.7%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.7340)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7083)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.3961)"
+CLI00995,Alta Renda,0.8259,1,"Risco de Churn: [ALTO] (82.6%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.7563)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4729)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.6952)"
+CLI00688,Private,0.8214,1,"Risco de Churn: [ALTO] (82.1%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8038)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6893)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.5899)"
+CLI00505,Alta Renda,0.815,1,"Risco de Churn: [ALTO] (81.5%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.6739)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.3570)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+1.1103)"
+CLI00018,Alta Renda,0.8143,1,"Risco de Churn: [ALTO] (81.4%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.7769)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.6334)
+  • Retorno relativo ao benchmark de mercado: [-] REDUZ risco (SHAP=-0.4173)"
+CLI01002,Wealth,0.8067,1,"Risco de Churn: [ALTO] (80.7%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+3.7308)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.2578)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.2175)"
+CLI00384,Private,0.8044,1,"Risco de Churn: [ALTO] (80.4%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.9793)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.5549)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3203)"
+CLI00269,Alta Renda,0.7992,1,"Risco de Churn: [ALTO] (79.9%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5959)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4139)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4842)"
+CLI00158,Alta Renda,0.7959,1,"Risco de Churn: [ALTO] (79.6%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8504)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7839)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.2207)"
+CLI00701,Alta Renda,0.7905,1,"Risco de Churn: [ALTO] (79.0%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.2435)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1506)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.5605)"
+CLI00840,Alta Renda,0.7884,1,"Risco de Churn: [ALTO] (78.8%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.9407)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4937)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.2450)"
+CLI00756,Private,0.788,1,"Risco de Churn: [ALTO] (78.8%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5683)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.2766)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.5032)"
+CLI00102,Alta Renda,0.7833,1,"Risco de Churn: [ALTO] (78.3%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.6035)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.5406)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.4466)"
+CLI00275,Private,0.7826,1,"Risco de Churn: [ALTO] (78.3%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+3.9966)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.1833)
+  • AuC total sob custódia (R$ milhões): [-] REDUZ risco (SHAP=-0.1669)"
+CLI00561,Alta Renda,0.77,1,"Risco de Churn: [ALTO] (77.0%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.6709)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.1634)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.4284)"
+CLI00101,Private,0.7666,1,"Risco de Churn: [ALTO] (76.7%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.5056)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2262)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5153)"
+CLI00878,Alta Renda,0.7655,1,"Risco de Churn: [ALTO] (76.5%)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+1.7484)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.5975)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.5702)"
+CLI00796,Wealth,0.763,1,"Risco de Churn: [ALTO] (76.3%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+4.0591)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.2115)
+  • Score de engajamento do cliente: [-] REDUZ risco (SHAP=-0.1924)"
+CLI00595,Private,0.7624,1,"Risco de Churn: [ALTO] (76.2%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7262)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.7241)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.5213)"
+CLI00300,Alta Renda,0.7622,1,"Risco de Churn: [ALTO] (76.2%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.9396)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.2699)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.2862)"
+CLI01034,Alta Renda,0.7606,1,"Risco de Churn: [ALTO] (76.1%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.7492)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4527)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+1.0977)"
+CLI00666,Alta Renda,0.7574,1,"Risco de Churn: [ALTO] (75.7%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.0918)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6696)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5219)"
+CLI00331,Private,0.7559,1,"Risco de Churn: [ALTO] (75.6%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.2249)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.2725)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.3633)"
+CLI00421,Private,0.7556,1,"Risco de Churn: [ALTO] (75.6%)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+2.7716)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.4141)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.3888)"
+CLI00019,Alta Renda,0.7483,1,"Risco de Churn: [ALTO] (74.8%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1935)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.8632)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.4947)"
+CLI00832,Alta Renda,0.7459,1,"Risco de Churn: [ALTO] (74.6%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.2721)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+1.1016)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.7382)"
+CLI00777,Private,0.7441,1,"Risco de Churn: [ALTO] (74.4%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.7368)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1731)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4471)"
+CLI00957,Alta Renda,0.7401,1,"Risco de Churn: [ALTO] (74.0%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7293)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.5962)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5279)"
+CLI00663,Alta Renda,0.7398,1,"Risco de Churn: [ALTO] (74.0%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7341)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8369)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.7020)"
+CLI01108,Private,0.7391,1,"Risco de Churn: [ALTO] (73.9%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.1388)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.9642)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4647)"
+CLI00576,Alta Renda,0.7357,1,"Risco de Churn: [ALTO] (73.6%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+2.1531)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.7451)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.5209)"
+CLI00168,Alta Renda,0.733,1,"Risco de Churn: [ALTO] (73.3%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.7274)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6440)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5404)"
+CLI00641,Alta Renda,0.7287,1,"Risco de Churn: [ALTO] (72.9%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.6676)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.7675)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.5209)"
+CLI00968,Private,0.7194,1,"Risco de Churn: [ALTO] (71.9%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4658)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.1732)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9290)"
+CLI00578,Private,0.7188,1,"Risco de Churn: [ALTO] (71.9%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.4290)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.7823)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5570)"
+CLI00144,Alta Renda,0.7156,1,"Risco de Churn: [ALTO] (71.6%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.5268)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.2606)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.4097)"
+CLI00769,Private,0.6991,1,"Risco de Churn: [ALTO] (69.9%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4649)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.7348)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.4561)"
+CLI00887,Alta Renda,0.6978,1,"Risco de Churn: [ALTO] (69.8%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7615)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1823)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5245)"
+CLI01137,Private,0.6932,1,"Risco de Churn: [ALTO] (69.3%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8560)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.5620)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.3301)"
+CLI00802,Private,0.6919,1,"Risco de Churn: [ALTO] (69.2%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.3840)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1748)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.6109)"
+CLI00981,Private,0.6805,1,"Risco de Churn: [ALTO] (68.0%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+2.0624)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3658)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.3125)"
+CLI00450,Private,0.6789,1,"Risco de Churn: [ALTO] (67.9%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4862)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1068)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.6072)"
+CLI00006,Alta Renda,0.6761,1,"Risco de Churn: [ALTO] (67.6%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+2.9832)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3592)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.1687)"
+CLI00010,Alta Renda,0.6698,1,"Risco de Churn: [ALTO] (67.0%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3772)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6142)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5323)"
+CLI00279,Private,0.6625,1,"Risco de Churn: [ALTO] (66.2%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.4753)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.8724)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.4778)"
+CLI00360,Alta Renda,0.6607,1,"Risco de Churn: [ALTO] (66.1%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+3.5592)
+  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.4761)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.3626)"
+CLI00562,Alta Renda,0.6557,1,"Risco de Churn: [ALTO] (65.6%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4034)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.7120)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.6532)"
+CLI00978,Private,0.653,1,"Risco de Churn: [ALTO] (65.3%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+1.4806)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+1.0439)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.8409)"
+CLI00512,Wealth,0.6475,1,"Risco de Churn: [ALTO] (64.8%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8477)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3191)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4702)"
+CLI00459,Alta Renda,0.6466,1,"Risco de Churn: [ALTO] (64.7%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8374)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.7166)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3595)"
+CLI00989,Private,0.6388,1,"Risco de Churn: [ALTO] (63.9%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.8773)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+1.0468)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.5746)"
+CLI00393,Private,0.6317,1,"Risco de Churn: [ALTO] (63.2%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.4870)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.4303)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.5366)"
+CLI00073,Private,0.6158,1,"Risco de Churn: [ALTO] (61.6%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.6941)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5695)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.4984)"
+CLI00049,Alta Renda,0.6054,1,"Risco de Churn: [ALTO] (60.5%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8583)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.2701)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.3870)"
+CLI01180,Family Office,0.6008,1,"Risco de Churn: [ALTO] (60.1%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.8815)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6852)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.5286)"
+CLI00067,Private,0.6001,1,"Risco de Churn: [ALTO] (60.0%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8712)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1107)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.2645)"
+CLI01013,Alta Renda,0.5999,1,"Risco de Churn: [MEDIO] (60.0%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4508)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+1.1099)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9089)"
+CLI00435,Private,0.5936,1,"Risco de Churn: [MEDIO] (59.4%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.6162)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.3484)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.2407)"
+CLI00128,Alta Renda,0.5874,0,"Risco de Churn: [MEDIO] (58.7%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5721)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.2950)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5119)"
+CLI01127,Alta Renda,0.587,1,"Risco de Churn: [MEDIO] (58.7%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+1.1800)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.6406)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.4179)"
+CLI00599,Alta Renda,0.5863,1,"Risco de Churn: [MEDIO] (58.6%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7279)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.6210)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.4727)"
+CLI00861,Private,0.5854,1,"Risco de Churn: [MEDIO] (58.5%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.6564)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.6235)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.3800)"
+CLI00647,Private,0.5812,1,"Risco de Churn: [MEDIO] (58.1%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7239)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.6996)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4289)"
+CLI00094,Private,0.5786,1,"Risco de Churn: [MEDIO] (57.9%)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+1.3518)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.8386)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.7812)"
+CLI00630,Private,0.5698,1,"Risco de Churn: [MEDIO] (57.0%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.8024)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.6515)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4811)"
+CLI00557,Alta Renda,0.5678,1,"Risco de Churn: [MEDIO] (56.8%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9815)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.7146)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.3942)"
+CLI01184,Alta Renda,0.5639,1,"Risco de Churn: [MEDIO] (56.4%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.6330)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.5881)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5720)"
+CLI00997,Alta Renda,0.5633,1,"Risco de Churn: [MEDIO] (56.3%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.3266)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.5580)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4347)"
+CLI00856,Alta Renda,0.5513,1,"Risco de Churn: [MEDIO] (55.1%)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.7299)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.6868)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.6232)"
+CLI00187,Private,0.5489,1,"Risco de Churn: [MEDIO] (54.9%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5523)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.4266)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4128)"
+CLI00084,Alta Renda,0.5484,1,"Risco de Churn: [MEDIO] (54.8%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.4104)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2294)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.2197)"
+CLI00131,Alta Renda,0.5427,1,"Risco de Churn: [MEDIO] (54.3%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.1608)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.7686)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.6697)"
+CLI00865,Private,0.5361,1,"Risco de Churn: [MEDIO] (53.6%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.7249)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.4138)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.3922)"
+CLI01081,Alta Renda,0.5175,1,"Risco de Churn: [MEDIO] (51.7%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.1729)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.7210)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5428)"
+CLI00749,Private,0.5174,1,"Risco de Churn: [MEDIO] (51.7%)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+1.0068)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.8231)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3381)"
+CLI00573,Private,0.5136,1,"Risco de Churn: [MEDIO] (51.4%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.7168)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4577)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.2880)"
+CLI00057,Alta Renda,0.513,1,"Risco de Churn: [MEDIO] (51.3%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.7325)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5139)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.4392)"
+CLI00400,Alta Renda,0.5111,1,"Risco de Churn: [MEDIO] (51.1%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.9758)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.5800)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.2664)"
+CLI00691,Alta Renda,0.5066,1,"Risco de Churn: [MEDIO] (50.7%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.3301)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.7561)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.5466)"
+CLI00826,Alta Renda,0.5018,1,"Risco de Churn: [MEDIO] (50.2%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.6124)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.5319)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3028)"
+CLI00206,Alta Renda,0.4952,1,"Risco de Churn: [MEDIO] (49.5%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.7873)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.4679)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.2847)"
+CLI00114,Private,0.494,1,"Risco de Churn: [MEDIO] (49.4%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.9214)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4931)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.3098)"
+CLI00276,Private,0.489,1,"Risco de Churn: [MEDIO] (48.9%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0633)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.0476)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4353)"
+CLI00859,Alta Renda,0.4768,1,"Risco de Churn: [MEDIO] (47.7%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.2931)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.6449)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4313)"
+CLI00368,Alta Renda,0.4743,1,"Risco de Churn: [MEDIO] (47.4%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.6427)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.4653)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4446)"
+CLI01112,Alta Renda,0.4712,1,"Risco de Churn: [MEDIO] (47.1%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.5171)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.4795)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.3852)"
+CLI00356,Alta Renda,0.4685,1,"Risco de Churn: [MEDIO] (46.9%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.3160)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.8856)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.2653)"
+CLI00217,Private,0.4629,1,"Risco de Churn: [MEDIO] (46.3%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.1749)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.7972)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.4388)"
+CLI00372,Alta Renda,0.4594,1,"Risco de Churn: [MEDIO] (45.9%)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.9380)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.4982)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.4092)"
+CLI00637,Alta Renda,0.4483,1,"Risco de Churn: [MEDIO] (44.8%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.7434)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.5052)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.2144)"
+CLI00063,Alta Renda,0.4315,1,"Risco de Churn: [MEDIO] (43.1%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+2.0441)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.5420)
+  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.4069)"
+CLI00485,Wealth,0.4237,1,"Risco de Churn: [MEDIO] (42.4%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+2.0145)
+  • Segmento do cliente: [-] REDUZ risco (SHAP=-0.2945)
+  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.2745)"
+CLI00470,Alta Renda,0.4236,1,"Risco de Churn: [MEDIO] (42.4%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+1.2577)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+0.7183)
+  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.4384)"
+CLI00744,Alta Renda,0.4171,1,"Risco de Churn: [MEDIO] (41.7%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.5864)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.9628)
+  • Score de engajamento do cliente: [-] REDUZ risco (SHAP=-0.3572)"
+CLI00803,Private,0.4163,1,"Risco de Churn: [MEDIO] (41.6%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.9990)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+0.6109)
+  • AuC total sob custódia (R$ milhões): [-] REDUZ risco (SHAP=-0.3731)"
+CLI00916,Alta Renda,0.4128,1,"Risco de Churn: [MEDIO] (41.3%)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.8566)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.4192)
+  • Retorno relativo ao benchmark de mercado: [+] AUMENTA risco (SHAP=+0.2387)"
+CLI00564,Alta Renda,0.4037,1,"Risco de Churn: [MEDIO] (40.4%)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.6145)
+  • AuC total sob custódia (R$ milhões): [+] AUMENTA risco (SHAP=+0.4309)
+  • Tempo como cliente (meses): [+] AUMENTA risco (SHAP=+0.3977)"
+CLI00196,Private,0.4004,1,"Risco de Churn: [MEDIO] (40.0%)
+  • Score de engajamento do cliente: [+] AUMENTA risco (SHAP=+0.9434)
+  • Variação da cadência de contato (últimos 3 meses): [+] AUMENTA risco (SHAP=+0.4783)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.3566)"
+CLI00847,Family Office,0.3943,1,"Risco de Churn: [MEDIO] (39.4%)
+  • Dias desde o último contato com o assessor: [+] AUMENTA risco (SHAP=+1.8703)
+  • Retorno da carteira nos últimos 12 meses: [+] AUMENTA risco (SHAP=+0.4681)
+  • Intensidade relativa de movimentação: [+] AUMENTA risco (SHAP=+0.2682)"
+CLI00295,Private,0.3843,1,"Risco de Churn: [MEDIO] (38.4%)
+  • Tempo médio de resposta do cliente ao assessor: [+] AUMENTA risco (SHAP=+1.0200)
+  • Dias desde o último contato com o assessor: [-] REDUZ risco (SHAP=-0.5440)
+  • Quantidade de produtos contratados: [+] AUMENTA risco (SHAP=+0.5288)"
