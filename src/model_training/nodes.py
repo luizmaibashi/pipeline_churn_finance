@@ -125,6 +125,20 @@ def train_final_model(train_df: pd.DataFrame, parameters: dict) -> Pipeline:
     return gb_final
 
 
+def train_final_model_v2(df_v2_clean: pd.DataFrame, parameters: dict) -> Pipeline:
+    """Treina o pipeline v2 (early-warning) final no dataset limpo inteiro —
+    paralelo a train_final_model (v1), para persistir e usar em SHAP/API."""
+    X, y = df_v2_clean[FEATURES_V2_BASE], df_v2_clean["churn"]
+    gb_final = _create_pipeline_v2(GradientBoostingClassifier(
+        n_estimators=parameters.get("n_estimators", 300),
+        learning_rate=parameters.get("learning_rate", 0.03),
+        max_depth=parameters.get("max_depth", 4),
+        random_state=parameters.get("random_state", 42)
+    ))
+    gb_final.fit(X, y)
+    return gb_final
+
+
 def evaluate_final_model(model: Pipeline, test_df: pd.DataFrame) -> tuple[dict, pd.DataFrame]:
     """
     Avalia o pipeline final treinado.

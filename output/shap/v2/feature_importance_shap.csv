@@ -1,0 +1,16 @@
+feature,mean_abs_shap
+dias_desde_ultimo_contato,0.5130308998679572
+variacao_freq_contato_3m,0.48829875388036176
+tempo_resposta_medio_horas,0.43043245955011844
+segmento_enc,0.4217954910870812
+saldo_bi,0.2456722823831262
+intensidade_rel,0.1393709473771037
+meses_cliente,0.12998252236792662
+engajamento_score,0.12197224521020336
+retorno_relativo,0.058513067738295385
+qtd_produtos,0.056006237927638904
+freq_contato_mes,0.05515119806240744
+retorno_12m_pct,0.04917688794740098
+sem_historico_12m,0.009518448535264366
+flag_risco,0.00014762963773721252
+cliente_novo_sem_contato_hist,0.0

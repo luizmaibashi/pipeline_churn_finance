@@ -61,3 +61,7 @@ feature_importance:
 gb_pipeline:
   type: pickle.PickleDataSet
   filepath: output/models/gb_pipeline.pkl
+
+gb_pipeline_v2:
+  type: pickle.PickleDataSet
+  filepath: output/models/gb_pipeline_v2.pkl

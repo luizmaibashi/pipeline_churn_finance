@@ -32,7 +32,8 @@ from src.model_training.nodes import (
     get_feature_importance,
     train_and_compare_v1_v2,
     bootstrap_ic_diferenca_recall,
-    cross_validate_v2
+    cross_validate_v2,
+    train_final_model_v2
 )
 
 print("=" * 60)
@@ -166,6 +167,11 @@ print(f"  CV 5-fold v2 recall: {cv_v2_mean:.4f} +/- {cv_v2_std:.4f}")
 
 veredito = "[SUPEROU]" if recall_v2 > recall_v1 else "[NAO superou]"
 print(f"  Criterio ADR-0001 (ponto): v2 recall > v1 recall? {veredito} ({recall_v2:.4f} vs {recall_v1:.4f})")
+
+# Persiste o modelo v2 final (treinado no dataset limpo inteiro) para uso
+# em shap_analysis_v2.py / API futura
+gb_final_v2 = train_final_model_v2(df_v2_limpo, parameters)
+catalog.save("gb_pipeline_v2", gb_final_v2)
 
 # ── FASE 6: Persistência dos artefatos ───────────────────────
 print("\n[6/6] Salvando pipeline consolidado...")
