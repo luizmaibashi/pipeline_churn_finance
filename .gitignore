@@ -36,5 +36,13 @@ Thumbs.db
 output/*.db
 output/jobs.db
 
+# MLflow (apêndice notebooks/02 — tracking local regenerável)
+mlruns/
+mlartifacts/
+notebooks/mlruns/
+notebooks/mlartifacts/
+notebooks/mlflow.db
+mlflow.db
+
 # Cache de testes
 .pytest_cache/
