@@ -16,7 +16,10 @@ from src.data_processing.nodes import (
     generate_synthetic_data,
     generate_advisors_data,
     attach_advisor_and_behavioral_features,
+    inject_data_quality_issues,
+    clean_clientes_v2_bruto,
 )
+from src.model_training.nodes import train_and_compare_v1_v2
 
 SEED = 42
 
@@ -117,6 +120,45 @@ def test_auc_exposto_agregado_dentro_da_faixa_de_mercado(dataset_v2):
 
 
 # ── Contrato de schema: assessor_id sempre presente e válido ──
+
+# ── Critério de sucesso do ADR-0001 §5 (gate: precisa virar código,
+#    não só prosa) ──
+
+@pytest.fixture(scope="module")
+def comparacao_v1_v2(dataset_v2):
+    df_cli, df_adv_raw, _ = dataset_v2
+    # regenera o df_adv "cru" (pré-attach) para reaproveitar o fluxo completo
+    df_adv_original = generate_advisors_data(300, seed=SEED)
+    df_v2, df_adv_com_carteira = attach_advisor_and_behavioral_features(df_cli, df_adv_original, seed=SEED)
+    df_v2_bruto, df_adv_bruto = inject_data_quality_issues(df_v2, df_adv_com_carteira, seed=SEED)
+    df_v2_limpo = clean_clientes_v2_bruto(df_v2_bruto, df_adv_bruto)
+
+    parameters = {
+        "random_state": SEED, "test_size": 0.20,
+        "n_estimators": 300, "learning_rate": 0.03, "max_depth": 4,
+    }
+    return train_and_compare_v1_v2(df_cli, df_v2_limpo, parameters)
+
+
+def test_recall_early_warning_vs_baseline_reativo(comparacao_v1_v2):
+    """
+    Critério de sucesso do ADR-0001: modelo v2 (early-warning + advisor
+    attrition) deve superar a baseline v1 (reativa) em recall de churn,
+    medido sobre split idêntico (mesma população/grão). Gate ML da base:
+    "Critério escrito em ADR precisa aparecer em código executável" —
+    este teste é essa evidência.
+    """
+    recall_v1 = comparacao_v1_v2.loc[
+        comparacao_v1_v2["modelo"] == "v1_baseline_reativa", "recall_churn"
+    ].iloc[0]
+    recall_v2 = comparacao_v1_v2.loc[
+        comparacao_v1_v2["modelo"] == "v2_early_warning_advisor", "recall_churn"
+    ].iloc[0]
+    assert recall_v2 > recall_v1, (
+        f"v2 (recall={recall_v2:.4f}) não superou v1 (recall={recall_v1:.4f}) — "
+        f"critério de sucesso do ADR-0001 não atingido"
+    )
+
 
 def test_todo_cliente_tem_assessor_atribuido(dataset_v2):
     _, df_adv, df_v2 = dataset_v2

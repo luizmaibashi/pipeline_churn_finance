@@ -19,6 +19,7 @@ from src.data_processing.nodes import (
     generate_advisors_data,
     attach_advisor_and_behavioral_features,
     inject_data_quality_issues,
+    clean_clientes_v2_bruto,
     split_data,
     run_feature_engineering
 )
@@ -27,7 +28,8 @@ from src.model_training.nodes import (
     train_final_model,
     evaluate_final_model,
     cross_validate,
-    get_feature_importance
+    get_feature_importance,
+    train_and_compare_v1_v2
 )
 
 print("=" * 60)
@@ -121,6 +123,23 @@ catalog.save("feature_importance", importances)
 print(f"  CV F1-macro: {cv_mean:.4f} ± {cv_std:.4f}")
 print(f"  Teste — F1-macro: {metrics['f1_macro']:.4f} | ROC-AUC: {metrics['roc_auc']:.4f}")
 print(f"  Confusão — TN={metrics['tn']} FP={metrics['fp']} FN={metrics['fn']} TP={metrics['tp']}")
+
+# ── FASE 5.5: Comparação v1 (reativa) vs v2 (early-warning + advisor) ─
+print("\n[5.5/6] Comparando modelo v2 (ADR-0001) contra baseline v1...")
+df_v2_limpo = clean_clientes_v2_bruto(df_v2_bruto, df_advisors_bruto)
+catalog.save("base_clientes_v2_limpo", df_v2_limpo)
+
+comparacao = train_and_compare_v1_v2(df, df_v2_limpo, parameters)
+catalog.save("recall_early_warning_vs_baseline_reativo", comparacao)
+
+print(f"  {'Modelo':<28} {'Recall(churn)':>13} {'F1-churn':>9} {'ROC-AUC':>9}")
+print("  " + "-" * 62)
+for _, row in comparacao.iterrows():
+    print(f"  {row['modelo']:<28} {row['recall_churn']:>13.4f} {row['f1_churn']:>9.4f} {row['roc_auc']:>9.4f}")
+recall_v1 = comparacao.loc[comparacao['modelo']=='v1_baseline_reativa', 'recall_churn'].iloc[0]
+recall_v2 = comparacao.loc[comparacao['modelo']=='v2_early_warning_advisor', 'recall_churn'].iloc[0]
+veredito = "[SUPEROU]" if recall_v2 > recall_v1 else "[NAO superou]"
+print(f"  Criterio ADR-0001: v2 recall > v1 recall? {veredito} ({recall_v2:.4f} vs {recall_v1:.4f})")
 
 # ── FASE 6: Persistência dos artefatos ───────────────────────
 print("\n[6/6] Salvando pipeline consolidado...")

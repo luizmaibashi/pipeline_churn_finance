@@ -18,6 +18,14 @@ base_assessores_bruto:
   type: pandas.CSVDataSet
   filepath: output/data/base_assessores_bruto.csv
 
+base_clientes_v2_limpo:
+  type: pandas.CSVDataSet
+  filepath: output/data/base_clientes_v2_limpo.csv
+
+recall_early_warning_vs_baseline_reativo:
+  type: pandas.CSVDataSet
+  filepath: output/data/comparacao_v1_v2.csv
+
 base_feature_eng:
   type: pandas.CSVDataSet
   filepath: output/data/base_feature_eng.csv

@@ -2,6 +2,28 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
+
+class StructuralNullImputer(BaseEstimator, TransformerMixin):
+    """
+    Imputa nulo estrutural (Direção A, ADR-0001) por mediana aprendida
+    SÓ no treino (evita leakage — mesma disciplina do FeatureEngineer).
+    Preserva DataFrame para não quebrar transformers subsequentes que
+    dependem de nome de coluna (FeatureEngineer, ColumnTransformer).
+    """
+    def __init__(self, colunas):
+        self.colunas = colunas
+
+    def fit(self, X, y=None):
+        self.medianas_ = {c: X[c].median() for c in self.colunas}
+        return self
+
+    def transform(self, X):
+        X_out = X.copy()
+        for c in self.colunas:
+            X_out[c] = X_out[c].fillna(self.medianas_[c])
+        return X_out
+
+
 class FeatureEngineer(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         self.freq_max_ = X["freq_contato_mes"].max()

@@ -250,6 +250,57 @@ def inject_data_quality_issues(
     return df, adv
 
 
+def clean_clientes_v2_bruto(df_bruto: pd.DataFrame, df_advisors_bruto: pd.DataFrame) -> pd.DataFrame:
+    """
+    Etapa 3 (ADR-0001): aplica as 6 decisões de tratamento documentadas em
+    reports/eda_clientes_v2_bruto.md — cada uma pela causa, não por reflexo.
+    Não imputa nada que a EDA marcou como nulo estrutural.
+    """
+    df = df_bruto.copy()
+    adv = df_advisors_bruto.copy()
+
+    # 1. Duplicata de cliente_id — manter 1ª ocorrência (sem timestamp real
+    #    no dataset sintético para decidir "mais recente" de outra forma;
+    #    limitação documentada no EDA).
+    df = df.drop_duplicates(subset="cliente_id", keep="first").reset_index(drop=True)
+
+    # 6. canal sujo — padronizar variantes de string (confirmado no EDA:
+    #    mesma categoria, não 3 grupos reais)
+    adv["canal"] = adv["canal"].replace({"R.I.A.": "RIA", "ria": "RIA"})
+
+    # 4. Outlier de escala em saldo_bi — critério relacional (>p99 do
+    #    segmento * 20), corrige dividindo por 1000 em vez de descartar
+    for seg in df["segmento"].unique():
+        mask_seg = df["segmento"] == seg
+        p99_seg = df.loc[mask_seg, "saldo_bi"].quantile(0.99)
+        mask_outlier = mask_seg & (df["saldo_bi"] > p99_seg * 20)
+        df.loc[mask_outlier, "saldo_bi"] = df.loc[mask_outlier, "saldo_bi"] / 1000
+
+    # 5. Sentinela -999 em retorno_12m_pct — vira nulo estrutural (cliente
+    #    sem 12 meses de histórico), nunca valor numérico
+    df.loc[df["retorno_12m_pct"] == -999.0, "retorno_12m_pct"] = np.nan
+
+    # 3. Nulo estrutural (dias_desde_ultimo_contato/tempo_resposta/retorno)
+    #    — flag para o modelo saber que a ausência é por cliente novo/sem
+    #    histórico, não imputação que inventaria comportamento inexistente
+    df["sem_historico_12m"] = df["retorno_12m_pct"].isna().astype(int)
+    df["cliente_novo_sem_contato_hist"] = df["dias_desde_ultimo_contato"].isna().astype(int)
+
+    # 2. Nulo em freq_contato_mes — EDA confirmou que a nulidade não prediz
+    #    o alvo (qui-quadrado p=0.72), então imputação é segura. Imputa
+    #    pela média do grupo segmento+canal do assessor (preserva o viés
+    #    operacional real em vez de usar a média global, que o esconderia)
+    canal_por_cliente = df["assessor_id"].map(adv.set_index("assessor_id")["canal"])
+    df["_canal_assessor_tmp"] = canal_por_cliente
+    media_grupo = df.groupby(["segmento", "_canal_assessor_tmp"])["freq_contato_mes"].transform("mean")
+    df["freq_contato_mes"] = df["freq_contato_mes"].fillna(media_grupo)
+    # fallback: grupo sem nenhum valor não-nulo (raro) usa média global
+    df["freq_contato_mes"] = df["freq_contato_mes"].fillna(df["freq_contato_mes"].mean())
+    df = df.drop(columns=["_canal_assessor_tmp"])
+
+    return df
+
+
 def split_data(df: pd.DataFrame, test_size: float, random_state: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Divide o dataset de entrada de forma estratificada pelo target churn."""
     from sklearn.model_selection import train_test_split
