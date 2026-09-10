@@ -44,7 +44,7 @@ from src.job_queue import JobQueue
 from transformers import FeatureEngineer, StructuralNullImputer   # noqa: F401
 from serving_contract import (
     SEGMENTOS_VALIDOS, FEATURES_V2_BASE,
-    load_threshold_map, risk_level, operational_flow, auc_at_risk_mm,
+    load_threshold_map, risk_level, operational_flow, auc_at_risk_mm, risk_factors,
 )
 
 # ── Inicializa a fila global de Jobs
@@ -298,24 +298,20 @@ def _threshold_for(segmento: str) -> float:
     return _threshold_map_or_503()[segmento]
 
 
-def _recommended_action(risk: str, prob: float, features: dict) -> str:
+def _recommended_action(risk: str, features: dict) -> str:
     if risk == "BAIXO":
         return "Monitoramento rotineiro. Nenhuma acao imediata necessaria."
 
-    actions = []
-    retorno = features.get("retorno_12m_pct")
-    dias_contato = features.get("dias_desde_ultimo_contato")
-    variacao = features.get("variacao_freq_contato_3m")
-    if retorno is not None and retorno < 9.0:
-        actions.append("Apresentar portfólio com maior CDI+ e produtos de renda variável diversificada")
-    if features.get("freq_contato_mes", 99) == 0 or (dias_contato is not None and dias_contato > 45):
-        actions.append("Agendar call consultiva com assessor — cliente sem contato recente")
-    if variacao is not None and variacao < -0.2:
-        actions.append("Cadência de contato caindo — early-warning: acionar assessor antes da próxima régua")
-    if features.get("qtd_produtos", 99) == 1:
-        actions.append("Oferecer diversificação de produtos — cliente monoproduto")
-    if features.get("auc_milhoes", 99) < 15:
-        actions.append("Avaliar incentivo de aporte mínimo ou campanha de fidelização")
+    # Limiares e disparo vêm do contrato de serving (serving_contract.risk_factors);
+    # aqui só o texto da ação para cada código.
+    FRASES = {
+        "retorno_baixo":       "Apresentar portfólio com maior CDI+ e produtos de renda variável diversificada",
+        "sem_contato_recente": "Agendar call consultiva com assessor — cliente sem contato recente",
+        "cadencia_caindo":     "Cadência de contato caindo — early-warning: acionar assessor antes da próxima régua",
+        "monoproduto":         "Oferecer diversificação de produtos — cliente monoproduto",
+        "auc_baixo":           "Avaliar incentivo de aporte mínimo ou campanha de fidelização",
+    }
+    actions = [FRASES[cod] for cod in risk_factors(features) if cod in FRASES]
 
     if not actions:
         actions.append("Contato proativo pelo assessor para entender necessidades atuais")
@@ -376,7 +372,7 @@ def _predict_one(cliente: ClienteInput) -> PredictionResult:
     risk        = _risk_level(prob, cliente.segmento)
     threshold   = _threshold_for(cliente.segmento)
     predicted   = prob >= threshold
-    action      = _recommended_action(risk, prob, cliente.model_dump())
+    action      = _recommended_action(risk, cliente.model_dump())
     flow_str    = _flow(cliente.segmento, cliente.auc_milhoes)
     reasons     = _get_shap_reasons(cliente.cliente_id)
     auc_risk_mm = auc_at_risk_mm(cliente.auc_milhoes, prob)
@@ -425,7 +421,7 @@ async def model_info():
     """
     meta = _state.get("meta", {})
     if not meta:
-        return {"message": "Modelo carregado sem metadata (versão flat). Execute version_manager.py para versionar."}
+        return {"message": "Modelo não carregado. Execute 'python pipeline.py'."}
     return meta
 
 

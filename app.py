@@ -17,6 +17,8 @@ from transformers import FeatureEngineer, StructuralNullImputer  # noqa: F401 �
 from serving_contract import (
     SEGMENTOS_VALIDOS as SEGMENTOS_V2, FEATURES_V2_BASE, RISK_MID_FACTOR,
     load_threshold_map, risk_level, needs_human_review, auc_at_risk_mm,
+    DIAS_SEM_CONTATO_ALERTA, QUEDA_CADENCIA_ALERTA, TEMPO_RESPOSTA_ALERTA_H,
+    QTD_PRODUTOS_MONOPRODUTO,
 )
 
 # ── Configuração da página ────────────────────────────────────
@@ -451,7 +453,7 @@ with tab1:
                     "cliente_novo_sem_contato_hist": int(dias_val is None),
                 }])[FEATURES_V2_BASE]
                 prob = model.predict_proba(X_new)[0][1]
-                thr = thr_map.get(segmento, 0.5)
+                thr = thr_map[segmento]   # contrato garante os 4 segmentos; sem fallback silencioso
 
         with col_result:
             st.markdown("<div style='color:#8b95b0; font-size:12px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:14px;'>Resultado da Predição</div>", unsafe_allow_html=True)
@@ -464,17 +466,17 @@ with tab1:
             )
 
             insights = []
-            if dias_val is not None and dias_val > 45:
+            if dias_val is not None and dias_val > DIAS_SEM_CONTATO_ALERTA:
                 insights.append(f"⚠️ {dias_val} dias sem contato — sinal antecedente de deterioração")
-            if variacao < -0.2:
+            if variacao < QUEDA_CADENCIA_ALERTA:
                 insights.append(f"⚠️ Cadência de contato caindo {abs(variacao)*100:.0f}% — early-warning")
-            if resposta > 40:
+            if resposta > TEMPO_RESPOSTA_ALERTA_H:
                 insights.append("⚠️ Latência de resposta alta — engajamento em queda")
             if freq == 0:
                 insights.append("⚠️ Nenhum contato no último mês")
             if tem_retorno and retorno < media_retorno:
                 insights.append(f"⚠️ Retorno abaixo da média da carteira ({media_retorno:.1f}%)")
-            if qtd_prod == 1:
+            if qtd_prod == QTD_PRODUTOS_MONOPRODUTO:
                 insights.append("⚠️ Monoproduto — menor fidelização")
 
             if insights:

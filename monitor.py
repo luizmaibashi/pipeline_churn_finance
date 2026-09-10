@@ -8,7 +8,6 @@
 #
 # Uso:
 #   python monitor.py                     → usa dados do treino como referência
-#   python monitor.py --ref v1            → compara com perfil salvo na v1
 #   python monitor.py --alert-only        → só exibe alertas (para CI/CD)
 #
 # Output: output/monitor/drift_report_YYYY-MM-DD.json + .txt
@@ -99,16 +98,6 @@ def build_reference_profile(df_train: pd.DataFrame) -> dict:
     return profile
 
 
-def load_reference_from_version(version: str) -> dict | None:
-    """Carrega perfil salvo no metadata de uma versão específica."""
-    meta_path = os.path.join(MODELS_DIR, version, "metadata.json")
-    if not os.path.exists(meta_path):
-        return None
-    with open(meta_path, "r", encoding="utf-8") as f:
-        meta = json.load(f)
-    return meta.get("data_profile")
-
-
 # ── KS-Test para features numéricas ─────────────────────────
 
 def ks_test_feature(ref_values: list, curr_values: list) -> dict:
@@ -165,7 +154,7 @@ def score_drift(df_ref: pd.DataFrame, df_curr: pd.DataFrame,
 
 # ── Geração do relatório ─────────────────────────────────────
 
-def run_monitor(ref_version: str | None = None, alert_only: bool = False):
+def run_monitor(alert_only: bool = False):
     os.makedirs(MONITOR_DIR, exist_ok=True)
 
     print("=" * 60)
@@ -267,7 +256,7 @@ def run_monitor(ref_version: str | None = None, alert_only: bool = False):
         "alerts"            : drift_alerts,
         "retraining_needed" : n_alerts >= 2,
         "recommendation"    : (
-            "Executar pipeline.py + version_manager.py imediatamente."
+            "Executar pipeline.py imediatamente para retreinar sobre dados atuais."
             if n_alerts >= 2 else
             "Monitoramento normal. Verificar novamente na proxima semana."
         ),
@@ -335,11 +324,10 @@ def main():
     parser = argparse.ArgumentParser(
         description="Data Drift Monitor — Churn Finance MLOps Lite"
     )
-    parser.add_argument("--ref",        type=str,            help="Versao de referencia (ex: v1)")
     parser.add_argument("--alert-only", action="store_true", help="Retorna exit code 1 se drift critico (para CI/CD)")
     args = parser.parse_args()
 
-    run_monitor(ref_version=args.ref, alert_only=args.alert_only)
+    run_monitor(alert_only=args.alert_only)
 
 
 if __name__ == "__main__":

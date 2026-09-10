@@ -38,6 +38,14 @@ PCT_AUC_LOSS_ON_CHURN = 0.30   # queda de AuC que caracteriza churn (PROBLEM.md 
 RISK_MID_FACTOR       = 0.6    # fronteira MÉDIO = fração do threshold ALTO do segmento
 HUMAN_REVIEW_AUC_MM   = 250    # AuC (R$ milhões) acima do qual o fluxo vai a especialista
 
+# ── Limiares dos fatores de risco (antes copiados em api.py e app.py) ─────────
+RETORNO_12M_BAIXO_PCT     = 9.0   # retorno de 12m abaixo disso conta como fator
+DIAS_SEM_CONTATO_ALERTA   = 45    # dias desde o último contato acima disso: alerta
+QUEDA_CADENCIA_ALERTA     = -0.2  # variação de cadência abaixo disso: cadência caindo
+TEMPO_RESPOSTA_ALERTA_H   = 40    # latência de resposta acima disso: engajamento em queda
+AUC_FIDELIZACAO_MIN_MM    = 15    # AuC abaixo disso: candidato a campanha de fidelização
+QTD_PRODUTOS_MONOPRODUTO  = 1     # cliente monoproduto
+
 THRESHOLDS_CSV = os.path.join("output", "data", "thresholds_v2.csv")
 
 
@@ -92,3 +100,35 @@ def operational_flow(segmento: str, auc_milhoes: float) -> str:
 def auc_at_risk_mm(auc_milhoes: float, prob: float) -> float:
     """Receita/AuC anual estimada em risco: AuC × queda-de-churn × probabilidade."""
     return round(auc_milhoes * PCT_AUC_LOSS_ON_CHURN * prob, 2)
+
+
+def risk_factors(features: dict) -> list[str]:
+    """Códigos canônicos dos fatores de risco disparados pelo perfil do cliente.
+
+    Fonte única dos limiares que `api._recommended_action` e o painel de insights
+    do `app.py` mantinham em cópia. Cada consumidor formata o código à sua
+    maneira (ação recomendada na API, alerta no dashboard).
+
+    Códigos: retorno_baixo, sem_contato_recente, cadencia_caindo, resposta_lenta,
+    monoproduto, auc_baixo.
+    """
+    f = features
+    retorno  = f.get("retorno_12m_pct")
+    dias     = f.get("dias_desde_ultimo_contato")
+    variacao = f.get("variacao_freq_contato_3m")
+    resposta = f.get("tempo_resposta_medio_horas")
+
+    fatores: list[str] = []
+    if retorno is not None and retorno < RETORNO_12M_BAIXO_PCT:
+        fatores.append("retorno_baixo")
+    if f.get("freq_contato_mes", 99) == 0 or (dias is not None and dias > DIAS_SEM_CONTATO_ALERTA):
+        fatores.append("sem_contato_recente")
+    if variacao is not None and variacao < QUEDA_CADENCIA_ALERTA:
+        fatores.append("cadencia_caindo")
+    if resposta is not None and resposta > TEMPO_RESPOSTA_ALERTA_H:
+        fatores.append("resposta_lenta")
+    if f.get("qtd_produtos", 99) == QTD_PRODUTOS_MONOPRODUTO:
+        fatores.append("monoproduto")
+    if f.get("auc_milhoes", 99) < AUC_FIDELIZACAO_MIN_MM:
+        fatores.append("auc_baixo")
+    return fatores

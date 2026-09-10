@@ -80,6 +80,31 @@ def test_auc_at_risk_mm():
     assert sc.auc_at_risk_mm(0.0, 0.9) == 0.0
 
 
+def test_risk_factors_dispara_os_codigos_certos():
+    base = {
+        "retorno_12m_pct": 12.0, "dias_desde_ultimo_contato": 5.0,
+        "variacao_freq_contato_3m": 0.0, "tempo_resposta_medio_horas": 8.0,
+        "freq_contato_mes": 3, "qtd_produtos": 4, "auc_milhoes": 120.0,
+    }
+    assert sc.risk_factors(base) == []
+
+    critico = {**base, "retorno_12m_pct": 4.0, "dias_desde_ultimo_contato": 70.0,
+               "variacao_freq_contato_3m": -0.45, "tempo_resposta_medio_horas": 60.0,
+               "qtd_produtos": 1, "auc_milhoes": 8.0}
+    assert sc.risk_factors(critico) == [
+        "retorno_baixo", "sem_contato_recente", "cadencia_caindo",
+        "resposta_lenta", "monoproduto", "auc_baixo",
+    ]
+
+    # nulo estrutural não dispara retorno_baixo / resposta_lenta
+    nulos = {**base, "retorno_12m_pct": None, "tempo_resposta_medio_horas": None}
+    assert "retorno_baixo" not in sc.risk_factors(nulos)
+    assert "resposta_lenta" not in sc.risk_factors(nulos)
+
+    # freq_contato_mes == 0 dispara sem_contato_recente mesmo com dias baixo
+    assert "sem_contato_recente" in sc.risk_factors({**base, "freq_contato_mes": 0})
+
+
 def test_nenhuma_copia_do_contrato_nos_consumidores():
     """grep de regressão: as regras não podem ser redefinidas fora de serving_contract."""
     raiz = os.path.dirname(os.path.dirname(__file__))
@@ -88,3 +113,8 @@ def test_nenhuma_copia_do_contrato_nos_consumidores():
         txt = open(os.path.join(raiz, arq), encoding="utf-8").read()
         for padrao in proibido:
             assert padrao not in txt, f"{arq} reimplementa regra do contrato: {padrao!r}"
+
+    # os limiares de fator de risco vêm do contrato, não reescritos na API
+    api_txt = open(os.path.join(raiz, "api.py"), encoding="utf-8").read()
+    for lit in ("< 9.0", "< -0.2", "> 45"):
+        assert lit not in api_txt, f"api.py reescreve limiar de risk_factors: {lit!r}"
