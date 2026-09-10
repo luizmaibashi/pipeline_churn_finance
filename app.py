@@ -353,10 +353,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── TABS ─────────────────────────────────────────────────────
-tab1, tab2, tab3 = st.tabs([
+tab1, tab2, tab3, tab4 = st.tabs([
     "🎯  Predição Individual",
     "📈  Análise da Carteira",
-    "🔬  Performance do Modelo"
+    "🔬  Performance do Modelo",
+    "🧭  Carteira Exposta por Assessor"
 ])
 
 
@@ -843,6 +844,112 @@ with tab3:
                     <div class='metric-value' style='font-size:22px; color:{color};'>{val}</div>
                 </div>
                 """, unsafe_allow_html=True)
+
+# ==============================================================
+# TAB 4 — CARTEIRA EXPOSTA POR ASSESSOR  (Direção B, ADR-0001)
+# ==============================================================
+with tab4:
+    st.markdown('<p class="section-header">Carteira Exposta por Assessor</p>', unsafe_allow_html=True)
+    st.markdown(
+        '<p class="section-sub">Tabela <b>descritiva</b> de priorização, não predição. '
+        'Responde: "se ESTE assessor deixar a firma, quanto AuC da carteira dele tende a migrar junto?". '
+        'Insumo para retenção de assessor — <b>não</b> é feature do classificador de churn de cliente '
+        '(importância de <code>auc_exposto</code> = 1,3%, correlação com churn individual −0,04). '
+        'Ver §6 do ADR-0001.</p>',
+        unsafe_allow_html=True
+    )
+
+    CARTEIRA_PATH = "output/data/carteira_exposta_por_assessor.csv"
+    if not os.path.exists(CARTEIRA_PATH):
+        st.error("⚠️ `carteira_exposta_por_assessor.csv` não encontrado. Execute `python pipeline.py` primeiro.")
+    else:
+        carteira = pd.read_csv(CARTEIRA_PATH)
+
+        fc1, fc2 = st.columns([1, 1])
+        with fc1:
+            canais = ["Todos"] + sorted(carteira["canal"].dropna().unique().tolist())
+            canal_sel = st.selectbox("Canal", canais, key="cart_canal")
+        with fc2:
+            so_risco = st.checkbox("Só assessores com risco de saída (risco_saida = 1)", key="cart_risco")
+
+        view = carteira.copy()
+        if canal_sel != "Todos":
+            view = view[view["canal"] == canal_sel]
+        if so_risco:
+            view = view[view["risco_saida"] == 1]
+        view = view.sort_values("auc_exposto_total", ascending=False)
+
+        k1, k2, k3, k4 = st.columns(4)
+        kpis = [
+            ("Assessores", f"{len(view)}", "#74c0fc"),
+            ("AuC exposto total", f"R$ {view['auc_exposto_total'].sum():.1f} bi", "#ff6b6b"),
+            ("Em risco de saída", f"{int((view['risco_saida'] == 1).sum())}", "#ffd43b"),
+            ("Clientes cobertos", f"{int(view['qtd_clientes'].sum())}", "#63e6be"),
+        ]
+        for col, (label, val, color) in zip([k1, k2, k3, k4], kpis):
+            with col:
+                st.markdown(f"""
+                <div class='metric-card'>
+                    <div class='metric-label'>{label}</div>
+                    <div class='metric-value' style='font-size:22px; color:{color};'>{val}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+        gcol1, gcol2 = st.columns([1.2, 0.8], gap="medium")
+        with gcol1:
+            top = view.head(15).sort_values("auc_exposto_total")
+            fig_top = go.Figure(go.Bar(
+                x=top["auc_exposto_total"],
+                y=top["assessor_id"],
+                orientation="h",
+                text=[f"R$ {v:.2f} bi" for v in top["auc_exposto_total"]],
+                textposition="outside",
+                cliponaxis=False,
+                marker_color=["#f03e3e" if r == 1 else "#74c0fc" for r in top["risco_saida"]],
+                marker_line_color="#2d3250",
+                marker_line_width=1,
+            ))
+            fig_top.update_layout(
+                title="Top 15 — AuC exposto (vermelho = risco de saída)",
+                **PLOTLY_DARK,
+                height=420,
+                margin=dict(t=60, b=40, l=90, r=90),
+                xaxis_title="AuC exposto (R$ bi)",
+                xaxis_range=[0, top["auc_exposto_total"].max() * 1.25] if len(top) else [0, 1],
+            )
+            st.plotly_chart(fig_top, use_container_width=True, key="cart_top")
+
+        with gcol2:
+            fig_sc = go.Figure(go.Scatter(
+                x=view["anos_de_casa"],
+                y=view["pct_carteira_exposta"] * 100,
+                mode="markers",
+                marker=dict(
+                    size=(view["auc_exposto_total"] / view["auc_exposto_total"].max() * 34 + 6)
+                    if view["auc_exposto_total"].max() > 0 else 8,
+                    color=["#f03e3e" if r == 1 else "#74c0fc" for r in view["risco_saida"]],
+                    line=dict(color="#2d3250", width=1),
+                ),
+                text=view["assessor_id"],
+            ))
+            fig_sc.update_layout(
+                title="Anos de casa × % da carteira exposta (tamanho = AuC)",
+                **PLOTLY_DARK,
+                height=420,
+                xaxis_title="Anos de casa",
+                yaxis_title="% carteira exposta",
+            )
+            st.plotly_chart(fig_sc, use_container_width=True, key="cart_scatter")
+
+        st.markdown("<div style='color:#8b95b0; font-size:12px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; margin:8px 0 10px 0;'>Detalhe por assessor</div>", unsafe_allow_html=True)
+        tbl = view.copy()
+        tbl["auc_total_carteira"] = tbl["auc_total_carteira"].apply(lambda v: f"R$ {v:.2f} bi")
+        tbl["auc_exposto_total"]  = tbl["auc_exposto_total"].apply(lambda v: f"R$ {v:.2f} bi")
+        tbl["pct_carteira_exposta"] = tbl["pct_carteira_exposta"].apply(lambda v: f"{v*100:.0f}%")
+        tbl["risco_saida"] = tbl["risco_saida"].map({1: "🔴 sim", 0: "—"})
+        tbl.columns = ["Assessor", "Clientes", "AuC carteira", "AuC exposto", "% exposta", "Canal", "Anos de casa", "Risco saída"]
+        st.dataframe(tbl.reset_index(drop=True), use_container_width=True, height=340)
+
 
 # ── FOOTER ───────────────────────────────────────────────────
 st.markdown("---")
