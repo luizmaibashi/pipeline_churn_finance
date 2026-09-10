@@ -74,7 +74,23 @@ Expandir o escopo do projeto em duas frentes compostas, mantendo a engenharia v1
 
 ---
 
-## 6. LINKS RELACIONADOS
+## 6. CORREÇÃO PÓS-IMPLEMENTAÇÃO (2026-09-09, auditoria pedida pelo Luiz)
+
+Implementação original tratava `auc_exposto` (Direção B) como **feature** do modelo de churn, junto com o sinal comportamental (Direção A) — a leitura de "A+B compostas" da decisão original foi interpretada como "entram no mesmo classificador".
+
+**Achado da auditoria:** feature importance mostrou `auc_exposto` com 1,3% de peso no modelo — investigação confirmou que não é sinal fraco, é a métrica certa pro objetivo errado. Risco de saída de assessor é quase independente do churn individual do cliente (`corr(risco_saida_assessor, churn) = -0,04`, medido), porque são fenômenos causalmente distintos: um cliente pode sair por insatisfação própria sem o assessor sair, e vice-versa.
+
+**Correção:** `auc_exposto` saiu de `FEATURES_V2_EXTRA` (não entra mais no classificador). Virou `aggregate_carteira_exposta_por_assessor()` — produto de dado separado, agregado por `assessor_id`, respondendo "se ESTE assessor sair, quanto AuC da carteira está exposto" (insumo pra dashboard de risco de carteira, não pra prever churn de cliente).
+
+**Releitura correta de "A+B compostas":** não significa "mesmo modelo, mais features" — significa **dois produtos de dado do mesmo projeto**, cada um respondendo uma pergunta de negócio diferente:
+- Direção A → classificador de churn do cliente (usa sinal comportamental)
+- Direção B → agregação de exposição de risco por assessor (não é preditiva, é descritiva/priorização)
+
+**Resultado pós-correção:** recall v2 melhorou levemente (CV 5-fold: 0,3125→0,2958, mais estável — desvio caiu de 0,0437 para 0,0358) ao remover o ruído de uma feature sem função ali. As 3 features comportamentais passaram a somar 55,7% da importância do modelo, confirmando que o ganho é genuíno.
+
+---
+
+## 7. LINKS RELACIONADOS
 
 - [[PROBLEM.md]] — contrato de dados v1 (target reativo, ainda vigente como componente)
 - [[refactoring_blueprint.md]] — arquitetura de engenharia v1 (Kedro/FastAPI/Envoy), base que este ADR estende
