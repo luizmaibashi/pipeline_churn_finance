@@ -12,9 +12,18 @@ Bem-vindo ao repositório do **Churn Finance Pipeline**. Este projeto foi constr
 
 ## A Narrativa do Projeto (Por que este repositório existe?)
 
-No mercado financeiro de alta renda, as áreas de negócio não consomem modelos `.pkl` soltos ou Jupyter Notebooks. Elas exigem APIs seguras de alta disponibilidade, auditorias de governança (LGPD) e monitoramento contínuo contra a degradação do modelo (*Data Drift*).
+A primeira versão deste projeto previa churn olhando só para o efeito: cliente saca capital, saldo cai 30% em 6 meses, o sistema classifica como churn. É um sinal **reativo** — quando o dashboard acende, o cliente já está de saída há semanas.
 
-Este repositório foi **completamente refatorado** para adotar uma arquitetura de sistemas robusta, garantindo:
+Pesquisa de mercado (wealth management, 2026) mostrou duas dores que essa abordagem não cobre — e que a indústria real está tentando resolver agora:
+
+1. **O sinal de verdade vem antes do saldo cair.** Firmas data-driven monitoram cadência de contato, latência de resposta e sinais de desengajamento — comportamento que muda semanas antes do capital sair.
+2. **Boa parte do churn não é decisão do cliente — é decisão do assessor.** Quando um assessor migra de firma (Wirehouse → RIA, por exemplo), ele carrega a carteira consigo. Em 2023, isso moveu mais de US$100 bilhões em AuM em 90 dias no mercado americano.
+
+Este repositório evoluiu em duas frentes (ver [ADR-0001](docs/adr/0001-refatoracao-early-warning-advisor-attrition.md)):
+- **Direção A — early-warning comportamental:** o classificador de churn passa a usar sinal antecedente (recência de contato, variação de cadência, latência de resposta), não só saldo.
+- **Direção B — carteira exposta por assessor:** métrica separada (não é feature do modelo) que responde "se este assessor sair, quanto AuC da carteira está exposto" — insumo para priorização de retenção, não para prever churn de cliente individual.
+
+Sobre a base dessa mudança de modelo, a arquitetura de sistemas (v1) permanece:
 1. **Zero Training-Serving Skew:** Separação rígida de I/O e lógica analítica utilizando um catálogo de dados declarativo.
 2. **Inferência Larga e Escalável:** Endpoint assíncrono para processamento em lote que não sobrecarrega a API web, delegando tarefas para um Worker em background.
 3. **Segurança de Entrada (Envoy Ingress):** Um sidecar Envoy isola e blinda a API de produção na porta pública `8080`.
@@ -26,16 +35,28 @@ Este repositório foi **completamente refatorado** para adotar uma arquitetura d
 ## Objetivos do Projeto
 
 O objetivo primordial deste projeto é **mitigar a evasão de clientes (churn) em uma carteira sob custódia (AuC) de R$ 75 Bilhões**, estruturando um ecossistema de dados que conecte inteligência preditiva e ações práticas. Especificamente, o projeto visa:
-1. **Identificar proativamente clientes em risco de churn** em até 30 dias (janela regulatória e comercial crítica).
-2. **Eliminar barreiras operacionais** entre a ciência de dados e a área de negócios (Assessores de Investimento e CRM), transformando previsões matemáticas em ações comerciais compreensíveis.
-3. **Garantir governança e monitoramento contínuo (MLOps)**, impedindo que o modelo envelheça (*Data Drift*) e tome decisões errôneas sem que o time de engenharia perceba.
-4. **Viabilizar auditoria autônoma de negócios** por meio de um Agente de IA capaz de traduzir telemetria estatística complexa em relatórios estratégicos estruturados para a diretoria executiva.
+1. **Identificar clientes em risco de churn por sinal antecedente** (comportamento, não saldo) — antes que a evasão de capital já esteja em curso.
+2. **Priorizar risco de carteira por assessor**, não só por cliente — reconhecendo que uma fração relevante da evasão é herdada de mobilidade de assessor, não decisão do cliente.
+3. **Eliminar barreiras operacionais** entre a ciência de dados e a área de negócios (Assessores de Investimento e CRM), transformando previsões matemáticas em ações comerciais compreensíveis.
+4. **Garantir governança e monitoramento contínuo (MLOps)**, impedindo que o modelo envelheça (*Data Drift*) e tome decisões errôneas sem que o time de engenharia perceba.
+5. **Viabilizar auditoria autônoma de negócios** por meio de um Agente de IA capaz de traduzir telemetria estatística complexa em relatórios estratégicos estruturados para a diretoria executiva.
 
 ---
 
 ## Resultados Alcançados
 
 A refatoração e implementação das camadas de MLOps e IA resultaram em conquistas significativas de software, segurança e impacto de negócios:
+
+### Modelo v2 (Early-Warning) vs. Baseline v1 (Reativo)
+
+Comparação sobre split idêntico (mesma população, mesmo grão — nunca se compara modelo contra baseline em populações diferentes):
+
+| Métrica | v1 (reativa) | v2 (early-warning) |
+|---|---|---|
+| Recall (churn), CV 5-fold | 0,0875 ± 0,0306 | **0,2958 ± 0,0358** |
+| ROC-AUC (split de teste) | 0,6431 | **0,7568** |
+
+O ganho é carregado quase inteiramente pelas 3 features comportamentais novas (55,7% da importância do modelo) — não por artefato de simulação. **Ressalva honesta:** o ganho no split único de teste (n=48 casos de churn) tem IC 95% bootstrap que inclui zero — amostra pequena demais pra afirmar significância isolada. A evidência confiável é a validação cruzada (5 folds, todo o dataset em rotação), onde os intervalos de v1 e v2 não se sobrepõem.
 
 ### Métricas de Negócio & ROI Estimado
 * **Redução de Churn e Preservação de Receita:** Com base na modelagem preditiva e nos thresholds ajustados por segmento de risco (Varejo: 0.40, Alta Renda: 0.50, Wealth/Corporate: 0.60), o projeto atinge a meta do `PROBLEM.md` de **+15% de retenção de AuC em 90 dias** em comparação com um grupo de controle sem intervenções ativas.
