@@ -19,7 +19,7 @@ Projeto de portfólio fictício: pipeline de previsão de churn para carteira si
 - **v1 (engenharia):** completa — Kedro catalog, API assíncrona (Redis/SQLite dual-mode), Envoy sidecar, agente de IA com fallback offline, 19 testes passando.
 - **v1 (dado):** gap conhecido — zero teste de leakage temporal apesar do contrato R-01 a R-05 em `PROBLEM.md` ser rígido.
 - **v2 (fechado no modelo/dado, ver [ADR-0001](docs/adr/0001-refatoracao-early-warning-advisor-attrition.md)):** Direção A (early-warning comportamental) é o classificador de churn — supera a baseline v1 (CV 5-fold recall 0,2958±0,0358 vs. 0,0875±0,0306; 3 features comportamentais somam 55,7% da importância). Direção B (risco de saída de assessor / AuC exposto) é agregação separada (`carteira_exposta_por_assessor`), não feature — dashboard de risco de carteira, não preditor de churn de cliente. Dataset 100% sintético, calibrado com parâmetros estatísticos reais de mercado (pesquisa 2026-09-09), 30 testes passando (inclui gate de CI que trava o critério de sucesso do ADR).
-- **v2 (apresentação — pendente):** `README.md`, `app.py`/`api.py` e `monitor.py`/`agent.py` ainda refletem só a v1. SHAP (`shap_analysis.py`) roda só sobre o modelo v1.
+- **v2 (apresentação — parcial):** `api.py` migrado para o Pipeline v2 (payload early-warning + nulo estrutural derivado; endpoint `GET /advisors/exposed-portfolio` para a Direção B). Pendente: `app.py` (dashboard), `monitor.py`/`agent.py` (drift ainda sobre features v1), `README.md`. SHAP v2 já existe (`shap_analysis_v2.py`, `output/shap/v2/`).
 
 ## Decisões arquiteturais
 

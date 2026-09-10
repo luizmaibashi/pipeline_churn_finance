@@ -37,9 +37,11 @@ from pydantic import BaseModel, Field, field_validator
 from typing import Literal, Optional
 from contextlib import asynccontextmanager
 
-# ── Importa a fila de processamento assíncrono e o transformer
+# ── Importa a fila de processamento assíncrono e os transformers
+# (FeatureEngineer + StructuralNullImputer são necessários para unpicklear o
+# Pipeline v2 — ADR-0001, Direção A early-warning).
 from src.job_queue import JobQueue
-from transformers import FeatureEngineer   # noqa: F401
+from transformers import FeatureEngineer, StructuralNullImputer   # noqa: F401
 
 # ── Inicializa a fila global de Jobs
 job_queue = JobQueue()
@@ -52,14 +54,22 @@ THRESHOLD_MAP = {
     "Wealth"    : 0.60,
     "Corporate" : 0.60,
 }
-FEATURES_BASE = [
+# Modelo v2 (ADR-0001, Direção A): early-warning comportamental substitui a
+# baseline reativa v1. `sem_historico_12m` / `cliente_novo_sem_contato_hist`
+# são derivados da ausência de `retorno_12m_pct` / `dias_desde_ultimo_contato`
+# (src/data_processing/nodes.py:316-317) — o payload não os recebe.
+FEATURES_V2_BASE = [
     "segmento", "meses_cliente", "qtd_produtos",
-    "retorno_12m_pct", "freq_contato_mes", "saldo_bi"
+    "retorno_12m_pct", "freq_contato_mes", "saldo_bi",
+    "dias_desde_ultimo_contato", "variacao_freq_contato_3m",
+    "tempo_resposta_medio_horas",
+    "sem_historico_12m", "cliente_novo_sem_contato_hist",
 ]
-SHAP_CSV  = os.path.join("output", "shap", "client_explanations.csv")
-DATA_CSV  = os.path.join("output", "data", "base_clientes.csv")
+SHAP_CSV  = os.path.join("output", "shap", "v2", "client_explanations.csv")
+DATA_CSV  = os.path.join("output", "data", "base_clientes_v2_limpo.csv")
+CARTEIRA_CSV  = os.path.join("output", "data", "carteira_exposta_por_assessor.csv")
 MODELS_DIR    = os.path.join("output", "models")
-POINTER_FILE  = os.path.join(MODELS_DIR, "current_version.txt")
+MODEL_V2_PKL  = os.path.join(MODELS_DIR, "gb_pipeline_v2.pkl")
 MONITOR_DIR   = os.path.join("output", "monitor")
 
 TRADUCAO = {
@@ -81,28 +91,28 @@ _state: dict = {}
 
 
 def _load_model() -> object:
-    """Carrega o modelo da versão atual de produção."""
-    if os.path.exists(POINTER_FILE):
-        with open(POINTER_FILE) as f:
-            version = f.read().strip()
-        pkl = os.path.join(MODELS_DIR, version, "gb_pipeline.pkl")
-        meta_path = os.path.join(MODELS_DIR, version, "metadata.json")
-        meta = {}
-        if os.path.exists(meta_path):
-            with open(meta_path, encoding="utf-8") as f:
-                meta = json.load(f)
-    else:
-        pkl     = os.path.join(MODELS_DIR, "gb_pipeline.pkl")
-        version = "flat"
-        meta    = {}
+    """Carrega o Pipeline v2 (early-warning comportamental, ADR-0001).
 
-    if not os.path.exists(pkl):
+    A API expõe só a v2 — decisão travada na sessão de 2026-09-09: substitui a
+    baseline reativa v1, não roda os dois lado a lado.
+    """
+    if not os.path.exists(MODEL_V2_PKL):
         raise FileNotFoundError(
-            f"Modelo não encontrado em {pkl}. Execute 'python pipeline.py' primeiro."
+            f"Modelo não encontrado em {MODEL_V2_PKL}. Execute 'python pipeline.py' primeiro."
         )
 
-    model = joblib.load(pkl)
-    return model, version, meta
+    meta = {
+        "version": "v2",
+        "algorithm": "GradientBoostingClassifier",
+        "adr": "docs/adr/0001-refatoracao-early-warning-advisor-attrition.md",
+        "features": FEATURES_V2_BASE,
+        "notes": (
+            "Direção A — early-warning comportamental. CV 5-fold recall "
+            "0,2958±0,0358 vs baseline v1 0,0875±0,0306."
+        ),
+    }
+    model = joblib.load(MODEL_V2_PKL)
+    return model, "v2", meta
 
 
 def _load_shap_explanations() -> pd.DataFrame | None:
@@ -194,13 +204,17 @@ class ClienteInput(BaseModel):
         description="Quantidade de produtos financeiros ativos",
         examples=[3]
     )
-    retorno_12m_pct: float = Field(
-        ge=0.0, le=100.0,
-        description="Retorno da carteira nos últimos 12 meses (%)",
+    retorno_12m_pct: Optional[float] = Field(
+        default=None, ge=-50.0, le=100.0,
+        description=(
+            "Retorno da carteira nos últimos 12 meses (%). Pode ser negativo. "
+            "null = cliente sem histórico de 12m → sem_historico_12m=1 e "
+            "imputação por mediana do treino."
+        ),
         examples=[11.5]
     )
-    freq_contato_mes: int = Field(
-        ge=0, le=60,
+    freq_contato_mes: float = Field(
+        ge=0.0, le=60.0,
         description="Número de contatos com assessor no último mês",
         examples=[2]
     )
@@ -208,6 +222,30 @@ class ClienteInput(BaseModel):
         gt=0.0,
         description="Saldo sob custódia em R$ bilhões",
         examples=[0.5]
+    )
+    dias_desde_ultimo_contato: Optional[float] = Field(
+        default=None, ge=0.0, le=400.0,
+        description=(
+            "Early-warning: dias desde o último contato cliente-assessor. "
+            "null = cliente novo sem histórico → cliente_novo_sem_contato_hist=1."
+        ),
+        examples=[16.8]
+    )
+    variacao_freq_contato_3m: float = Field(
+        ge=-1.0, le=3.0,
+        description=(
+            "Early-warning: variação relativa da cadência de contato nos "
+            "últimos 3 meses (−0,3 = caiu 30%)."
+        ),
+        examples=[-0.03]
+    )
+    tempo_resposta_medio_horas: Optional[float] = Field(
+        default=None, ge=0.0, le=400.0,
+        description=(
+            "Early-warning: latência média de resposta do cliente ao assessor "
+            "(horas). null → imputação por mediana do treino."
+        ),
+        examples=[16.9]
     )
 
     @field_validator("segmento")
@@ -267,10 +305,15 @@ def _recommended_action(risk: str, prob: float, features: dict) -> str:
         return "Monitoramento rotineiro. Nenhuma acao imediata necessaria."
 
     actions = []
-    if features.get("retorno_12m_pct", 99) < 9.0:
+    retorno = features.get("retorno_12m_pct")
+    dias_contato = features.get("dias_desde_ultimo_contato")
+    variacao = features.get("variacao_freq_contato_3m")
+    if retorno is not None and retorno < 9.0:
         actions.append("Apresentar portfólio com maior CDI+ e produtos de renda variável diversificada")
-    if features.get("freq_contato_mes", 99) == 0:
+    if features.get("freq_contato_mes", 99) == 0 or (dias_contato is not None and dias_contato > 45):
         actions.append("Agendar call consultiva com assessor — cliente sem contato recente")
+    if variacao is not None and variacao < -0.2:
+        actions.append("Cadência de contato caindo — early-warning: acionar assessor antes da próxima régua")
     if features.get("qtd_produtos", 99) == 1:
         actions.append("Oferecer diversificação de produtos — cliente monoproduto")
     if features.get("saldo_bi", 99) < 0.1:
@@ -311,14 +354,25 @@ def _predict_one(cliente: ClienteInput) -> PredictionResult:
     if model is None:
         raise HTTPException(status_code=503, detail="Modelo não carregado. Execute pipeline.py.")
 
+    # Flags de nulo estrutural derivadas da ausência do valor bruto — mesma
+    # regra do treino (src/data_processing/nodes.py:316-317). O StructuralNullImputer
+    # do Pipeline v2 completa retorno/dias/tempo com a mediana aprendida no treino.
+    sem_historico = int(cliente.retorno_12m_pct is None)
+    cliente_novo  = int(cliente.dias_desde_ultimo_contato is None)
+
     X = pd.DataFrame([{
-        "segmento":        cliente.segmento,
-        "meses_cliente":   cliente.meses_cliente,
-        "qtd_produtos":    cliente.qtd_produtos,
-        "retorno_12m_pct": cliente.retorno_12m_pct,
-        "freq_contato_mes":cliente.freq_contato_mes,
-        "saldo_bi":        cliente.saldo_bi,
-    }])
+        "segmento":                    cliente.segmento,
+        "meses_cliente":               cliente.meses_cliente,
+        "qtd_produtos":                cliente.qtd_produtos,
+        "retorno_12m_pct":             cliente.retorno_12m_pct,
+        "freq_contato_mes":            cliente.freq_contato_mes,
+        "saldo_bi":                    cliente.saldo_bi,
+        "dias_desde_ultimo_contato":   cliente.dias_desde_ultimo_contato,
+        "variacao_freq_contato_3m":    cliente.variacao_freq_contato_3m,
+        "tempo_resposta_medio_horas":  cliente.tempo_resposta_medio_horas,
+        "sem_historico_12m":           sem_historico,
+        "cliente_novo_sem_contato_hist": cliente_novo,
+    }])[FEATURES_V2_BASE]
 
     prob = float(model.predict_proba(X)[0][1])
     prob = round(prob, 4)
@@ -326,7 +380,7 @@ def _predict_one(cliente: ClienteInput) -> PredictionResult:
     risk        = _risk_level(prob, cliente.segmento)
     threshold   = THRESHOLD_MAP.get(cliente.segmento, 0.50)
     predicted   = prob >= threshold
-    action      = _recommended_action(risk, prob, cliente.dict())
+    action      = _recommended_action(risk, prob, cliente.model_dump())
     flow_str    = _flow(cliente.segmento, cliente.saldo_bi)
     reasons     = _get_shap_reasons(cliente.cliente_id)
     auc_risk_mm = round(cliente.saldo_bi * 1000 * 0.012 * prob, 2)  # 1.2% do AuC × prob
@@ -444,7 +498,7 @@ def run_local_worker_task(job_id: str):
             "total": len(results),
             "scored_at": datetime.datetime.now().isoformat(),
             "model_version": _state.get("version", "N/A"),
-            "results": [r.dict() for r in results],
+            "results": [r.model_dump() for r in results],
             "summary": summary
         }
         
@@ -472,7 +526,7 @@ async def predict_batch(payload: BatchInput, background_tasks: BackgroundTasks):
     Retorna um `job_id` com status `202 Accepted` imediatamente.
     Para obter os resultados, consulte o endpoint `/predict/batch/status/{job_id}`.
     """
-    job_id = job_queue.enqueue(payload.dict())
+    job_id = job_queue.enqueue(payload.model_dump())
     
     # Se não houver Redis conectado, usa o worker local integrado via BackgroundTasks do FastAPI
     if job_queue.redis_client is None:
@@ -541,9 +595,12 @@ async def high_risk_clients(
 
     df = shap_df[shap_df["churn_prob"] >= 0.35].copy()
 
-    # Adiciona dados de segmento do dataset base
+    # O client_explanations v2 já traz `segmento`; do dataset base só falta saldo_bi
     if os.path.exists(DATA_CSV):
-        base = pd.read_csv(DATA_CSV)[["cliente_id", "segmento", "saldo_bi"]]
+        cols = ["cliente_id", "saldo_bi"]
+        if "segmento" not in df.columns:
+            cols.append("segmento")
+        base = pd.read_csv(DATA_CSV)[cols]
         df   = df.merge(base, on="cliente_id", how="left")
 
     # Filtra por segmento apenas se a coluna existir após o merge
@@ -577,4 +634,60 @@ async def high_risk_clients(
         "model_version" : _state.get("version", "N/A"),
         "generated_at"  : datetime.datetime.now().isoformat(),
         "clientes"      : clientes,
+    }
+
+
+@app.get("/advisors/exposed-portfolio", tags=["Analytics"])
+async def advisor_exposed_portfolio(
+    limit: int = Query(default=20, ge=1, le=500, description="Número máximo de assessores retornados"),
+    canal: Optional[str] = Query(default=None, description="Filtrar por canal (ex: Wirehouse)"),
+    apenas_risco: bool = Query(default=False, description="Só assessores com risco_saida=1"),
+):
+    """
+    **Direção B do ADR-0001 — carteira exposta por assessor.**
+
+    NÃO é predição de churn de cliente. É uma tabela descritiva de priorização:
+    "se ESTE assessor deixar a firma, quanto AuC da carteira dele tende a
+    migrar junto". Insumo para retenção de assessor, não para o classificador
+    (feature importance de `auc_exposto` era 1,3%, corr com churn individual
+    −0,04 — ver §6 do ADR).
+
+    Ordenado por AuC exposto (desc). Fonte: `carteira_exposta_por_assessor.csv`,
+    regenerado a cada `python pipeline.py`.
+    """
+    if not os.path.exists(CARTEIRA_CSV):
+        raise HTTPException(
+            status_code=404,
+            detail="carteira_exposta_por_assessor.csv não encontrado. Execute 'python pipeline.py'.",
+        )
+
+    df = pd.read_csv(CARTEIRA_CSV)
+    if canal and "canal" in df.columns:
+        df = df[df["canal"] == canal]
+    if apenas_risco and "risco_saida" in df.columns:
+        df = df[df["risco_saida"] == 1]
+
+    df = df.sort_values("auc_exposto_total", ascending=False).head(limit)
+
+    assessores = [
+        {
+            "assessor_id"          : row["assessor_id"],
+            "canal"                : str(row.get("canal", "N/A")),
+            "anos_de_casa"         : float(row.get("anos_de_casa", 0)),
+            "risco_saida"          : int(row.get("risco_saida", 0)),
+            "qtd_clientes"         : int(row.get("qtd_clientes", 0)),
+            "auc_total_carteira_bi": round(float(row["auc_total_carteira"]), 4),
+            "auc_exposto_total_bi" : round(float(row["auc_exposto_total"]), 4),
+            "pct_carteira_exposta" : round(float(row["pct_carteira_exposta"]), 4),
+        }
+        for _, row in df.iterrows()
+    ]
+
+    return {
+        "total"          : len(assessores),
+        "filter_canal"   : canal or "all",
+        "apenas_risco"   : apenas_risco,
+        "auc_exposto_total_bi": round(sum(a["auc_exposto_total_bi"] for a in assessores), 4),
+        "generated_at"   : datetime.datetime.now().isoformat(),
+        "assessores"     : assessores,
     }
