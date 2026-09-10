@@ -14,7 +14,9 @@ ganhar atenção).
 
 ## Tarefas
 
-1. **4 vulnerabilidades Dependabot no repo público (1 alta) — não investigadas.**
+1. **Vulnerabilidades Dependabot no repo público — não investigadas.**
+   Contagem no push de 2026-09-10: **5** (1 alta, 1 moderada, 3 baixas) — o
+   handoff dizia 4. `https://github.com/luizmaibashi/pipeline_churn_finance/security/dependabot`
    - `gh api repos/<owner>/pipeline_churn_finance/dependabot/alerts` (ou aba
      Security do GitHub) — listar as 4, identificar pacote/severidade/caminho.
    - Verificar se são dependências de runtime (entram no que roda) ou só de dev
