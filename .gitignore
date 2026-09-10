@@ -46,3 +46,6 @@ mlflow.db
 
 # Cache de testes
 .pytest_cache/
+
+# Relatorios de drift (monitor.py / orchestrator.py) — regeneraveis, datados
+output/monitor/drift_report_*
