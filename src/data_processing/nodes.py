@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import OrdinalEncoder
-from transformers import FeatureEngineer
+from src.transformers import FeatureEngineer
 
 def generate_synthetic_data(
     n_samples: int, parameters: dict | None = None, seed: int = 42

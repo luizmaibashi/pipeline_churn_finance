@@ -1,20 +1,25 @@
 # =============================================================
 # app.py — Dashboard Streamlit: Churn Finance Pipeline
-# Uso: streamlit run app.py
+# Uso (a partir da raiz do projeto): streamlit run src/app.py
 # =============================================================
 
 import warnings
 warnings.filterwarnings("ignore")
 
+import os
+import sys
+
+# Raiz do projeto no path — o pacote é `src.*` e o streamlit só injeta o dir do script.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import streamlit as st
 import pandas as pd
 import joblib
-import os
 import plotly.graph_objects as go
 import plotly.express as px
 
-from transformers import FeatureEngineer, StructuralNullImputer  # noqa: F401 — unpickle do Pipeline v2
-from serving_contract import (
+from src.transformers import FeatureEngineer, StructuralNullImputer  # noqa: F401 — unpickle do Pipeline v2
+from src.serving_contract import (
     SEGMENTOS_VALIDOS as SEGMENTOS_V2, FEATURES_V2_BASE, RISK_MID_FACTOR,
     load_threshold_map, risk_level, needs_human_review, auc_at_risk_mm,
     DIAS_SEM_CONTATO_ALERTA, QUEDA_CADENCIA_ALERTA, TEMPO_RESPOSTA_ALERTA_H,
@@ -348,7 +353,7 @@ with st.sidebar:
         <div style='background:rgba(255,107,107,0.12); border:1px solid rgba(255,107,107,0.3);
                     border-radius:8px; padding:12px; margin-top:12px; font-size:12px; color:#ffa8a8;'>
             ⚠️ Artefatos ausentes.<br>Execute primeiro:<br>
-            <code style='background:#0f1117; padding:2px 6px; border-radius:4px;'>python pipeline.py</code>
+            <code style='background:#0f1117; padding:2px 6px; border-radius:4px;'>python src/pipeline.py</code>
         </div>
         """, unsafe_allow_html=True)
 
@@ -398,7 +403,7 @@ with tab1:
     st.markdown('<p class="section-sub">Perfil do cliente + sinais de <b>early-warning comportamental</b> (v2). O corte de risco é o threshold calibrado do segmento (<code>reports/thresholds_v2.md</code>).</p>', unsafe_allow_html=True)
 
     if not artifacts_ok:
-        st.error("⚠️ Artefatos de modelo não encontrados. Execute `python pipeline.py` primeiro.")
+        st.error("⚠️ Artefatos de modelo não encontrados. Execute `python src/pipeline.py` primeiro.")
     else:
         model = load_artifacts()
         df_cli, _, _, _ = load_data()
@@ -553,7 +558,7 @@ with tab2:
     st.markdown('<p class="section-sub">Visão geral da base de 1.200 clientes com distribuição de risco e perfil de churn por segmento.</p>', unsafe_allow_html=True)
 
     if not artifacts_ok:
-        st.error("⚠️ Dados não encontrados. Execute `python pipeline.py` primeiro.")
+        st.error("⚠️ Dados não encontrados. Execute `python src/pipeline.py` primeiro.")
     else:
         model = load_artifacts()
         df_cli, imp, cmp, cv_df = load_data()
@@ -715,7 +720,7 @@ with tab3:
     st.markdown('<p class="section-sub">Early-warning comportamental (ADR-0001) contra a baseline reativa v1, no mesmo split. Dado sintético — as métricas medem a coerência do pipeline, não desempenho de produção. Números lidos de <code>comparacao_v1_v2.csv</code>, <code>feature_importance_v2.csv</code>, <code>cv_scores_v2.csv</code>.</p>', unsafe_allow_html=True)
 
     if not artifacts_ok:
-        st.error("⚠️ Dados não encontrados. Execute `python pipeline.py` primeiro.")
+        st.error("⚠️ Dados não encontrados. Execute `python src/pipeline.py` primeiro.")
     else:
         _, imp, cmp, cv_df = load_data()
         thr_map = load_thresholds_v2()
@@ -835,7 +840,7 @@ with tab4:
 
     CARTEIRA_PATH = "output/data/carteira_exposta_por_assessor.csv"
     if not os.path.exists(CARTEIRA_PATH):
-        st.error("⚠️ `carteira_exposta_por_assessor.csv` não encontrado. Execute `python pipeline.py` primeiro.")
+        st.error("⚠️ `carteira_exposta_por_assessor.csv` não encontrado. Execute `python src/pipeline.py` primeiro.")
     else:
         carteira = pd.read_csv(CARTEIRA_PATH)
 

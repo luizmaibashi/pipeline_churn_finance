@@ -24,8 +24,9 @@ Projeto de portfólio fictício sobre early-warning de churn em wealth managemen
 
 ## Regras
 
-- Antes de mudar lógica, leia `PROBLEM.md`, ADR-0001, ADR-0002 e a spec 0002.
+- Antes de mudar lógica, leia `PROBLEM.md` e os ADRs 0001–0004 (0003 = contrato de serving, 0004 = src-layout) + a spec 0002.
+- Todo código Python vive em `src/`, importado como `src.*`. Entry points têm shim de `sys.path`. Rodar sempre da raiz do projeto.
 - Todo valor fora do domínio de entrada deve gerar erro explícito, nunca clamp silencioso.
 - Features só podem usar informação até D-0; ajustar transformadores somente no treino.
 - Proporções precisam de `n` e intervalo quando houver inferência.
-- Rode `python -m pytest -q` após alterações. Para regenerar artefatos: `python pipeline.py`, `python shap_analysis_v2.py`.
+- Rode `python -m pytest -q` após alterações. Para regenerar artefatos: `python src/pipeline.py`, `python src/shap_analysis_v2.py`.

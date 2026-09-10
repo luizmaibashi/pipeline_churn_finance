@@ -20,7 +20,7 @@ from functools import lru_cache
 
 import pandas as pd
 
-from serving_contract import (
+from src.serving_contract import (
     SEGMENTOS_VALIDOS as SEGMENTOS_V2, load_threshold_map, risk_level,
     operational_flow, auc_at_risk_mm,
 )
@@ -52,7 +52,7 @@ def _threshold_map() -> dict:
     try:
         return load_threshold_map()
     except (FileNotFoundError, ValueError) as e:
-        print(f"[Agent] thresholds v2 indisponíveis ({e}). Rode 'python pipeline.py'.")
+        print(f"[Agent] thresholds v2 indisponíveis ({e}). Rode 'python src/pipeline.py'.")
         return {}
 
 
@@ -83,7 +83,7 @@ def _get(endpoint: str, params: dict = None) -> dict:
         r.raise_for_status()
         return r.json()
     except Exception as e:
-        return {"error": str(e), "detail": "API offline. Execute: uvicorn api:app --port 8000"}
+        return {"error": str(e), "detail": "API offline. Execute: uvicorn src.api:app --port 8000"}
 
 
 def _post(endpoint: str, body: dict) -> dict:
@@ -92,7 +92,7 @@ def _post(endpoint: str, body: dict) -> dict:
         r.raise_for_status()
         return r.json()
     except Exception as e:
-        return {"error": str(e), "detail": "API offline. Execute: uvicorn api:app --port 8000"}
+        return {"error": str(e), "detail": "API offline. Execute: uvicorn src.api:app --port 8000"}
 
 
 # ═══════════════════════════════════════════════════════════
@@ -248,7 +248,7 @@ def status_modelo() -> dict:
                 },
             }
         except Exception as e:
-            return {"error": f"comparacao_v1_v2.csv indisponível: {e}. Execute python pipeline.py."}
+            return {"error": f"comparacao_v1_v2.csv indisponível: {e}. Execute python src/pipeline.py."}
     return result
 
 

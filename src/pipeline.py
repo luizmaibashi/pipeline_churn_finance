@@ -1,7 +1,7 @@
 # =============================================================
 # pipeline.py — Geração modular dos artefatos de ML (Kedro Pattern)
 # Executa o pipeline completo através de nodes puros e do Data Catalog
-# Uso: python pipeline.py
+# Uso (a partir da raiz do projeto): python src/pipeline.py
 # =============================================================
 
 import warnings
@@ -10,10 +10,11 @@ warnings.filterwarnings("ignore")
 import os
 import sys
 from pathlib import Path
-from sklearn.model_selection import train_test_split
 
-# Garante que o diretório raiz e o diretório 'src' estão no path de importação
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+# Raiz do projeto no path de importação (o pacote é `src.*`)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from sklearn.model_selection import train_test_split
 
 from src.kedro_runner import DataCatalog, load_parameters
 from src.data_processing.nodes import (
@@ -212,4 +213,4 @@ meta_f1  = "[ATINGIDA]"     if metrics['f1_macro']  >= 0.55 else "[NÃO atingida
 meta_roc = "[ATINGIDA]"     if metrics['roc_auc'] >= 0.70 else "[NÃO atingida]"
 print(f"  F1-macro {meta_f1} | ROC-AUC {meta_roc}")
 print("=" * 60)
-print("\nPróximo passo: streamlit run app.py")
+print("\nPróximo passo: streamlit run src/app.py")

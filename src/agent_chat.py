@@ -2,16 +2,20 @@
 # agent_chat.py — Interface de Chat do Data Agent
 # Fase 3 do Roadmap: Visão Agêntica
 #
-# Uso: streamlit run agent_chat.py
+# Uso (a partir da raiz do projeto): streamlit run src/agent_chat.py
 #
 # Modos:
 #   DEMO MODE: sem API key — usa intent classifier + dados reais
 #   FULL MODE: com OPENAI_API_KEY no .env — LLM completo
 # =============================================================
 
-import streamlit as st
 import sys
 import os
+
+# Raiz do projeto no path — o pacote é `src.*` e o streamlit só injeta o dir do script.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import streamlit as st
 
 # ── Configuração da página ────────────────────────────────────
 st.set_page_config(
@@ -196,7 +200,7 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
 # ── Imports do agente ─────────────────────────────────────────
 try:
-    from agent import run_agent, DEMO_MODE, consultar_auc_segmento, alertas_drift
+    from src.agent import run_agent, DEMO_MODE, consultar_auc_segmento, alertas_drift
     AGENT_OK = True
 except ImportError as e:
     AGENT_OK = False
@@ -265,7 +269,7 @@ with st.sidebar:
         </div>
         """, unsafe_allow_html=True)
     except Exception:
-        st.markdown("<div style='color:#ff6b6b; font-size:12px;'>API offline. Execute uvicorn api:app --port 8000</div>", unsafe_allow_html=True)
+        st.markdown("<div style='color:#ff6b6b; font-size:12px;'>API offline. Execute uvicorn src.api:app --port 8000</div>", unsafe_allow_html=True)
 
     st.markdown("<hr style='border-color:#2d3250; margin:14px 0;'>", unsafe_allow_html=True)
 
@@ -450,7 +454,7 @@ if question_to_process:
         try:
             response_text, tool_logs = run_agent(question_to_process, history)
         except Exception as e:
-            response_text = f"Erro ao executar o agente: {str(e)}\n\nVerifique se a API está rodando: `uvicorn api:app --port 8000`"
+            response_text = f"Erro ao executar o agente: {str(e)}\n\nVerifique se a API está rodando: `uvicorn src.api:app --port 8000`"
             tool_logs = []
 
     # Adiciona resposta ao histórico

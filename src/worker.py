@@ -4,12 +4,12 @@ import time
 import json
 import datetime
 
-# Garante importações corretas a partir da raiz
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+# Raiz do projeto no path de importação (o pacote é `src.*`)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.job_queue import JobQueue
-import api
-from api import ClienteInput, _load_model, _load_shap_explanations, _predict_one
+from src import api
+from src.api import ClienteInput, _load_model, _load_shap_explanations, _predict_one
 
 def main():
     print("=" * 60)

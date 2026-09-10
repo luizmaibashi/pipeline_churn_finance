@@ -6,9 +6,9 @@
 # treino usando KS-Test (numérico) e Chi-Quadrado (categórico).
 # Se o drift ultrapassar o threshold, emite alerta de re-treino.
 #
-# Uso:
-#   python monitor.py                     → usa dados do treino como referência
-#   python monitor.py --alert-only        → só exibe alertas (para CI/CD)
+# Uso (a partir da raiz do projeto):
+#   python src/monitor.py                 → usa dados do treino como referência
+#   python src/monitor.py --alert-only    → só exibe alertas (para CI/CD)
 #
 # Output: output/monitor/drift_report_YYYY-MM-DD.json + .txt
 # =============================================================
@@ -20,6 +20,8 @@ import argparse
 import datetime
 import warnings
 warnings.filterwarnings("ignore")
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -42,8 +44,8 @@ from scipy import stats
 
 # FeatureEngineer + StructuralNullImputer são necessários para unpicklear o
 # Pipeline v2 (ADR-0001, Direção A early-warning).
-from transformers import FeatureEngineer, StructuralNullImputer  # noqa: F401
-from serving_contract import FEATURES_V2_BASE   # contrato de scoring v2 (ADR-0003)
+from src.transformers import FeatureEngineer, StructuralNullImputer  # noqa: F401
+from src.serving_contract import FEATURES_V2_BASE   # contrato de scoring v2 (ADR-0003)
 
 # ── Configuração ─────────────────────────────────────────────
 MONITOR_DIR  = os.path.join("output", "monitor")
@@ -180,7 +182,7 @@ def run_monitor(alert_only: bool = False):
 
     if not os.path.exists(MODEL_V2_PKL):
         raise FileNotFoundError(
-            f"Modelo v2 nao encontrado em {MODEL_V2_PKL}. Execute 'python pipeline.py' primeiro."
+            f"Modelo v2 nao encontrado em {MODEL_V2_PKL}. Execute 'python src/pipeline.py' primeiro."
         )
     current_ver = "v2"
     print(f"  Versao de producao: {current_ver} ({MODEL_V2_PKL})")

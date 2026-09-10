@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import pandas as pd
-from transformers import FeatureEngineer
+from src.transformers import FeatureEngineer
 
 def test_feature_engineer_creation():
     """Testa se as colunas esperadas são adicionadas pelo FeatureEngineer."""

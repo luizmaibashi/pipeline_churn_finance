@@ -35,31 +35,41 @@ As três features comportamentais somam 63,2% da importância do Gradient Boosti
 
 ## Como executar
 
+Todos os comandos rodam **a partir da raiz do projeto** (os caminhos `output/`,
+`conf/` e `reports/` são relativos ao diretório de trabalho).
+
 ```bash
-python pipeline.py
-python shap_analysis_v2.py
-python -m pytest -q
-uvicorn api:app --reload --port 8000
+python src/pipeline.py          # regenera dados, modelo, thresholds e comparações
+python src/shap_analysis_v2.py  # explicabilidade SHAP do modelo v2
+python -m pytest -q             # 55 testes de contrato, dado, modelo e API
+uvicorn src.api:app --port 8000 # API (Swagger em /docs)
+streamlit run src/app.py        # dashboard
 ```
 
 O pipeline gera os thresholds por segmento em `output/data/thresholds_v2.csv`. Segmentos com evidência insuficiente recebem o threshold global, marcado como `global_fallback`; a API lê esse arquivo na inicialização e não mantém uma regra paralela no código.
 
 ## Estrutura
 
+Todo o código Python vive em `src/`, importado como pacote `src.*` (ADR-0004).
+
 ```text
-src/                 geração, limpeza e treino
-pipeline.py          orquestração e persistência de artefatos
-serving_contract.py  fonte única do contrato de scoring v2 (features, thresholds, regras — ADR-0003)
-api.py               serviço de predição
-app.py               dashboard Streamlit
-monitor.py           monitor de data drift
-agent.py             agente de dados sobre a API
-agent_chat.py        interface de chat do agente (Streamlit)
-tests/               contratos de dado, modelo e API
-notebooks/           01: pipeline v2 em pandas/sklearn · 02: apêndice Spark
-docs/adr/            decisões de arquitetura
-docs/spec/           contrato de implementação
-reports/             EDA e thresholds
+src/
+  pipeline.py          orquestração e persistência de artefatos
+  serving_contract.py  fonte única do contrato de scoring v2 (features, thresholds, regras — ADR-0003)
+  data_processing/     geração e limpeza dos dados sintéticos
+  model_training/      benchmark, treino, calibração de threshold
+  transformers.py      FeatureEngineer + StructuralNullImputer (dentro do Pipeline sklearn)
+  api.py               serviço de predição (FastAPI)
+  app.py               dashboard (Streamlit)
+  monitor.py           monitor de data drift
+  agent.py             agente de dados sobre a API
+  agent_chat.py        interface de chat do agente (Streamlit)
+  worker.py            worker assíncrono de predição em lote (fila Redis/SQLite)
+tests/                 contratos de dado, modelo e API
+notebooks/             01: pipeline v2 em pandas/sklearn · 02: apêndice Spark
+docs/adr/              decisões de arquitetura
+docs/spec/             contrato de implementação
+reports/              EDA e thresholds
 ```
 
 ## Camada de infraestrutura (showcase de engenharia)

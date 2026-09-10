@@ -1,6 +1,6 @@
 # EDA: clientes v2 bruto
 
-**Fonte:** execução determinística de `python pipeline.py`, seed 42, 2026-09-10.
+**Fonte:** execução determinística de `python src/pipeline.py`, seed 42, 2026-09-10.
 **Escopo:** inspeção do dataset bruto antes da limpeza. A população é sintética.
 
 ## Foto da carteira limpa de referência

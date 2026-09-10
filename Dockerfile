@@ -18,5 +18,6 @@ COPY . .
 # Expõe a porta interna da API do FastAPI
 EXPOSE 8000
 
-# Execução padrão (será substituída para o worker no docker-compose)
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+# Execução padrão (será substituída para o worker no docker-compose).
+# Código em src/, importado como pacote src.* (ADR-0004); WORKDIR /app está no path.
+CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -3,7 +3,10 @@ import sys
 import subprocess
 import glob
 import json
-from agent import run_agent
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.agent import run_agent
 
 if sys.platform.startswith('win'):
     try:
@@ -20,7 +23,7 @@ def orchestrate_drift_and_summary():
     # 1. Executar Monitor de Drift (Pipeline Clássico)
     print("\n1. Iniciando monitor.py...")
     try:
-        subprocess.run(["python", "monitor.py", "--alert-only"], check=True)
+        subprocess.run([sys.executable, os.path.join("src", "monitor.py"), "--alert-only"], check=True)
         print("-> Drift não atingiu nível crítico para acionar retreino obrigatório (Exit 0).")
     except subprocess.CalledProcessError:
         print("-> [ALERTA] Monitor detectou drift crítico (Exit 1).")

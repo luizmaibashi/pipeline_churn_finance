@@ -2,8 +2,8 @@
 # api.py — FastAPI: Churn Finance Prediction Service
 # Fase 2 do Roadmap: O mercado consome APIs
 #
-# Uso:
-#   uvicorn api:app --reload --port 8000
+# Uso (a partir da raiz do projeto):
+#   uvicorn src.api:app --reload --port 8000
 #
 # Documentação interativa:
 #   http://localhost:8000/docs   (Swagger UI)
@@ -41,8 +41,8 @@ from contextlib import asynccontextmanager
 # (FeatureEngineer + StructuralNullImputer são necessários para unpicklear o
 # Pipeline v2 — ADR-0001, Direção A early-warning).
 from src.job_queue import JobQueue
-from transformers import FeatureEngineer, StructuralNullImputer   # noqa: F401
-from serving_contract import (
+from src.transformers import FeatureEngineer, StructuralNullImputer   # noqa: F401
+from src.serving_contract import (
     SEGMENTOS_VALIDOS, FEATURES_V2_BASE,
     load_threshold_map, risk_level, operational_flow, auc_at_risk_mm, risk_factors,
 )
@@ -86,7 +86,7 @@ def _load_model() -> object:
     """
     if not os.path.exists(MODEL_V2_PKL):
         raise FileNotFoundError(
-            f"Modelo não encontrado em {MODEL_V2_PKL}. Execute 'python pipeline.py' primeiro."
+            f"Modelo não encontrado em {MODEL_V2_PKL}. Execute 'python src/pipeline.py' primeiro."
         )
 
     meta = {
@@ -138,7 +138,7 @@ async def lifespan(app: FastAPI):
         _state["started_at"] = datetime.datetime.now().isoformat()
         print(f"[OK] Modelo v{version} carregado.")
     except FileNotFoundError as e:
-        print(f"[WARN] {e} — API iniciada sem modelo. Execute pipeline.py.")
+        print(f"[WARN] {e} — API iniciada sem modelo. Execute 'python src/pipeline.py'.")
         _state["model"]   = None
         _state["version"] = "N/A"
         _state["meta"]    = {}
@@ -286,7 +286,7 @@ class BatchResult(BaseModel):
 def _threshold_map_or_503() -> dict[str, float]:
     thr_map = _state.get("threshold_map") or {}
     if not thr_map:
-        raise HTTPException(status_code=503, detail="Thresholds v2 não carregados. Execute pipeline.py.")
+        raise HTTPException(status_code=503, detail="Thresholds v2 não carregados. Execute 'python src/pipeline.py'.")
     return thr_map
 
 
@@ -344,7 +344,7 @@ def _get_shap_reasons(cliente_id: str) -> list[dict]:
 def _predict_one(cliente: ClienteInput) -> PredictionResult:
     model = _state.get("model")
     if model is None:
-        raise HTTPException(status_code=503, detail="Modelo não carregado. Execute pipeline.py.")
+        raise HTTPException(status_code=503, detail="Modelo não carregado. Execute 'python src/pipeline.py'.")
 
     # Flags de nulo estrutural derivadas da ausência do valor bruto — mesma
     # regra do treino (src/data_processing/nodes.py:316-317). O StructuralNullImputer
@@ -421,7 +421,7 @@ async def model_info():
     """
     meta = _state.get("meta", {})
     if not meta:
-        return {"message": "Modelo não carregado. Execute 'python pipeline.py'."}
+        return {"message": "Modelo não carregado. Execute 'python src/pipeline.py'."}
     return meta
 
 
@@ -559,7 +559,7 @@ async def monitor_latest():
     if report is None:
         raise HTTPException(
             status_code=404,
-            detail="Nenhum relatório de drift encontrado. Execute 'python monitor.py'."
+            detail="Nenhum relatório de drift encontrado. Execute 'python src/monitor.py'."
         )
     return report
 
@@ -580,7 +580,7 @@ async def high_risk_clients(
     if shap_df is None:
         raise HTTPException(
             status_code=404,
-            detail="Explicações SHAP não disponíveis. Execute 'python shap_analysis_v2.py'."
+            detail="Explicações SHAP não disponíveis. Execute 'python src/shap_analysis_v2.py'."
         )
 
     df = shap_df[shap_df["churn_prob"] >= 0.35].copy()
@@ -643,12 +643,12 @@ async def advisor_exposed_portfolio(
     −0,04 — ver §6 do ADR).
 
     Ordenado por AuC exposto (desc). Fonte: `carteira_exposta_por_assessor.csv`,
-    regenerado a cada `python pipeline.py`.
+    regenerado a cada `python src/pipeline.py`.
     """
     if not os.path.exists(CARTEIRA_CSV):
         raise HTTPException(
             status_code=404,
-            detail="carteira_exposta_por_assessor.csv não encontrado. Execute 'python pipeline.py'.",
+            detail="carteira_exposta_por_assessor.csv não encontrado. Execute 'python src/pipeline.py'.",
         )
 
     df = pd.read_csv(CARTEIRA_CSV)

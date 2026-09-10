@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from api import app
+from src.api import app
 
 # Payload base v2 (ADR-0001, Direção A — early-warning comportamental).
 # `retorno_12m_pct`, `dias_desde_ultimo_contato` e `tempo_resposta_medio_horas`

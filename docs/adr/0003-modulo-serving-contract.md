@@ -180,3 +180,9 @@ A auditoria pós-fechamento apontou dois resíduos que esta ADR deixou para trá
    - `tests/test_serving_contract.py`: `test_risk_factors_dispara_os_codigos_certos` + grep de regressão contra `< 9.0` / `< -0.2` / `> 45` em `api.py`.
 
 Nenhuma mudança de comportamento observável (a saída de `_predict_one` e os insights do dashboard são idênticos; 55 testes verdes, artefatos byte-idênticos).
+
+**Nota de layout (2026-09-10):** a §2 e a §4 desta ADR colocaram `serving_contract.py`
+na raiz, com o receio de `src/` arrastar `sklearn`. [ADR-0004](0004-src-layout.md) verificou
+que o receio não procede (`src/__init__.py` vazio) e moveu **todo** o código para `src/` —
+`serving_contract.py` incluído. A direção da dependência (`serving_contract` é a fonte,
+`nodes.py` importa dela) não muda; só o caminho passa a ser `src.serving_contract`.

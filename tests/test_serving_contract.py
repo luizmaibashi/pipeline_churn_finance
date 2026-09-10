@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import pytest
 
-import serving_contract as sc
+from src import serving_contract as sc
 
 
 def test_features_v2_base_bate_com_o_treino():
@@ -19,13 +19,13 @@ def test_features_v2_base_bate_com_o_treino():
 
 
 def test_features_v2_base_bate_com_api():
-    import api
+    from src import api
     assert api.FEATURES_V2_BASE is sc.FEATURES_V2_BASE
 
     # shap_analysis_v2 roda no import (script), então só confere o fonte: não redefine a lista
     raiz = os.path.dirname(os.path.dirname(__file__))
-    txt = open(os.path.join(raiz, "shap_analysis_v2.py"), encoding="utf-8").read()
-    assert "from serving_contract import FEATURES_V2_BASE" in txt
+    txt = open(os.path.join(raiz, "src", "shap_analysis_v2.py"), encoding="utf-8").read()
+    assert "from src.serving_contract import FEATURES_V2_BASE" in txt
     assert "FEATURES_V2_BASE = [" not in txt
 
 
@@ -110,11 +110,11 @@ def test_nenhuma_copia_do_contrato_nos_consumidores():
     raiz = os.path.dirname(os.path.dirname(__file__))
     proibido = ("* 0.30 *", "* 0.6 else", 'in {"Wealth", "Family Office"} or')
     for arq in ("api.py", "app.py", "agent.py", "monitor.py"):
-        txt = open(os.path.join(raiz, arq), encoding="utf-8").read()
+        txt = open(os.path.join(raiz, "src", arq), encoding="utf-8").read()
         for padrao in proibido:
             assert padrao not in txt, f"{arq} reimplementa regra do contrato: {padrao!r}"
 
     # os limiares de fator de risco vêm do contrato, não reescritos na API
-    api_txt = open(os.path.join(raiz, "api.py"), encoding="utf-8").read()
+    api_txt = open(os.path.join(raiz, "src", "api.py"), encoding="utf-8").read()
     for lit in ("< 9.0", "< -0.2", "> 45"):
         assert lit not in api_txt, f"api.py reescreve limiar de risk_factors: {lit!r}"

@@ -10,8 +10,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import f1_score, roc_auc_score, confusion_matrix, recall_score
 from sklearn.model_selection import StratifiedKFold, cross_val_score
-from transformers import FeatureEngineer, StructuralNullImputer
-from serving_contract import FEATURES_V2_BASE   # fonte única do contrato de scoring (ADR-0003)
+from src.transformers import FeatureEngineer, StructuralNullImputer
+from src.serving_contract import FEATURES_V2_BASE   # fonte única do contrato de scoring (ADR-0003)
 
 FEATURES_BASE = [
     "segmento", "meses_cliente", "qtd_produtos",

@@ -59,7 +59,7 @@ def load_threshold_map(path: str = THRESHOLDS_CSV) -> dict[str, float]:
     """
     if not os.path.exists(path):
         raise FileNotFoundError(
-            f"Thresholds v2 não encontrados em {path}. Execute 'python pipeline.py'."
+            f"Thresholds v2 não encontrados em {path}. Execute 'python src/pipeline.py'."
         )
     df = pd.read_csv(path)
     faltando = {"segmento", "threshold"} - set(df.columns)

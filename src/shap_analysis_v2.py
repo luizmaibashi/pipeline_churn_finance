@@ -3,7 +3,7 @@
 # ADR-0001: por que o sinal comportamental pesa mais que o saldo
 #
 # Pré-requisito: pipeline.py já foi executado (gera gb_pipeline_v2.pkl)
-# Uso: python shap_analysis_v2.py
+# Uso (a partir da raiz do projeto): python src/shap_analysis_v2.py
 # Output: output/shap/v2/  (plots + CSVs + relatório por cliente)
 # =============================================================
 
@@ -11,12 +11,16 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import numpy as np
 import pandas as pd
 import joblib
 import shap
 
-from serving_contract import FEATURES_V2_BASE   # contrato de scoring v2 (ADR-0003)
+from src.serving_contract import FEATURES_V2_BASE   # contrato de scoring v2 (ADR-0003)
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
