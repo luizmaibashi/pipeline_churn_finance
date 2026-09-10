@@ -44,6 +44,7 @@ from scipy import stats
 # FeatureEngineer + StructuralNullImputer são necessários para unpicklear o
 # Pipeline v2 (ADR-0001, Direção A early-warning).
 from transformers import FeatureEngineer, StructuralNullImputer  # noqa: F401
+from serving_contract import FEATURES_V2_BASE   # contrato de scoring v2 (ADR-0003)
 
 # ── Configuração ─────────────────────────────────────────────
 MONITOR_DIR  = os.path.join("output", "monitor")
@@ -51,19 +52,14 @@ DATA_DIR     = os.path.join("output", "data")
 MODELS_DIR   = os.path.join("output", "models")
 MODEL_V2_PKL = os.path.join(MODELS_DIR, "gb_pipeline_v2.pkl")
 
-# Schema v2 (ADR-0001 / spec 0002): early-warning comportamental + AuC em milhões.
-# O modelo de produção é o v2; o monitor observa as features que ele consome.
-NUMERIC_FEATURES = [
-    "meses_cliente", "qtd_produtos", "retorno_12m_pct",
-    "freq_contato_mes", "auc_milhoes",
-    "dias_desde_ultimo_contato", "variacao_freq_contato_3m",
-    "tempo_resposta_medio_horas",
-]
+# O modelo de produção é o v2; o monitor observa exatamente as features que ele
+# consome. NUMERIC/CATEGORICAL são visões (filtros) da lista canônica.
 CATEGORICAL_FEATURES = ["segmento"]
-
-# Features completas do Pipeline v2 (inclui as flags de nulo estrutural).
-FEATURES_V2 = NUMERIC_FEATURES + ["segmento",
-                                  "sem_historico_12m", "cliente_novo_sem_contato_hist"]
+_FLAGS = {"sem_historico_12m", "cliente_novo_sem_contato_hist"}
+NUMERIC_FEATURES = [
+    c for c in FEATURES_V2_BASE if c not in CATEGORICAL_FEATURES and c not in _FLAGS
+]
+FEATURES_V2 = FEATURES_V2_BASE
 
 # Thresholds definidos no PROBLEM.md — Seção 6.3
 KS_DRIFT_THRESHOLD   = 0.20   # > 20% de drift em features numéricas → alerta

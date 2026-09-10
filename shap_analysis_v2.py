@@ -15,6 +15,8 @@ import numpy as np
 import pandas as pd
 import joblib
 import shap
+
+from serving_contract import FEATURES_V2_BASE   # contrato de scoring v2 (ADR-0003)
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -33,13 +35,6 @@ print("\n[1/5] Carregando pipeline v2 e dados...")
 pipeline = joblib.load("output/models/gb_pipeline_v2.pkl")
 df = pd.read_csv("output/data/base_clientes_v2_limpo.csv")
 
-FEATURES_V2_BASE = [
-    "segmento", "meses_cliente", "qtd_produtos",
-    "retorno_12m_pct", "freq_contato_mes", "auc_milhoes",
-    "dias_desde_ultimo_contato", "variacao_freq_contato_3m",
-    "tempo_resposta_medio_horas",
-    "sem_historico_12m", "cliente_novo_sem_contato_hist",
-]
 TARGET = "churn"
 
 X = df[FEATURES_V2_BASE]

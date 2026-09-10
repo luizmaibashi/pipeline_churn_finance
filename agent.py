@@ -20,6 +20,11 @@ from functools import lru_cache
 
 import pandas as pd
 
+from serving_contract import (
+    SEGMENTOS_VALIDOS as SEGMENTOS_V2, load_threshold_map, risk_level,
+    operational_flow, auc_at_risk_mm,
+)
+
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -32,43 +37,27 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 LLM_MODEL      = os.getenv("LLM_MODEL",      "gpt-4o-mini")
 DEMO_MODE      = not bool(OPENAI_API_KEY)
 
-# Schema v2 (ADR-0001 / spec 0002): segmentos de wealth, AuC em milhões de reais.
-SEGMENTOS_V2   = ["Alta Renda", "Private", "Wealth", "Family Office"]
+# Contrato de scoring v2 em serving_contract.py (ADR-0003). Aqui só os caminhos
+# offline que reproduzem, sobre o disco, o que a API faria.
 _SEG_ENUM      = SEGMENTOS_V2 + ["todos"]   # enums das ferramentas que aceitam "carteira toda"
-PCT_PERDA_CHURN = 0.30   # queda de AuC que define churn no PROBLEM.md v2.0 §2
 SHAP_V2_CSV    = os.path.join("output", "shap", "v2", "client_explanations.csv")
 BASE_V2_CSV    = os.path.join("output", "data", "base_clientes_v2_limpo.csv")
-THRESHOLDS_CSV = os.path.join("output", "data", "thresholds_v2.csv")
 COMPARACAO_CSV = os.path.join("output", "data", "comparacao_v1_v2.csv")
 
 
 @lru_cache(maxsize=1)
 def _threshold_map() -> dict:
-    """Thresholds calibrados por segmento (reports/thresholds_v2.md). Sem regra v1 embutida.
-    Lido uma vez por processo (cache) — é chamado por linha nos fallbacks offline."""
+    """{segmento: threshold} calibrado — lido uma vez por processo (cache), pois
+    os fallbacks offline pontuam linha a linha. Vazio se o pipeline não rodou."""
     try:
-        t = pd.read_csv(THRESHOLDS_CSV)
-        return {r["segmento"]: float(r["threshold"]) for _, r in t.iterrows()}
-    except FileNotFoundError:
-        print(f"[Agent] {THRESHOLDS_CSV} ausente — rode 'python pipeline.py'. Usando corte 0,5.")
+        return load_threshold_map()
+    except (FileNotFoundError, ValueError) as e:
+        print(f"[Agent] thresholds v2 indisponíveis ({e}). Rode 'python pipeline.py'.")
         return {}
 
 
-def _risk_from_threshold(prob: float, segmento: str, thr_map: dict | None = None) -> str:
-    thr = (thr_map if thr_map is not None else _threshold_map()).get(segmento)
-    if thr is None:
-        return "ALTO" if prob >= 0.5 else "BAIXO"
-    if prob >= thr:
-        return "ALTO"
-    if prob >= thr * 0.6:
-        return "MEDIO"
-    return "BAIXO"
-
-
-def _flow_v2(segmento: str, auc_milhoes: float) -> str:
-    if segmento in {"Wealth", "Family Office"} or auc_milhoes >= 250:
-        return "REVISAO_HUMANA (especialista)"
-    return "AUTO → CRM"
+def _risco_offline(prob: float, seg: str, thr_map: dict) -> str:
+    return risk_level(prob, seg, thr_map) if seg in thr_map else "N/A"
 
 
 def _carregar_base_risco_offline(segmento: str) -> "pd.DataFrame | None":
@@ -126,16 +115,16 @@ def consultar_auc_segmento(segmento: str) -> dict:
     if "error" in result:
         print("[Agent Fallback] API indisponível. Carregando dados de AuC diretamente do disco local...")
         df = _carregar_base_risco_offline(segmento)
-        if df is None:
-            return result
         thr_map = _threshold_map()
+        if df is None or not thr_map:
+            return result
         clientes = [
             {
                 "cliente_id"    : row["cliente_id"],
-                "risk_level"    : _risk_from_threshold(float(row["churn_prob"]),
-                                                       str(row.get("segmento", "N/A")), thr_map),
-                "auc_at_risk_MM": round(float(row.get("auc_milhoes", 0)) * PCT_PERDA_CHURN
-                                        * float(row["churn_prob"]), 2),
+                "risk_level"    : _risco_offline(float(row["churn_prob"]),
+                                                 str(row.get("segmento", "N/A")), thr_map),
+                "auc_at_risk_MM": auc_at_risk_mm(float(row.get("auc_milhoes", 0)),
+                                                 float(row["churn_prob"])),
             }
             for _, row in df.iterrows()
         ]
@@ -173,10 +162,10 @@ def listar_clientes_prioritarios(segmento: str = "todos", limit: int = 10) -> di
     if "error" in result:
         print("[Agent Fallback] API indisponível. Carregando lista de prioridade diretamente do disco local...")
         df = _carregar_base_risco_offline(segmento)
-        if df is None:
+        thr_map = _threshold_map()
+        if df is None or not thr_map:
             return result
         df = df.sort_values("churn_prob", ascending=False).head(limit)
-        thr_map = _threshold_map()
         clientes = []
         for _, row in df.iterrows():
             prob = float(row["churn_prob"])
@@ -187,10 +176,10 @@ def listar_clientes_prioritarios(segmento: str = "todos", limit: int = 10) -> di
                 "segmento"            : seg,
                 "churn_probability"   : round(prob, 4),
                 "churn_probability_pct": f"{prob*100:.1f}%",
-                "risk_level"          : _risk_from_threshold(prob, seg, thr_map),
+                "risk_level"          : _risco_offline(prob, seg, thr_map),
                 "churn_real"          : int(row.get("churn_real", -1)),
-                "auc_at_risk_MM"      : round(auc_milhoes * PCT_PERDA_CHURN * prob, 2),
-                "flow"                : _flow_v2(seg, auc_milhoes),
+                "auc_at_risk_MM"      : auc_at_risk_mm(auc_milhoes, prob),
+                "flow"                : operational_flow(seg, auc_milhoes),
                 "explicacao"          : str(row.get("explicacao", "")),
             })
         return {

@@ -42,27 +42,20 @@ from contextlib import asynccontextmanager
 # Pipeline v2 — ADR-0001, Direção A early-warning).
 from src.job_queue import JobQueue
 from transformers import FeatureEngineer, StructuralNullImputer   # noqa: F401
+from serving_contract import (
+    SEGMENTOS_VALIDOS, FEATURES_V2_BASE,
+    load_threshold_map, risk_level, operational_flow, auc_at_risk_mm,
+)
 
 # ── Inicializa a fila global de Jobs
 job_queue = JobQueue()
 
-# ── Constantes do PROBLEM.md ─────────────────────────────────
-SEGMENTOS_VALIDOS = ["Alta Renda", "Private", "Wealth", "Family Office"]
-# Modelo v2 (ADR-0001, Direção A): early-warning comportamental substitui a
-# baseline reativa v1. `sem_historico_12m` / `cliente_novo_sem_contato_hist`
-# são derivados da ausência de `retorno_12m_pct` / `dias_desde_ultimo_contato`
-# (src/data_processing/nodes.py:316-317) — o payload não os recebe.
-FEATURES_V2_BASE = [
-    "segmento", "meses_cliente", "qtd_produtos",
-    "retorno_12m_pct", "freq_contato_mes", "auc_milhoes",
-    "dias_desde_ultimo_contato", "variacao_freq_contato_3m",
-    "tempo_resposta_medio_horas",
-    "sem_historico_12m", "cliente_novo_sem_contato_hist",
-]
+# ── Constantes de serving (contrato v2 — ADR-0003, serving_contract.py) ───────
+# `sem_historico_12m` / `cliente_novo_sem_contato_hist` são derivados da ausência
+# de `retorno_12m_pct` / `dias_desde_ultimo_contato` — o payload não os recebe.
 SHAP_CSV  = os.path.join("output", "shap", "v2", "client_explanations.csv")
 DATA_CSV  = os.path.join("output", "data", "base_clientes_v2_limpo.csv")
 CARTEIRA_CSV  = os.path.join("output", "data", "carteira_exposta_por_assessor.csv")
-THRESHOLDS_CSV = os.path.join("output", "data", "thresholds_v2.csv")
 MODELS_DIR    = os.path.join("output", "models")
 MODEL_V2_PKL  = os.path.join(MODELS_DIR, "gb_pipeline_v2.pkl")
 MONITOR_DIR   = os.path.join("output", "monitor")
@@ -117,22 +110,6 @@ def _load_shap_explanations() -> pd.DataFrame | None:
     return None
 
 
-def _load_threshold_map() -> dict[str, float]:
-    """Carrega thresholds calibrados pelo pipeline; não aceita regra v1 embutida."""
-    if not os.path.exists(THRESHOLDS_CSV):
-        raise FileNotFoundError(
-            f"Thresholds v2 não encontrados em {THRESHOLDS_CSV}. Execute 'python pipeline.py'."
-        )
-    thresholds = pd.read_csv(THRESHOLDS_CSV)
-    required = {"segmento", "threshold"}
-    if not required.issubset(thresholds.columns):
-        raise ValueError(f"CSV de thresholds sem colunas obrigatórias: {required}")
-    result = dict(zip(thresholds["segmento"], thresholds["threshold"]))
-    if set(result) != set(SEGMENTOS_VALIDOS):
-        raise ValueError("CSV de thresholds não cobre exatamente os segmentos da v2.")
-    return {segmento: float(threshold) for segmento, threshold in result.items()}
-
-
 def _latest_monitor_report() -> dict | None:
     """Lê o relatório de drift mais recente."""
     if not os.path.exists(MONITOR_DIR):
@@ -156,7 +133,7 @@ async def lifespan(app: FastAPI):
         _state["model"]   = model
         _state["version"] = version
         _state["meta"]    = meta
-        _state["threshold_map"] = _load_threshold_map()
+        _state["threshold_map"] = load_threshold_map()
         _state["shap_df"] = _load_shap_explanations()
         _state["started_at"] = datetime.datetime.now().isoformat()
         print(f"[OK] Modelo v{version} carregado.")
@@ -306,20 +283,19 @@ class BatchResult(BaseModel):
 
 # ── Funções de negócio ────────────────────────────────────────
 
+def _threshold_map_or_503() -> dict[str, float]:
+    thr_map = _state.get("threshold_map") or {}
+    if not thr_map:
+        raise HTTPException(status_code=503, detail="Thresholds v2 não carregados. Execute pipeline.py.")
+    return thr_map
+
+
 def _risk_level(prob: float, segmento: str) -> str:
-    threshold = _threshold_for(segmento)
-    if prob >= threshold:
-        return "ALTO"
-    elif prob >= threshold * 0.6:
-        return "MEDIO"
-    return "BAIXO"
+    return risk_level(prob, segmento, _threshold_map_or_503())
 
 
 def _threshold_for(segmento: str) -> float:
-    threshold = _state.get("threshold_map", {}).get(segmento)
-    if threshold is None:
-        raise HTTPException(status_code=503, detail="Thresholds v2 não carregados. Execute pipeline.py.")
-    return float(threshold)
+    return _threshold_map_or_503()[segmento]
 
 
 def _recommended_action(risk: str, prob: float, features: dict) -> str:
@@ -348,10 +324,8 @@ def _recommended_action(risk: str, prob: float, features: dict) -> str:
 
 
 def _flow(segmento: str, auc_milhoes: float) -> str:
-    """Define o fluxo operacional conforme PROBLEM.md Seção 5.2."""
-    if segmento in {"Wealth", "Family Office"} or auc_milhoes >= 250:
-        return "REVISAO_HUMANA (especialista)"
-    return "AUTO → CRM"
+    """Fluxo operacional (PROBLEM.md §5.2) — delega ao contrato de serving."""
+    return operational_flow(segmento, auc_milhoes)
 
 
 def _get_shap_reasons(cliente_id: str) -> list[dict]:
@@ -405,7 +379,7 @@ def _predict_one(cliente: ClienteInput) -> PredictionResult:
     action      = _recommended_action(risk, prob, cliente.model_dump())
     flow_str    = _flow(cliente.segmento, cliente.auc_milhoes)
     reasons     = _get_shap_reasons(cliente.cliente_id)
-    auc_risk_mm = round(cliente.auc_milhoes * 0.30 * prob, 2)
+    auc_risk_mm = auc_at_risk_mm(cliente.auc_milhoes, prob)
 
     return PredictionResult(
         cliente_id            = cliente.cliente_id,
@@ -643,7 +617,7 @@ async def high_risk_clients(
             "churn_probability_pct": f"{prob*100:.1f}%",
             "risk_level"          : risk,
             "churn_real"          : int(row.get("churn_real", -1)),
-            "auc_at_risk_MM"      : round(auc_milhoes * 0.30 * prob, 2),
+            "auc_at_risk_MM"      : auc_at_risk_mm(auc_milhoes, prob),
             "flow"                : flow,
             "explicacao"          : str(row.get("explicacao", "")),
         })

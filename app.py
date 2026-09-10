@@ -14,6 +14,10 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 from transformers import FeatureEngineer, StructuralNullImputer  # noqa: F401 — unpickle do Pipeline v2
+from serving_contract import (
+    SEGMENTOS_VALIDOS as SEGMENTOS_V2, FEATURES_V2_BASE, RISK_MID_FACTOR,
+    load_threshold_map, risk_level, needs_human_review, auc_at_risk_mm,
+)
 
 # ── Configuração da página ────────────────────────────────────
 st.set_page_config(
@@ -190,19 +194,6 @@ html, body, [class*="css"] {
 
 
 # ── Helpers ───────────────────────────────────────────────────
-# Schema v2 (ADR-0001 / spec 0002): early-warning comportamental + AuC em milhões.
-SEGMENTOS_V2 = ["Alta Renda", "Private", "Wealth", "Family Office"]
-PCT_PERDA_CHURN = 0.30   # queda de AuC que caracteriza churn (PROBLEM.md v2.0 §2)
-
-# Colunas cruas que o Pipeline v2 consome (idêntico a api.py FEATURES_V2_BASE).
-FEATURES_V2_BASE = [
-    "segmento", "meses_cliente", "qtd_produtos",
-    "retorno_12m_pct", "freq_contato_mes", "auc_milhoes",
-    "dias_desde_ultimo_contato", "variacao_freq_contato_3m",
-    "tempo_resposta_medio_horas",
-    "sem_historico_12m", "cliente_novo_sem_contato_hist",
-]
-
 FEAT_LABELS = {
     "variacao_freq_contato_3m":   "Variação de cadência de contato (3m)",
     "dias_desde_ultimo_contato":  "Dias desde o último contato",
@@ -235,23 +226,18 @@ def load_thresholds_table():
     return pd.read_csv("output/data/thresholds_v2.csv")
 
 
+@st.cache_data
 def load_thresholds_v2():
-    """{segmento: threshold} calibrado por segmento. Sem regra v1 embutida."""
-    t = load_thresholds_table()
-    return {r["segmento"]: float(r["threshold"]) for _, r in t.iterrows()}
+    """{segmento: threshold} calibrado por segmento — contrato de serving (ADR-0003)."""
+    return load_threshold_map()
 
 
-RISK_MID_FACTOR = 0.6   # fronteira MÉDIO = fração do threshold ALTO (mesma regra de api._risk_level)
+_RISCO_PT = {"ALTO": "Alto", "MEDIO": "Médio", "BAIXO": "Baixo"}
 
 
 def risco_por_threshold(prob, segmento, thr_map):
-    """ALTO >= threshold do segmento; MÉDIO >= RISK_MID_FACTOR*threshold; senão BAIXO."""
-    thr = thr_map.get(segmento, 0.5)
-    if prob >= thr:
-        return "Alto"
-    if prob >= thr * RISK_MID_FACTOR:
-        return "Médio"
-    return "Baixo"
+    """Rótulo PT-BR do nível de risco do contrato de serving (ALTO/MEDIO/BAIXO)."""
+    return _RISCO_PT[risk_level(prob, segmento, thr_map)]
 
 
 def band_color(prob, thr, high="#f03e3e", mid="#ffd43b", low="#51cf66"):
@@ -496,8 +482,8 @@ with tab1:
             else:
                 st.markdown("<div class='alert-box-green'><b style='color:#a9e34b; font-size:13px;'>✅ Perfil de baixo risco</b><br><span style='font-size:12px; color:#cbf078;'>Nenhum fator de risco crítico identificado para este cliente.</span></div>", unsafe_allow_html=True)
 
-            auc_risco_mm = auc_milhoes * PCT_PERDA_CHURN * prob
-            fluxo = "REVISÃO HUMANA (especialista)" if segmento in ("Wealth", "Family Office") or auc_milhoes >= 250 else "AUTO → CRM"
+            auc_risco_mm = auc_at_risk_mm(auc_milhoes, prob)
+            fluxo = "Revisão humana (especialista)" if needs_human_review(segmento, auc_milhoes) else "Auto → CRM"
             st.markdown(f"""
             <div class='insight-box' style='margin-top:12px;'>
                 <div style='font-weight:600; color:#e8ecf4; margin-bottom:6px;'>💼 AuC em risco</div>

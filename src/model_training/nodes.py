@@ -11,6 +11,7 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import f1_score, roc_auc_score, confusion_matrix, recall_score
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from transformers import FeatureEngineer, StructuralNullImputer
+from serving_contract import FEATURES_V2_BASE   # fonte única do contrato de scoring (ADR-0003)
 
 FEATURES_BASE = [
     "segmento", "meses_cliente", "qtd_produtos",
@@ -43,10 +44,11 @@ FEATURES_V2_EXTRA = [
     "tempo_resposta_medio_horas",
     "sem_historico_12m", "cliente_novo_sem_contato_hist"
 ]
-FEATURES_V2_BASE = [
-    "segmento", "meses_cliente", "qtd_produtos",
-    "retorno_12m_pct", "freq_contato_mes", "auc_milhoes"
-] + FEATURES_V2_EXTRA
+# A lista canônica vem de serving_contract; aqui só validamos que a composição
+# de treino (base + extras de early-warning) continua batendo com ela (ADR-0003).
+assert FEATURES_BASE + FEATURES_V2_EXTRA == FEATURES_V2_BASE, (
+    "FEATURES_V2_BASE divergiu entre serving_contract.py e src/model_training/nodes.py"
+)
 
 def _build_preprocessing():
     """Constrói o ColumnTransformer com o OrdinalEncoder para o pipeline."""
