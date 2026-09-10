@@ -222,7 +222,7 @@ def inject_data_quality_issues(
     3. Nulo estrutural em dias_desde_ultimo_contato/tempo_resposta —
        cliente novo (<60 dias) ainda não acumulou histórico suficiente
        para a métrica existir.
-    4. Outlier por erro de digitação em saldo_bi — assessor erra escala
+    4. Outlier por erro de digitação em auc_milhoes — assessor erra escala
        (casa decimal) ao digitar, valor sai 1000x maior.
     5. Sentinela mascarada em retorno_12m_pct — sistema legado usa -999
        em vez de NULL quando cliente não completou 12 meses de histórico.
@@ -234,8 +234,8 @@ def inject_data_quality_issues(
     adv = df_advisors.copy()
     N = len(df)
 
-    # 1. Duplicata de cliente (~1,5% da base) — mesmo ID, saldo_bi levemente
-    #    divergente (recadastro capturou saldo num dia diferente)
+    # 1. Duplicata de cliente (~1,5% da base) — mesmo ID, auc_milhoes levemente
+    #    divergente (recadastro capturou o AuC num dia diferente)
     n_dup = max(1, int(N * 0.015))
     idx_dup = rng.choice(N, size=n_dup, replace=False)
     linhas_dup = df.iloc[idx_dup].copy()
@@ -254,7 +254,7 @@ def inject_data_quality_issues(
     df.loc[mask_cliente_novo, "dias_desde_ultimo_contato"] = np.nan
     df.loc[mask_cliente_novo, "tempo_resposta_medio_horas"] = np.nan
 
-    # 4. Outlier por erro de digitação em saldo_bi (~0,4% da base)
+    # 4. Outlier por erro de digitação em auc_milhoes (~0,4% da base)
     n_erro_escala = max(1, int(len(df) * 0.004))
     idx_erro_escala = rng.choice(len(df), size=n_erro_escala, replace=False)
     df.loc[df.index[idx_erro_escala], "auc_milhoes"] = df.loc[df.index[idx_erro_escala], "auc_milhoes"] * 1000
@@ -323,7 +323,7 @@ def clean_clientes_v2_bruto(df_bruto: pd.DataFrame, df_advisors_bruto: pd.DataFr
     #    mesma categoria, não 3 grupos reais)
     adv["canal"] = adv["canal"].replace({"R.I.A.": "RIA", "ria": "RIA"})
 
-    # 4. Outlier de escala em saldo_bi — critério relacional (>p99 do
+    # 4. Outlier de escala em auc_milhoes — critério relacional (>p99 do
     #    segmento * 20), corrige dividindo por 1000 em vez de descartar
     for seg in df["segmento"].unique():
         mask_seg = df["segmento"] == seg

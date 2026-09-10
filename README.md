@@ -12,7 +12,7 @@ Isso não é uma demonstração de resultado comercial. É uma demonstração de
 - Uma tabela por assessor com AuC exposto esperado, calculado a partir da probabilidade de saída do assessor.
 - API FastAPI, dashboard Streamlit, monitor de drift e agente de dados, todos no modelo v2.
 - Artefatos de explicabilidade SHAP do modelo v2.
-- 45 testes de contrato, dado, modelo e API.
+- 55 testes de contrato, dado, modelo e API.
 
 ## Retrato atual do dado sintético
 
@@ -49,10 +49,12 @@ O pipeline gera os thresholds por segmento em `output/data/thresholds_v2.csv`. S
 ```text
 src/                 geração, limpeza e treino
 pipeline.py          orquestração e persistência de artefatos
+serving_contract.py  fonte única do contrato de scoring v2 (features, thresholds, regras — ADR-0003)
 api.py               serviço de predição
 app.py               dashboard Streamlit
 monitor.py           monitor de data drift
 agent.py             agente de dados sobre a API
+agent_chat.py        interface de chat do agente (Streamlit)
 tests/               contratos de dado, modelo e API
 notebooks/           01: pipeline v2 em pandas/sklearn · 02: apêndice Spark
 docs/adr/            decisões de arquitetura
@@ -70,4 +72,4 @@ O notebook `02_Evolucao_BigData_PySpark.ipynb` tem a mesma natureza: é um apên
 
 O dado é sintético. Um teste real exigiria série temporal observada, definição operacional de churn e experimento de retenção. As telas, o monitor e o agente já rodam o modelo v2 (Bloco 4); o que resta é opcional e está listado nos ADRs.
 
-Consulte [PROBLEM.md](PROBLEM.md), [ADR-0001](docs/adr/0001-refatoracao-early-warning-advisor-attrition.md) e [ADR-0002](docs/adr/0002-recalibracao-gerador-escala-wealth.md) para o contrato e as decisões.
+Consulte [PROBLEM.md](PROBLEM.md) e os ADRs para o contrato e as decisões: [ADR-0001](docs/adr/0001-refatoracao-early-warning-advisor-attrition.md) (pivô early-warning), [ADR-0002](docs/adr/0002-recalibracao-gerador-escala-wealth.md) (escala de wealth), [ADR-0003](docs/adr/0003-modulo-serving-contract.md) (contrato de scoring único).

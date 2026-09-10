@@ -225,8 +225,8 @@ def prever_churn_cliente(
 
 def status_modelo() -> dict:
     """
-    Retorna as métricas e metadados do modelo em produção:
-    versão, F1-macro, ROC-AUC, taxa de churn da base e feature mais importante.
+    Retorna as métricas e metadados do modelo v2 em produção: versão, ROC-AUC,
+    recall de churn e F1 de churn no split de teste (lidos de comparacao_v1_v2.csv).
     """
     result = _get("/model/info")
     
@@ -407,7 +407,7 @@ TOOLS_SCHEMA = [
         "type": "function",
         "function": {
             "name": "economia_auc_segmento",
-            "description": "Estima o AuC que pode ser salvo com ações de retenção proativas em um segmento.",
+            "description": "Cenário what-if ILUSTRATIVO: aplica uma taxa de retenção hipotética (fornecida pelo usuário) sobre o AuC em risco de um segmento. Não é retenção observada — o dado é sintético.",
             "parameters": {
                 "type": "object",
                 "properties": {

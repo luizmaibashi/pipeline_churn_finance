@@ -165,3 +165,18 @@ que é o comportamento desejado.
 - [x] Impacto quantificado (6 cópias → 1; 3 políticas → 1; ~10 literais → constantes)
 - [x] Critério de sucesso testável (`test_serving_contract.py` + grep de regressão)
 - [x] Cenário de regressão identificado (`assert` no import de `nodes.py`)
+
+---
+
+## 7. SEGUIMENTO (2026-09-10, auditoria de conformidade)
+
+A auditoria pós-fechamento apontou dois resíduos que esta ADR deixou para trás:
+
+1. **`app.py` ainda tinha `thr_map.get(segmento, 0.5)`** — o fallback silencioso que a §2 e a §3 diziam ter removido. Corrigido para `thr_map[segmento]` (o loader já garante os 4 segmentos; `KeyError` aqui é bug, não caminho).
+
+2. **Limiares de fator de risco ainda duplicados** entre `api._recommended_action` e o painel de insights do `app.py` (`dias > 45`, `variação < -0,2`, `retorno < 9`, `resposta > 40`, `auc < 15`, `qtd_produtos == 1`) — a mesma armadilha de cópia que motivou esta ADR, só que fora do contrato de scoring. Fechado agora:
+   - `serving_contract.py` ganhou as constantes (`DIAS_SEM_CONTATO_ALERTA`, `QUEDA_CADENCIA_ALERTA`, `TEMPO_RESPOSTA_ALERTA_H`, `RETORNO_12M_BAIXO_PCT`, `AUC_FIDELIZACAO_MIN_MM`, `QTD_PRODUTOS_MONOPRODUTO`) e a função `risk_factors(features) -> list[str]` (códigos canônicos).
+   - `api._recommended_action` consome `risk_factors()` e só mapeia código → frase de ação; `app.py` importa as constantes para os alertas do dashboard.
+   - `tests/test_serving_contract.py`: `test_risk_factors_dispara_os_codigos_certos` + grep de regressão contra `< 9.0` / `< -0.2` / `> 45` em `api.py`.
+
+Nenhuma mudança de comportamento observável (a saída de `_predict_one` e os insights do dashboard são idênticos; 55 testes verdes, artefatos byte-idênticos).

@@ -1,7 +1,7 @@
 # Spec 0002: Conformidade do projeto com a v2
 
 **Ancora:** [ADR-0002](../adr/0002-recalibracao-gerador-escala-wealth.md) (ver §2.5, mapa de conformidade)
-**Estado:** aguardando aval do Luiz no ADR-0002
+**Estado:** executado — blocos 2 a 5 fechados em 2026-09-10 (ADR-0002 e ADR-0003 aceitos). Mantido como registro do contrato do diff.
 **Norte:** a refatoração de 9 e 10 de setembro (ADR-0001 mais ADR-0002) é a direção. Os documentos de abril (`PROBLEM.md` v1.0, `refactoring_blueprint.md`) são legado da v1.
 
 Este documento é o contrato do diff, organizado em blocos. Cada bloco é uma sessão. Cada mudança tem "antes", "depois" e o teste que prova.
@@ -223,7 +223,7 @@ Conferir no output: soma de AuC 65 a 85 bi, mediana crescente por segmento, AuC 
 | `app.py` aba 2 (carteira) | Scoring ao vivo com `base_clientes_v2_limpo.csv` e as features v2. |
 | `app.py` aba 3 (performance) | Ler os artefatos v2 (`feature_importance_v2.csv`, `cv_scores_v2.csv`, `comparacao_v1_v2.csv`). O pipeline precisa emitir uma matriz de confusão v2 se a aba mostrar uma. |
 | `app.py` header | "~R$75bi sob custódia" confirmado pelo dado (Bloco 2 fez a soma bater). |
-| `monitor.py` | `NUMERIC_FEATURES` e `FEATURES` para o conjunto v2 (com as 3 comportamentais). Carregar `gb_pipeline_v2.pkl`. O baseline de referência (`--ref`) precisa ser regenerado sobre o dado v2. |
+| `monitor.py` | `NUMERIC_FEATURES` e `FEATURES` para o conjunto v2 (com as 3 comportamentais). Carregar `gb_pipeline_v2.pkl`. O baseline de referência é um sample do próprio dado v2 limpo. |
 | `agent.py` | Segmentos de wealth nos schemas de ferramenta (`:331`, `:349`, `:370`, `:407`). Ler as features v2. **Remover a string "ROC-AUC 0.93"** e substituir pelo número real do `comparacao_v1_v2.csv`. Schema da ferramenta de simulação com as features v2. |
 | `agent_chat.py` | Perguntas de exemplo reescritas para o vocabulário v2 (early-warning, não "cliente Varejo com retorno de 6%"). |
 | `orchestrator.py` | Confirmar que aponta para o `monitor.py` migrado. |
