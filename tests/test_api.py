@@ -12,7 +12,7 @@ PAYLOAD_V2 = {
     "qtd_produtos": 3,
     "retorno_12m_pct": 12.5,
     "freq_contato_mes": 2,
-    "saldo_bi": 0.25,
+    "auc_milhoes": 120.0,
     "dias_desde_ultimo_contato": 18.0,
     "variacao_freq_contato_3m": -0.05,
     "tempo_resposta_medio_horas": 20.0,
@@ -70,6 +70,7 @@ def test_predict_accepts_negative_return(client):
 @pytest.mark.parametrize("invalid_field,value", [
     ("segmento", "Investimento"),
     ("meses_cliente", 0),
+    ("meses_cliente", 5),
     ("meses_cliente", 601),
     ("qtd_produtos", 0),
     ("qtd_produtos", 21),
@@ -77,8 +78,9 @@ def test_predict_accepts_negative_return(client):
     ("retorno_12m_pct", 100.1),
     ("freq_contato_mes", -1),
     ("freq_contato_mes", 61),
-    ("saldo_bi", 0.0),
-    ("saldo_bi", -0.05),
+    ("auc_milhoes", 0.0),
+    ("auc_milhoes", -0.05),
+    ("auc_milhoes", 2000.1),
     ("variacao_freq_contato_3m", -2.0),  # abaixo de ge=-1
     ("variacao_freq_contato_3m", 5.0),   # acima de le=3
     ("dias_desde_ultimo_contato", 500.0),
@@ -104,17 +106,17 @@ def test_advisor_exposed_portfolio(client):
     assert len(json_data["assessores"]) <= 5
     if json_data["assessores"]:
         a = json_data["assessores"][0]
-        assert {"assessor_id", "auc_exposto_total_bi", "pct_carteira_exposta"} <= a.keys()
+        assert {"assessor_id", "auc_exposto_total_milhoes", "pct_carteira_exposta"} <= a.keys()
         # ordenado por AuC exposto desc
-        vals = [x["auc_exposto_total_bi"] for x in json_data["assessores"]]
+        vals = [x["auc_exposto_total_milhoes"] for x in json_data["assessores"]]
         assert vals == sorted(vals, reverse=True)
 
 
 def test_predict_batch_async_success(client):
     import time
     payload = {"clientes": [
-        {**PAYLOAD_V2, "cliente_id": "CLI00001", "segmento": "Varejo", "saldo_bi": 0.05},
-        {**PAYLOAD_V2, "cliente_id": "CLI00002", "saldo_bi": 1.2},
+        {**PAYLOAD_V2, "cliente_id": "CLI00001", "segmento": "Private", "auc_milhoes": 28.0},
+        {**PAYLOAD_V2, "cliente_id": "CLI00002", "segmento": "Family Office", "auc_milhoes": 650.0},
     ]}
 
     response = client.post("/predict/batch", json=payload)

@@ -8,7 +8,7 @@ Este documento é o contrato do diff, organizado em blocos. Cada bloco é uma se
 
 **Ordem de dependência:** Bloco 2 primeiro (regenera o dado e o modelo). Bloco 3 depende do 2 (docs citam números novos). Bloco 4 depende do 2 (telas carregam o modelo e as features novas). Bloco 5 é independente, pode ir a qualquer momento depois do 2.
 
-**Decisão mecânica a confirmar no início do Bloco 2:** renomear `saldo_bi` para `auc_milhoes` (ADR-0002 §7.1). Resolvida contra a Linguagem Ubíqua da v2 ("AuC" em todo lugar). Se o Luiz preferir manter `saldo_bi`, é trocar o nome da coluna nas tabelas abaixo, o resto do plano não muda.
+**Decisão mecânica aprovada para o Bloco 2:** renomear `saldo_bi` para `auc_milhoes` (ADR-0002 §7, decisão 1). Resolvida contra a Linguagem Ubíqua da v2 ("AuC" em todo lugar).
 
 ---
 
@@ -92,7 +92,8 @@ Trocar `saldo_bi` por `auc_milhoes` em: erro de escala (`* 1000`), critério de 
 - Nova `calibrate_thresholds_v2(model_v2, valid_df, parameters) -> pd.DataFrame`:
   - Split de validação a partir do treino (nunca toca o teste, gate ML "conjunto de teste consultado uma única vez").
   - Por segmento, varre threshold em `[0.05, 0.95]`, escolhe o ponto que minimiza `custo_fn_sobre_fp * FN(t) + FP(t)`, sujeito a `recall >= recall_minimo` quando factível.
-  - Retorna `segmento, threshold, recall, precision, fn, fp, n_valid`.
+  - Retorna `segmento, threshold, recall, precision, fn, fp, n_valid, origem_threshold`.
+  - Se o segmento não tiver pelo menos 5 positivos no split de validação, usa o threshold global; `origem_threshold = "global_fallback"`. Caso contrário, `origem_threshold = "segmento"`.
   - GradientBoosting não usa `class_weight`, então não há distorção de balanceamento a recalibrar. Se um candidato com `class_weight` entrar no futuro, calibração Platt/Isotonic antes (nota no código).
 
 ## 2.4 `pipeline.py`

@@ -90,7 +90,11 @@ Implementação original tratava `auc_exposto` (Direção B) como **feature** do
 
 ---
 
-## 7. LINKS RELACIONADOS
+## 7. ATUALIZAÇÃO DE CALIBRAÇÃO
+
+O ADR-0002 substitui a escala e o vocabulário varejistas que ainda restavam nesta decisão: `saldo_bi` virou `auc_milhoes`, a carteira foi recalibrada para wealth e os thresholds v2 passaram a ser gerados em validação interna. As métricas antigas desta ADR são históricas; consultar os CSVs regenerados e o `PROBLEM.md` v2.0 antes de citá-las.
+
+## 8. LINKS RELACIONADOS
 
 - [[PROBLEM.md]] — contrato de dados v1 (target reativo, ainda vigente como componente)
 - [[refactoring_blueprint.md]] — arquitetura de engenharia v1 (Kedro/FastAPI/Envoy), base que este ADR estende

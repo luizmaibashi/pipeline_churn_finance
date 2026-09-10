@@ -1,7 +1,7 @@
 # ADR-0002: Recalibração do Gerador Sintético para Escala de Wealth Management Real
 
 **Data:** 2026-09-10
-**Status:** Proposed
+**Status:** Accepted
 **Proposto por:** Luiz Maibashi
 **Estende:** [ADR-0001](0001-refatoracao-early-warning-advisor-attrition.md)
 
@@ -38,7 +38,7 @@ O teste `test_auc_exposto_agregado_dentro_da_faixa_de_mercado` passa (12,5% agre
 
 ### 1.4 Os documentos de abril são legado da v1, não contrato
 
-O `PROBLEM.md` v1.0 (2026-04-27) e o `refactoring_blueprint.md` foram escritos antes do pivô da ADR-0001. Eles descrevem um projeto diferente: churn reativo por queda de saldo, escala varejo, deploy Streamlit, objetivo declarado de "elevar o portfólio ao nível corporativo (Software 3.0)". A refatoração dos dias 9 e 10 de setembro (ADR-0001 mais esta ADR) é a direção do projeto. Os documentos de abril não são a régua contra a qual a v2 se mede; são histórico a ser reescrito (`PROBLEM.md` vira v2.0) ou arquivado (`refactoring_blueprint.md`, `refatoracao/`). Onde esta ADR cita o `PROBLEM.md`, é para marcar o que muda nele, nunca para justificar uma decisão por ele.
+O `PROBLEM.md` v1.0 (2026-04-27) e o `refactoring_blueprint.md` foram escritos antes do pivô da ADR-0001. Eles descrevem um projeto diferente: churn reativo por queda de saldo, escala varejo, deploy Streamlit, objetivo declarado de "elevar o portfólio ao nível corporativo (Software 3.0)". A refatoração dos dias 9 e 10 de setembro (ADR-0001 mais esta ADR) é a direção do projeto. Os documentos de abril não são a régua contra a qual a v2 se mede; são histórico a ser reescrito (`PROBLEM.md` vira v2.0) ou arquivado (`refactoring_blueprint.md`, `refatoracao/`). Onde esta ADR cita o `PROBLEM.md`, é para marcar o que muda nele. Ele deixa de ser o contrato da v2; as definições explicitamente herdadas (a queda de AuC que caracteriza churn e a curva de custo) seguem válidas apenas até a reescrita v2.0 no Bloco 3.
 
 ---
 
@@ -210,7 +210,7 @@ Fontes:
 As três escolhas abaixo não são independentes: cada uma se resolve pela pergunta "o que a v2 (ADR-0001) exige?", não por preferência estética.
 
 1. **Renomear `saldo_bi` para `auc_milhoes`.** A Linguagem Ubíqua da v2 é toda construída em "AuC" (`queda de AuC`, `AuC exposto`, `AuC under Custody`). `saldo_bi` é o único ponto do código que ainda fala v1. O rename alinha o código ao vocabulário da própria v2, além de tornar os valores legíveis (45,0 em vez de 0,045). 16 arquivos, mecânico, os testes pegam regressão.
-2. **Recalibrar os thresholds sobre o modelo v2.** A v2 mudou o que o modelo prevê (sinal comportamental antecedente em vez de saldo reativo), logo a distribuição de `P(churn)` mudou. Aplicar os thresholds do `PROBLEM.md` v1.0 (calibrados para o modelo reativo) sobre a saída da v2 não é coerente com a v2. A calibração usa a curva de custo do `PROBLEM.md` §4 sobre o split de validação, por segmento, e o resultado fica em `reports/thresholds_v2.md`. Como a curva depende da escala nova de dado, isso só pode ser feito depois da recalibração, dentro deste trabalho, não antes nem depois.
+2. **Recalibrar os thresholds sobre o modelo v2.** A v2 mudou o que o modelo prevê (sinal comportamental antecedente em vez de saldo reativo), logo a distribuição de `P(churn)` mudou. Aplicar os thresholds do `PROBLEM.md` v1.0 (calibrados para o modelo reativo) sobre a saída da v2 não é coerente com a v2. A calibração usa a curva de custo herdada do `PROBLEM.md` §4 sobre um split de validação separado do teste, por segmento, e o resultado fica em `reports/thresholds_v2.md`. Segmento sem suporte estatístico mínimo usa o threshold global e registra o fallback; não se transforma ruído de poucos eventos em regra comercial. Como a curva depende da escala nova de dado, isso só pode ser feito depois da recalibração, dentro deste trabalho, não antes nem depois.
 3. **Corrigir o número de assessores, não tratar o sintoma.** Os 9 assessores sem carteira são efeito de `n_advisors=300` para 1.200 clientes (4 relações cada), que não é a razão de um book de private banking. Com ~50 assessores (24 relações cada, faixa real), todos recebem carteira e a Direção B passa a medir risco de fuga sobre books de tamanho plausível. O `pipeline.py` registra quantos assessores ficaram sem book (esperado: zero ou perto disso).
 
 ### 7.1 Ainda em aberto (decisão do Luiz, não bloqueia os blocos 2 a 4)

@@ -35,7 +35,7 @@ df = pd.read_csv("output/data/base_clientes.csv")
 
 FEATURES_BASE = [
     "segmento", "meses_cliente", "qtd_produtos",
-    "retorno_12m_pct", "freq_contato_mes", "saldo_bi"
+    "retorno_12m_pct", "freq_contato_mes", "auc_milhoes"
 ]
 TARGET = "churn"
 
@@ -55,7 +55,7 @@ X_transformed = preprocessing_pipeline.transform(X)
 # Nomes das features após transformação
 FEATURE_NAMES = ["segmento_enc"] + [
     "meses_cliente", "qtd_produtos", "retorno_12m_pct",
-    "freq_contato_mes", "saldo_bi", "engajamento_score",
+    "freq_contato_mes", "auc_milhoes", "engajamento_score",
     "retorno_relativo", "flag_risco", "intensidade_rel"
 ]
 
@@ -177,7 +177,7 @@ def top3_razoes(row_shap: np.ndarray, feature_names: list,
         "freq_contato_mes":  "Frequência de contato com assessor (meses)",
         "retorno_relativo":  "Retorno relativo ao benchmark de mercado",
         "engajamento_score": "Score de engajamento do cliente",
-        "saldo_bi":          "Saldo total na custódia",
+        "auc_milhoes":       "AuC total sob custódia (R$ milhões)",
         "qtd_produtos":      "Quantidade de produtos contratados",
         "meses_cliente":     "Tempo como cliente (meses)",
         "flag_risco":        "Flag de risco comportamental",

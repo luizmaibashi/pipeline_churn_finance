@@ -14,12 +14,12 @@ from transformers import FeatureEngineer, StructuralNullImputer
 
 FEATURES_BASE = [
     "segmento", "meses_cliente", "qtd_produtos",
-    "retorno_12m_pct", "freq_contato_mes", "saldo_bi"
+    "retorno_12m_pct", "freq_contato_mes", "auc_milhoes"
 ]
 
 FEATURES_AFTER_FE = [
     "meses_cliente", "qtd_produtos", "retorno_12m_pct",
-    "freq_contato_mes", "saldo_bi", "engajamento_score",
+    "freq_contato_mes", "auc_milhoes", "engajamento_score",
     "retorno_relativo", "flag_risco", "intensidade_rel"
 ]
 
@@ -45,12 +45,12 @@ FEATURES_V2_EXTRA = [
 ]
 FEATURES_V2_BASE = [
     "segmento", "meses_cliente", "qtd_produtos",
-    "retorno_12m_pct", "freq_contato_mes", "saldo_bi"
+    "retorno_12m_pct", "freq_contato_mes", "auc_milhoes"
 ] + FEATURES_V2_EXTRA
 
 def _build_preprocessing():
     """Constrói o ColumnTransformer com o OrdinalEncoder para o pipeline."""
-    encoder = OrdinalEncoder(categories=[["Varejo", "Alta Renda", "Wealth", "Corporate"]])
+    encoder = OrdinalEncoder(categories=[["Alta Renda", "Private", "Wealth", "Family Office"]])
     return ColumnTransformer(
         transformers=[
             ("ordinals", encoder, ["segmento"]),
@@ -192,10 +192,10 @@ def cross_validate(model: Pipeline, df: pd.DataFrame, parameters: dict) -> pd.Da
 def _build_preprocessing_v2():
     """ColumnTransformer v2: OrdinalEncoder no segmento, passthrough no resto
     (FEATURES_AFTER_FE_V2, gerado após StructuralNullImputer + FeatureEngineer)."""
-    encoder = OrdinalEncoder(categories=[["Varejo", "Alta Renda", "Wealth", "Corporate"]])
+    encoder = OrdinalEncoder(categories=[["Alta Renda", "Private", "Wealth", "Family Office"]])
     features_pass = [
         "meses_cliente", "qtd_produtos", "retorno_12m_pct",
-        "freq_contato_mes", "saldo_bi", "engajamento_score",
+        "freq_contato_mes", "auc_milhoes", "engajamento_score",
         "retorno_relativo", "flag_risco", "intensidade_rel",
     ] + FEATURES_V2_EXTRA
     return ColumnTransformer(transformers=[
@@ -347,3 +347,63 @@ def get_feature_importance(model: Pipeline) -> pd.DataFrame:
         "importance": gb_clf.feature_importances_
     }).sort_values("importance", ascending=False)
     return importances
+
+
+def get_feature_importance_v2(model: Pipeline) -> pd.DataFrame:
+    """Extrai importâncias do GB v2 usando exatamente o schema early-warning."""
+    gb_clf = model.named_steps["clf"]
+    features_after_fe_v2 = [
+        "meses_cliente", "qtd_produtos", "retorno_12m_pct",
+        "freq_contato_mes", "auc_milhoes", "engajamento_score",
+        "retorno_relativo", "flag_risco", "intensidade_rel",
+    ] + FEATURES_V2_EXTRA
+    return pd.DataFrame({
+        "feature": ["segmento_enc"] + features_after_fe_v2,
+        "importance": gb_clf.feature_importances_,
+    }).sort_values("importance", ascending=False)
+
+
+def calibrate_thresholds_v2(model: Pipeline, valid_df: pd.DataFrame, parameters: dict) -> pd.DataFrame:
+    """Calibra threshold por segmento; pouca evidência usa regra global explícita."""
+    custo_fn = parameters["threshold_v2"]["custo_fn_sobre_fp"]
+    recall_minimo = parameters["threshold_v2"]["recall_minimo"]
+    thresholds = np.arange(0.05, 0.951, 0.01)
+    scored = valid_df[["segmento", "churn"]].copy()
+    scored["prob"] = model.predict_proba(valid_df[FEATURES_V2_BASE])[:, 1]
+
+    def escolher(frame: pd.DataFrame) -> dict:
+        candidatos = []
+        for threshold in thresholds:
+            pred = frame["prob"] >= threshold
+            tp = int(((pred) & (frame["churn"] == 1)).sum())
+            fn = int(((~pred) & (frame["churn"] == 1)).sum())
+            fp = int(((pred) & (frame["churn"] == 0)).sum())
+            recall = tp / (tp + fn) if tp + fn else 0.0
+            precision = tp / (tp + fp) if tp + fp else 0.0
+            candidatos.append((custo_fn * fn + fp, threshold, recall, precision, fn, fp))
+        factiveis = [c for c in candidatos if c[2] >= recall_minimo]
+        custo, threshold, recall, precision, fn, fp = min(factiveis or candidatos)
+        return {"threshold": round(float(threshold), 2), "recall": recall, "precision": precision, "fn": fn, "fp": fp}
+
+    global_result = escolher(scored)
+    linhas = []
+    for segmento, frame in scored.groupby("segmento", observed=True):
+        if int(frame["churn"].sum()) < 5:
+            threshold_global = global_result["threshold"]
+            pred = frame["prob"] >= threshold_global
+            tp = int(((pred) & (frame["churn"] == 1)).sum())
+            fn = int(((~pred) & (frame["churn"] == 1)).sum())
+            fp = int(((pred) & (frame["churn"] == 0)).sum())
+            resultado = {
+                "threshold": threshold_global,
+                "recall": tp / (tp + fn) if tp + fn else 0.0,
+                "precision": tp / (tp + fp) if tp + fp else 0.0,
+                "fn": fn,
+                "fp": fp,
+            }
+            origem = "global_fallback"
+        else:
+            resultado = escolher(frame)
+            origem = "segmento"
+        linhas.append({"segmento": segmento, **resultado, "n_valid": len(frame), "origem_threshold": origem})
+    return pd.DataFrame(linhas)

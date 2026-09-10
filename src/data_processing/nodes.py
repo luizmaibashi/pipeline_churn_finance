@@ -3,22 +3,42 @@ import pandas as pd
 from sklearn.preprocessing import OrdinalEncoder
 from transformers import FeatureEngineer
 
-def generate_synthetic_data(n_samples: int, seed: int = 42) -> pd.DataFrame:
-    """Gera o dataset de clientes com dados sintéticos simulados."""
+def generate_synthetic_data(
+    n_samples: int, parameters: dict | None = None, seed: int = 42
+) -> pd.DataFrame:
+    """Gera uma carteira sintética de wealth management calibrada por segmento."""
     np.random.seed(seed)
     N = n_samples
-
-    segmentos = ["Varejo", "Alta Renda", "Wealth", "Corporate"]
-    seg_prob = [0.65, 0.24, 0.08, 0.03]
+    parameters = parameters or {}
+    configuracao_segmentos = parameters.get("segmentos", {
+        "Alta Renda": {"share": 0.45, "auc_mediana_milhoes": 7.0, "auc_sigma_log": 0.55},
+        "Private": {"share": 0.38, "auc_mediana_milhoes": 28.0, "auc_sigma_log": 0.60},
+        "Wealth": {"share": 0.13, "auc_mediana_milhoes": 110.0, "auc_sigma_log": 0.65},
+        "Family Office": {"share": 0.04, "auc_mediana_milhoes": 650.0, "auc_sigma_log": 0.70},
+    })
+    segmentos = list(configuracao_segmentos)
+    seg_prob = [configuracao_segmentos[s]["share"] for s in segmentos]
     seg = np.random.choice(segmentos, N, p=seg_prob)
 
-    meses_cli = np.random.randint(1, 144, N)
+    meses_cli = np.random.randint(6, 144, N)
     qtd_prod = np.random.randint(1, 9, N)
     retorno = np.random.normal(11.5, 4.2, N).round(2)
     freq_cont = np.random.poisson(2.8, N)
-    saldo = np.random.lognormal(-1.8, 1.3, N).round(4)
+    auc = np.empty(N)
+    for segmento in segmentos:
+        idx = np.where(seg == segmento)[0]
+        config = configuracao_segmentos[segmento]
+        auc[idx] = np.random.lognormal(
+            mean=np.log(config["auc_mediana_milhoes"]),
+            sigma=config["auc_sigma_log"],
+            size=len(idx),
+        )
+    auc = np.maximum(auc, 3.0).round(3)
 
-    taxa_base = {"Varejo": 0.18, "Alta Renda": 0.09, "Wealth": 0.05, "Corporate": 0.04}
+    taxa_base = parameters.get("churn_base_por_segmento", {
+        "Alta Renda": 0.10, "Private": 0.07, "Wealth": 0.05, "Family Office": 0.04,
+    })
+    tercil_inferior = {s: np.quantile(auc[seg == s], 1 / 3) for s in segmentos}
 
     churn = np.zeros(N, dtype=int)
     for s in segmentos:
@@ -29,7 +49,7 @@ def generate_synthetic_data(n_samples: int, seed: int = 42) -> pd.DataFrame:
             if freq_cont[i] == 0:   mod *= 1.70
             if qtd_prod[i] == 1:    mod *= 1.25
             if meses_cli[i] < 12:   mod *= 1.35
-            if saldo[i] < 0.1:      mod *= 1.40
+            if auc[i] < tercil_inferior[s]: mod *= 1.40
             p = min(taxa_base[s] * mod, 0.75)
             churn[i] = int(np.random.rand() < p)
 
@@ -40,7 +60,7 @@ def generate_synthetic_data(n_samples: int, seed: int = 42) -> pd.DataFrame:
         "qtd_produtos"    : qtd_prod,
         "retorno_12m_pct" : retorno,
         "freq_contato_mes": freq_cont,
-        "saldo_bi"        : saldo,
+        "auc_milhoes"     : auc,
         "churn"           : churn
     })
     return df
@@ -78,6 +98,9 @@ def generate_advisors_data(n_advisors: int, seed: int = 42) -> pd.DataFrame:
             elif anos_de_casa[i] < 5: mod *= 1.15
             # Assessor muito sênior tende a ficar (patrimônio/relacionamento consolidado)
             if anos_de_casa[i] > 15:  mod *= 0.75
+            # Heterogeneidade individual evita transformar uma probabilidade
+            # de saída em três degraus discretos por canal/faixa de tenure.
+            mod *= np.random.uniform(0.90, 1.10)
             p = min(risco_base[c] * mod, 0.60)
             prob_saida[i] = p
             risco_saida[i] = int(np.random.rand() < p)
@@ -129,6 +152,7 @@ def attach_advisor_and_behavioral_features(
     assessor_idx = np.random.choice(len(df_advisors), size=N, p=pesos)
     assessor_ids = df_advisors["assessor_id"].values[assessor_idx]
     risco_saida_assessor = df_advisors["risco_saida"].values[assessor_idx]
+    prob_saida_assessor = df_advisors["prob_saida_calibrada"].values[assessor_idx]
 
     churn = df_clientes["churn"].values
 
@@ -155,7 +179,8 @@ def attach_advisor_and_behavioral_features(
     out = df_clientes.copy()
     out["assessor_id"] = assessor_ids
     out["risco_saida_assessor"] = risco_saida_assessor
-    out["auc_exposto"] = (out["saldo_bi"] * risco_saida_assessor).round(4)
+    out["prob_saida_assessor"] = prob_saida_assessor
+    out["auc_exposto"] = (out["auc_milhoes"] * prob_saida_assessor).round(3)
     out["dias_desde_ultimo_contato"] = dias_desde_ultimo_contato
     out["variacao_freq_contato_3m"] = variacao_freq_contato_3m
     out["tempo_resposta_medio_horas"] = tempo_resposta_medio_horas
@@ -214,7 +239,7 @@ def inject_data_quality_issues(
     n_dup = max(1, int(N * 0.015))
     idx_dup = rng.choice(N, size=n_dup, replace=False)
     linhas_dup = df.iloc[idx_dup].copy()
-    linhas_dup["saldo_bi"] = (linhas_dup["saldo_bi"] * rng.uniform(0.97, 1.03, n_dup)).round(4)
+    linhas_dup["auc_milhoes"] = (linhas_dup["auc_milhoes"] * rng.uniform(0.97, 1.03, n_dup)).round(3)
     df = pd.concat([df, linhas_dup], ignore_index=True)
 
     # 2. Nulo em freq_contato_mes — probabilidade de nulo cresce com
@@ -232,7 +257,7 @@ def inject_data_quality_issues(
     # 4. Outlier por erro de digitação em saldo_bi (~0,4% da base)
     n_erro_escala = max(1, int(len(df) * 0.004))
     idx_erro_escala = rng.choice(len(df), size=n_erro_escala, replace=False)
-    df.loc[df.index[idx_erro_escala], "saldo_bi"] = df.loc[df.index[idx_erro_escala], "saldo_bi"] * 1000
+    df.loc[df.index[idx_erro_escala], "auc_milhoes"] = df.loc[df.index[idx_erro_escala], "auc_milhoes"] * 1000
 
     # 5. Sentinela mascarada em retorno_12m_pct para cliente sem 12 meses
     mask_sem_12m = df["meses_cliente"] < 12
@@ -265,7 +290,7 @@ def aggregate_carteira_exposta_por_assessor(
     """
     agg = df_clientes_v2.groupby("assessor_id").agg(
         qtd_clientes=("cliente_id", "count"),
-        auc_total_carteira=("saldo_bi", "sum"),
+        auc_total_carteira=("auc_milhoes", "sum"),
         auc_exposto_total=("auc_exposto", "sum"),
     ).reset_index()
 
@@ -302,9 +327,9 @@ def clean_clientes_v2_bruto(df_bruto: pd.DataFrame, df_advisors_bruto: pd.DataFr
     #    segmento * 20), corrige dividindo por 1000 em vez de descartar
     for seg in df["segmento"].unique():
         mask_seg = df["segmento"] == seg
-        p99_seg = df.loc[mask_seg, "saldo_bi"].quantile(0.99)
-        mask_outlier = mask_seg & (df["saldo_bi"] > p99_seg * 20)
-        df.loc[mask_outlier, "saldo_bi"] = df.loc[mask_outlier, "saldo_bi"] / 1000
+        p99_seg = df.loc[mask_seg, "auc_milhoes"].quantile(0.99)
+        mask_outlier = mask_seg & (df["auc_milhoes"] > p99_seg * 20)
+        df.loc[mask_outlier, "auc_milhoes"] = df.loc[mask_outlier, "auc_milhoes"] / 1000
 
     # 5. Sentinela -999 em retorno_12m_pct — vira nulo estrutural (cliente
     #    sem 12 meses de histórico), nunca valor numérico
@@ -350,7 +375,7 @@ def run_feature_engineering(df: pd.DataFrame, train_df: pd.DataFrame) -> tuple[p
     """
     FEATURES_BASE = [
         "segmento", "meses_cliente", "qtd_produtos", 
-        "retorno_12m_pct", "freq_contato_mes", "saldo_bi"
+        "retorno_12m_pct", "freq_contato_mes", "auc_milhoes"
     ]
     
     X_train = train_df[FEATURES_BASE]
@@ -363,7 +388,7 @@ def run_feature_engineering(df: pd.DataFrame, train_df: pd.DataFrame) -> tuple[p
     X_fe_all = fe.transform(df)
     
     # Ajusta o OrdinalEncoder de segmento apenas no treino
-    encoder = OrdinalEncoder(categories=[["Varejo", "Alta Renda", "Wealth", "Corporate"]])
+    encoder = OrdinalEncoder(categories=[["Alta Renda", "Private", "Wealth", "Family Office"]])
     encoder.fit(X_train[["segmento"]])
     X_fe_all["segmento_enc"] = encoder.transform(X_fe_all[["segmento"]])
     

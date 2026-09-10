@@ -47,20 +47,14 @@ from transformers import FeatureEngineer, StructuralNullImputer   # noqa: F401
 job_queue = JobQueue()
 
 # ── Constantes do PROBLEM.md ─────────────────────────────────
-SEGMENTOS_VALIDOS = ["Varejo", "Alta Renda", "Wealth", "Corporate"]
-THRESHOLD_MAP = {
-    "Varejo"    : 0.40,
-    "Alta Renda": 0.50,
-    "Wealth"    : 0.60,
-    "Corporate" : 0.60,
-}
+SEGMENTOS_VALIDOS = ["Alta Renda", "Private", "Wealth", "Family Office"]
 # Modelo v2 (ADR-0001, Direção A): early-warning comportamental substitui a
 # baseline reativa v1. `sem_historico_12m` / `cliente_novo_sem_contato_hist`
 # são derivados da ausência de `retorno_12m_pct` / `dias_desde_ultimo_contato`
 # (src/data_processing/nodes.py:316-317) — o payload não os recebe.
 FEATURES_V2_BASE = [
     "segmento", "meses_cliente", "qtd_produtos",
-    "retorno_12m_pct", "freq_contato_mes", "saldo_bi",
+    "retorno_12m_pct", "freq_contato_mes", "auc_milhoes",
     "dias_desde_ultimo_contato", "variacao_freq_contato_3m",
     "tempo_resposta_medio_horas",
     "sem_historico_12m", "cliente_novo_sem_contato_hist",
@@ -68,6 +62,7 @@ FEATURES_V2_BASE = [
 SHAP_CSV  = os.path.join("output", "shap", "v2", "client_explanations.csv")
 DATA_CSV  = os.path.join("output", "data", "base_clientes_v2_limpo.csv")
 CARTEIRA_CSV  = os.path.join("output", "data", "carteira_exposta_por_assessor.csv")
+THRESHOLDS_CSV = os.path.join("output", "data", "thresholds_v2.csv")
 MODELS_DIR    = os.path.join("output", "models")
 MODEL_V2_PKL  = os.path.join(MODELS_DIR, "gb_pipeline_v2.pkl")
 MONITOR_DIR   = os.path.join("output", "monitor")
@@ -77,7 +72,7 @@ TRADUCAO = {
     "freq_contato_mes":  "Frequência de contato com assessor",
     "retorno_relativo":  "Retorno relativo ao benchmark",
     "engajamento_score": "Score de engajamento",
-    "saldo_bi":          "Saldo sob custódia",
+    "auc_milhoes":       "AuC sob custódia (R$ milhões)",
     "qtd_produtos":      "Quantidade de produtos",
     "meses_cliente":     "Tempo como cliente (meses)",
     "flag_risco":        "Flag de risco comportamental",
@@ -121,6 +116,22 @@ def _load_shap_explanations() -> pd.DataFrame | None:
     return None
 
 
+def _load_threshold_map() -> dict[str, float]:
+    """Carrega thresholds calibrados pelo pipeline; não aceita regra v1 embutida."""
+    if not os.path.exists(THRESHOLDS_CSV):
+        raise FileNotFoundError(
+            f"Thresholds v2 não encontrados em {THRESHOLDS_CSV}. Execute 'python pipeline.py'."
+        )
+    thresholds = pd.read_csv(THRESHOLDS_CSV)
+    required = {"segmento", "threshold"}
+    if not required.issubset(thresholds.columns):
+        raise ValueError(f"CSV de thresholds sem colunas obrigatórias: {required}")
+    result = dict(zip(thresholds["segmento"], thresholds["threshold"]))
+    if set(result) != set(SEGMENTOS_VALIDOS):
+        raise ValueError("CSV de thresholds não cobre exatamente os segmentos da v2.")
+    return {segmento: float(threshold) for segmento, threshold in result.items()}
+
+
 def _latest_monitor_report() -> dict | None:
     """Lê o relatório de drift mais recente."""
     if not os.path.exists(MONITOR_DIR):
@@ -144,6 +155,7 @@ async def lifespan(app: FastAPI):
         _state["model"]   = model
         _state["version"] = version
         _state["meta"]    = meta
+        _state["threshold_map"] = _load_threshold_map()
         _state["shap_df"] = _load_shap_explanations()
         _state["started_at"] = datetime.datetime.now().isoformat()
         print(f"[OK] Modelo v{version} carregado.")
@@ -152,6 +164,7 @@ async def lifespan(app: FastAPI):
         _state["model"]   = None
         _state["version"] = "N/A"
         _state["meta"]    = {}
+        _state["threshold_map"] = {}
         _state["shap_df"] = None
         _state["started_at"] = datetime.datetime.now().isoformat()
     yield
@@ -190,12 +203,12 @@ class ClienteInput(BaseModel):
         description="Identificador único do cliente",
         examples=["CLI00001"]
     )
-    segmento: Literal["Varejo", "Alta Renda", "Wealth", "Corporate"] = Field(
+    segmento: Literal["Alta Renda", "Private", "Wealth", "Family Office"] = Field(
         description="Segmento de investimento do cliente",
         examples=["Wealth"]
     )
     meses_cliente: int = Field(
-        ge=1, le=600,
+        ge=6, le=600,
         description="Tempo como cliente em meses (janela de observação: últimos 90 dias)",
         examples=[36]
     )
@@ -218,10 +231,10 @@ class ClienteInput(BaseModel):
         description="Número de contatos com assessor no último mês",
         examples=[2]
     )
-    saldo_bi: float = Field(
-        gt=0.0,
-        description="Saldo sob custódia em R$ bilhões",
-        examples=[0.5]
+    auc_milhoes: float = Field(
+        gt=0.0, le=2000.0,
+        description="AuC sob custódia em R$ milhões (máximo R$ 2 bi por relação)",
+        examples=[120.0]
     )
     dias_desde_ultimo_contato: Optional[float] = Field(
         default=None, ge=0.0, le=400.0,
@@ -292,12 +305,19 @@ class BatchResult(BaseModel):
 # ── Funções de negócio ────────────────────────────────────────
 
 def _risk_level(prob: float, segmento: str) -> str:
-    threshold = THRESHOLD_MAP.get(segmento, 0.50)
-    if prob >= 0.60:
+    threshold = _threshold_for(segmento)
+    if prob >= threshold:
         return "ALTO"
-    elif prob >= 0.35:
+    elif prob >= threshold * 0.6:
         return "MEDIO"
     return "BAIXO"
+
+
+def _threshold_for(segmento: str) -> float:
+    threshold = _state.get("threshold_map", {}).get(segmento)
+    if threshold is None:
+        raise HTTPException(status_code=503, detail="Thresholds v2 não carregados. Execute pipeline.py.")
+    return float(threshold)
 
 
 def _recommended_action(risk: str, prob: float, features: dict) -> str:
@@ -316,7 +336,7 @@ def _recommended_action(risk: str, prob: float, features: dict) -> str:
         actions.append("Cadência de contato caindo — early-warning: acionar assessor antes da próxima régua")
     if features.get("qtd_produtos", 99) == 1:
         actions.append("Oferecer diversificação de produtos — cliente monoproduto")
-    if features.get("saldo_bi", 99) < 0.1:
+    if features.get("auc_milhoes", 99) < 15:
         actions.append("Avaliar incentivo de aporte mínimo ou campanha de fidelização")
 
     if not actions:
@@ -325,9 +345,9 @@ def _recommended_action(risk: str, prob: float, features: dict) -> str:
     return " | ".join(actions)
 
 
-def _flow(segmento: str, saldo_bi: float) -> str:
+def _flow(segmento: str, auc_milhoes: float) -> str:
     """Define o fluxo operacional conforme PROBLEM.md Seção 5.2."""
-    if segmento == "Wealth" or saldo_bi >= 0.5:
+    if segmento in {"Wealth", "Family Office"} or auc_milhoes >= 250:
         return "REVISAO_HUMANA (especialista)"
     return "AUTO → CRM"
 
@@ -366,7 +386,7 @@ def _predict_one(cliente: ClienteInput) -> PredictionResult:
         "qtd_produtos":                cliente.qtd_produtos,
         "retorno_12m_pct":             cliente.retorno_12m_pct,
         "freq_contato_mes":            cliente.freq_contato_mes,
-        "saldo_bi":                    cliente.saldo_bi,
+        "auc_milhoes":                 cliente.auc_milhoes,
         "dias_desde_ultimo_contato":   cliente.dias_desde_ultimo_contato,
         "variacao_freq_contato_3m":    cliente.variacao_freq_contato_3m,
         "tempo_resposta_medio_horas":  cliente.tempo_resposta_medio_horas,
@@ -378,12 +398,12 @@ def _predict_one(cliente: ClienteInput) -> PredictionResult:
     prob = round(prob, 4)
 
     risk        = _risk_level(prob, cliente.segmento)
-    threshold   = THRESHOLD_MAP.get(cliente.segmento, 0.50)
+    threshold   = _threshold_for(cliente.segmento)
     predicted   = prob >= threshold
     action      = _recommended_action(risk, prob, cliente.model_dump())
-    flow_str    = _flow(cliente.segmento, cliente.saldo_bi)
+    flow_str    = _flow(cliente.segmento, cliente.auc_milhoes)
     reasons     = _get_shap_reasons(cliente.cliente_id)
-    auc_risk_mm = round(cliente.saldo_bi * 1000 * 0.012 * prob, 2)  # 1.2% do AuC × prob
+    auc_risk_mm = round(cliente.auc_milhoes * 0.30 * prob, 2)
 
     return PredictionResult(
         cliente_id            = cliente.cliente_id,
@@ -595,9 +615,9 @@ async def high_risk_clients(
 
     df = shap_df[shap_df["churn_prob"] >= 0.35].copy()
 
-    # O client_explanations v2 já traz `segmento`; do dataset base só falta saldo_bi
+    # O client_explanations v2 já traz `segmento`; do dataset base só falta AuC.
     if os.path.exists(DATA_CSV):
-        cols = ["cliente_id", "saldo_bi"]
+        cols = ["cliente_id", "auc_milhoes"]
         if "segmento" not in df.columns:
             cols.append("segmento")
         base = pd.read_csv(DATA_CSV)[cols]
@@ -613,7 +633,7 @@ async def high_risk_clients(
     for _, row in df.iterrows():
         prob    = float(row["churn_prob"])
         seg     = str(row.get("segmento", "N/A"))
-        saldo   = float(row.get("saldo_bi", 0))
+        auc_milhoes = float(row.get("auc_milhoes", 0))
         risk    = _risk_level(prob, seg)
         flow    = _flow(seg, saldo)
         clientes.append({
@@ -623,7 +643,7 @@ async def high_risk_clients(
             "churn_probability_pct": f"{prob*100:.1f}%",
             "risk_level"          : risk,
             "churn_real"          : int(row.get("churn_real", -1)),
-            "auc_at_risk_MM"      : round(saldo * 1000 * 0.012 * prob, 2),
+            "auc_at_risk_MM"      : round(auc_milhoes * 0.30 * prob, 2),
             "flow"                : flow,
             "explicacao"          : str(row.get("explicacao", "")),
         })
@@ -676,8 +696,8 @@ async def advisor_exposed_portfolio(
             "anos_de_casa"         : float(row.get("anos_de_casa", 0)),
             "risco_saida"          : int(row.get("risco_saida", 0)),
             "qtd_clientes"         : int(row.get("qtd_clientes", 0)),
-            "auc_total_carteira_bi": round(float(row["auc_total_carteira"]), 4),
-            "auc_exposto_total_bi" : round(float(row["auc_exposto_total"]), 4),
+            "auc_total_carteira_milhoes": round(float(row["auc_total_carteira"]), 3),
+            "auc_exposto_total_milhoes" : round(float(row["auc_exposto_total"]), 3),
             "pct_carteira_exposta" : round(float(row["pct_carteira_exposta"]), 4),
         }
         for _, row in df.iterrows()
@@ -687,7 +707,7 @@ async def advisor_exposed_portfolio(
         "total"          : len(assessores),
         "filter_canal"   : canal or "all",
         "apenas_risco"   : apenas_risco,
-        "auc_exposto_total_bi": round(sum(a["auc_exposto_total_bi"] for a in assessores), 4),
+        "auc_exposto_total_milhoes": round(sum(a["auc_exposto_total_milhoes"] for a in assessores), 3),
         "generated_at"   : datetime.datetime.now().isoformat(),
         "assessores"     : assessores,
     }

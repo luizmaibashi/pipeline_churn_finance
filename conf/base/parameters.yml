@@ -1,7 +1,23 @@
 n_samples: 1200
-n_advisors: 300
+n_advisors: 50
 test_size: 0.20
 random_state: 42
 learning_rate: 0.03
 n_estimators: 300
 max_depth: 4
+
+segmentos:
+  Alta Renda: { share: 0.45, auc_mediana_milhoes: 7.0, auc_sigma_log: 0.55 }
+  Private: { share: 0.38, auc_mediana_milhoes: 28.0, auc_sigma_log: 0.60 }
+  Wealth: { share: 0.13, auc_mediana_milhoes: 110.0, auc_sigma_log: 0.65 }
+  Family Office: { share: 0.04, auc_mediana_milhoes: 650.0, auc_sigma_log: 0.70 }
+
+churn_base_por_segmento:
+  Alta Renda: 0.10
+  Private: 0.07
+  Wealth: 0.05
+  Family Office: 0.04
+
+threshold_v2:
+  custo_fn_sobre_fp: 10
+  recall_minimo: 0.75

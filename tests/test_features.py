@@ -6,12 +6,12 @@ from transformers import FeatureEngineer
 def test_feature_engineer_creation():
     """Testa se as colunas esperadas são adicionadas pelo FeatureEngineer."""
     df_dummy = pd.DataFrame({
-        "segmento":        ["Varejo", "Wealth"],
+        "segmento":        ["Alta Renda", "Wealth"],
         "meses_cliente":   [12, 24],
         "qtd_produtos":    [2, 4],
         "retorno_12m_pct": [10.0, 15.0],
         "freq_contato_mes":[1, 3],
-        "saldo_bi":        [0.05, 0.8]
+        "auc_milhoes":     [7.0, 120.0]
     })
     
     fe = FeatureEngineer()
@@ -30,12 +30,12 @@ def test_feature_engineer_creation():
 def test_feature_engineer_logic():
     """Testa o cálculo matemático das colunas de engenharia de features."""
     df_dummy = pd.DataFrame({
-        "segmento":        ["Varejo", "Wealth", "Alta Renda"],
+        "segmento":        ["Alta Renda", "Wealth", "Private"],
         "meses_cliente":   [10, 20, 30],
         "qtd_produtos":    [1, 5, 2],
         "retorno_12m_pct": [5.0, 12.0, 10.0],
         "freq_contato_mes":[0, 10, 2],
-        "saldo_bi":        [0.01, 1.2, 0.3]
+        "auc_milhoes":     [7.0, 120.0, 28.0]
     })
     
     fe = FeatureEngineer()

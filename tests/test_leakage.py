@@ -18,6 +18,7 @@ from src.data_processing.nodes import (
     attach_advisor_and_behavioral_features,
     inject_data_quality_issues,
     clean_clientes_v2_bruto,
+    aggregate_carteira_exposta_por_assessor,
 )
 from src.model_training.nodes import train_and_compare_v1_v2
 
@@ -27,7 +28,7 @@ SEED = 42
 @pytest.fixture(scope="module")
 def dataset_v2():
     df_cli = generate_synthetic_data(1200, seed=SEED)
-    df_adv_raw = generate_advisors_data(300, seed=SEED)
+    df_adv_raw = generate_advisors_data(50, seed=SEED)
     df_v2, df_adv = attach_advisor_and_behavioral_features(df_cli, df_adv_raw, seed=SEED)
     return df_cli, df_adv, df_v2
 
@@ -81,7 +82,7 @@ def test_red_herring_nao_correlaciona_com_churn(dataset_v2):
 
 # ── Direção B: calibração de risco de saída de assessor ──
 
-def test_risco_saida_assessor_calibrado_por_canal(dataset_v2):
+def test_prob_saida_assessor_calibrada_por_canal(dataset_v2):
     """
     RIA deve ter o menor risco de saída (é o canal de destino do maior
     fluxo de migração 2025 — ADR-0001). Não testamos os valores exatos
@@ -89,7 +90,7 @@ def test_risco_saida_assessor_calibrado_por_canal(dataset_v2):
     mercado sustenta.
     """
     _, df_adv, _ = dataset_v2
-    risco_por_canal = df_adv.groupby("canal")["risco_saida"].mean()
+    risco_por_canal = df_adv.groupby("canal")["prob_saida_calibrada"].mean()
     assert risco_por_canal["RIA"] < risco_por_canal["Broker-Dealer"], (
         "RIA deveria ter risco de saída menor que Broker-Dealer"
     )
@@ -98,10 +99,10 @@ def test_risco_saida_assessor_calibrado_por_canal(dataset_v2):
     )
 
 
-def test_auc_exposto_e_produto_saldo_por_risco(dataset_v2):
-    """AuC exposto é métrica calculada (saldo x risco), não treinada — verifica fórmula."""
+def test_auc_exposto_e_produto_auc_por_probabilidade(dataset_v2):
+    """AuC exposto é expectativa (AuC x probabilidade), não evento binário realizado."""
     _, _, df_v2 = dataset_v2
-    esperado = (df_v2["saldo_bi"] * df_v2["risco_saida_assessor"]).round(4)
+    esperado = (df_v2["auc_milhoes"] * df_v2["prob_saida_assessor"]).round(3)
     assert (df_v2["auc_exposto"] == esperado).all()
 
 
@@ -112,11 +113,35 @@ def test_auc_exposto_agregado_dentro_da_faixa_de_mercado(dataset_v2):
     de grandeza, não ser trivialmente 0% ou >50%.
     """
     _, _, df_v2 = dataset_v2
-    pct_exposto = df_v2["auc_exposto"].sum() / df_v2["saldo_bi"].sum()
+    pct_exposto = df_v2["auc_exposto"].sum() / df_v2["auc_milhoes"].sum()
     assert 0.05 <= pct_exposto <= 0.25, (
         f"AuC exposto agregado = {pct_exposto*100:.1f}% — fora da faixa "
         f"plausível de mercado (5%-25%)"
     )
+
+
+def test_auc_agregado_bate_com_narrativa(dataset_v2):
+    _, _, df_v2 = dataset_v2
+    assert 65 <= df_v2["auc_milhoes"].sum() / 1000 <= 85
+
+
+def test_pct_carteira_exposta_nao_degenerada(dataset_v2):
+    _, df_adv, df_v2 = dataset_v2
+    col = aggregate_carteira_exposta_por_assessor(df_v2, df_adv)["pct_carteira_exposta"]
+    assert col.nunique() >= 10
+    assert col.std() >= 0.02
+
+
+def test_ordenacao_auc_por_segmento(dataset_v2):
+    _, _, df_v2 = dataset_v2
+    med = df_v2.groupby("segmento")["auc_milhoes"].median()
+    assert med["Alta Renda"] < med["Private"] < med["Wealth"] < med["Family Office"]
+
+
+def test_clientes_por_assessor_plausivel(dataset_v2):
+    _, _, df_v2 = dataset_v2
+    media = df_v2.groupby("assessor_id").size().mean()
+    assert 12 <= media <= 40
 
 
 # ── Contrato de schema: assessor_id sempre presente e válido ──
@@ -128,7 +153,7 @@ def test_auc_exposto_agregado_dentro_da_faixa_de_mercado(dataset_v2):
 def comparacao_v1_v2(dataset_v2):
     df_cli, df_adv_raw, _ = dataset_v2
     # regenera o df_adv "cru" (pré-attach) para reaproveitar o fluxo completo
-    df_adv_original = generate_advisors_data(300, seed=SEED)
+    df_adv_original = generate_advisors_data(50, seed=SEED)
     df_v2, df_adv_com_carteira = attach_advisor_and_behavioral_features(df_cli, df_adv_original, seed=SEED)
     df_v2_bruto, df_adv_bruto = inject_data_quality_issues(df_v2, df_adv_com_carteira, seed=SEED)
     df_v2_limpo = clean_clientes_v2_bruto(df_v2_bruto, df_adv_bruto)

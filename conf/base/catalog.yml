@@ -58,6 +58,14 @@ feature_importance:
   type: pandas.CSVDataSet
   filepath: output/data/feature_importance.csv
 
+feature_importance_v2:
+  type: pandas.CSVDataSet
+  filepath: output/data/feature_importance_v2.csv
+
+thresholds_v2:
+  type: pandas.CSVDataSet
+  filepath: output/data/thresholds_v2.csv
+
 gb_pipeline:
   type: pickle.PickleDataSet
   filepath: output/models/gb_pipeline.pkl

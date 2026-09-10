@@ -9,6 +9,8 @@ warnings.filterwarnings("ignore")
 
 import os
 import sys
+from pathlib import Path
+from sklearn.model_selection import train_test_split
 
 # Garante que o diretório raiz e o diretório 'src' estão no path de importação
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
@@ -33,7 +35,9 @@ from src.model_training.nodes import (
     train_and_compare_v1_v2,
     bootstrap_ic_diferenca_recall,
     cross_validate_v2,
-    train_final_model_v2
+    train_final_model_v2,
+    get_feature_importance_v2,
+    calibrate_thresholds_v2,
 )
 
 print("=" * 60)
@@ -48,6 +52,7 @@ parameters = load_parameters("conf/base/parameters.yml")
 print("\n[1/6] Gerando dados sintéticos...")
 df = generate_synthetic_data(
     n_samples=parameters.get("n_samples", 1200),
+    parameters=parameters,
     seed=parameters.get("random_state", 42)
 )
 catalog.save("base_clientes", df)
@@ -68,7 +73,9 @@ catalog.save("base_clientes_v2", df_v2)
 
 vc_adv = df_advisors["risco_saida"].value_counts()
 print(f"  Assessores: {df_advisors.shape[0]} | Risco de saída: {vc_adv.get(1, 0)} ({vc_adv.get(1, 0)/len(df_advisors)*100:.1f}%)")
-print(f"  AuC exposto (v2): R$ {df_v2['auc_exposto'].sum():.2f}bi de R$ {df_v2['saldo_bi'].sum():.2f}bi total ({df_v2['auc_exposto'].sum()/df_v2['saldo_bi'].sum()*100:.1f}%)")
+print(f"  AuC total: R$ {df_v2['auc_milhoes'].sum() / 1000:.1f} bi | mediana: R$ {df_v2['auc_milhoes'].median():.1f} M")
+print(f"  AuC exposto (v2): R$ {df_v2['auc_exposto'].sum() / 1000:.1f} bi ({df_v2['auc_exposto'].sum()/df_v2['auc_milhoes'].sum()*100:.1f}% do total)")
+print(f"  Assessores sem book: {(df_advisors['qtd_clientes_carteira'] == 0).sum()}")
 
 # ── FASE 1.6: Injeção de sujeira de dado realista (Etapa 1, aprovada) ─
 print("\n[1.6/6] Injetando problemas de qualidade de dado (dataset bruto)...")
@@ -87,7 +94,7 @@ catalog.save("carteira_exposta_por_assessor", carteira_exposta)
 top3 = carteira_exposta.head(3)
 print(f"  Carteira exposta (Direção B, dashboard próprio) — top 3 assessores de maior risco:")
 for _, row in top3.iterrows():
-    print(f"    {row['assessor_id']} ({row['canal']}) — AuC exposto: R$ {row['auc_exposto_total']:.2f}bi ({row['pct_carteira_exposta']*100:.0f}% da carteira)")
+    print(f"    {row['assessor_id']} ({row['canal']}) — AuC exposto: R$ {row['auc_exposto_total']:.2f} M ({row['pct_carteira_exposta']*100:.0f}% da carteira)")
 
 # ── FASE 2: Split estratificado ANTES da Engenharia de Features
 print("\n[2/6] Split estratificado...")
@@ -172,6 +179,26 @@ print(f"  Criterio ADR-0001 (ponto): v2 recall > v1 recall? {veredito} ({recall_
 # em shap_analysis_v2.py / API futura
 gb_final_v2 = train_final_model_v2(df_v2_limpo, parameters)
 catalog.save("gb_pipeline_v2", gb_final_v2)
+importances_v2 = get_feature_importance_v2(gb_final_v2)
+catalog.save("feature_importance_v2", importances_v2)
+
+# Thresholds são selecionados em validação interna, nunca no conjunto de teste.
+cal_train, cal_valid = train_test_split(
+    df_v2_limpo, test_size=0.25, random_state=parameters.get("random_state", 42),
+    stratify=df_v2_limpo["churn"],
+)
+modelo_calibracao = train_final_model_v2(cal_train, parameters)
+thresholds_v2 = calibrate_thresholds_v2(modelo_calibracao, cal_valid, parameters)
+catalog.save("thresholds_v2", thresholds_v2)
+Path("reports").mkdir(exist_ok=True)
+with open("reports/thresholds_v2.md", "w", encoding="utf-8") as report:
+    report.write("# Thresholds v2\n\n")
+    report.write("Seleção por custo `10 × FN + FP`, com recall mínimo de 0,75. ")
+    report.write("Segmentos com menos de 5 positivos na validação usam o threshold global.\n\n")
+    report.write(thresholds_v2.to_markdown(index=False))
+    report.write("\n")
+print("  Thresholds v2 calibrados em validação interna e salvos em output/data/thresholds_v2.csv")
+print(f"  Importância comportamental v2: {importances_v2[importances_v2['feature'].isin(['dias_desde_ultimo_contato', 'variacao_freq_contato_3m', 'tempo_resposta_medio_horas'])]['importance'].sum():.1%}")
 
 # ── FASE 6: Persistência dos artefatos ───────────────────────
 print("\n[6/6] Salvando pipeline consolidado...")
