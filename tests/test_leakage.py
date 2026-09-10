@@ -137,7 +137,8 @@ def comparacao_v1_v2(dataset_v2):
         "random_state": SEED, "test_size": 0.20,
         "n_estimators": 300, "learning_rate": 0.03, "max_depth": 4,
     }
-    return train_and_compare_v1_v2(df_cli, df_v2_limpo, parameters)
+    comparacao, _, _, _ = train_and_compare_v1_v2(df_cli, df_v2_limpo, parameters)
+    return comparacao
 
 
 def test_recall_early_warning_vs_baseline_reativo(comparacao_v1_v2):

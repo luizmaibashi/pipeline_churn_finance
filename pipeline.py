@@ -20,6 +20,7 @@ from src.data_processing.nodes import (
     attach_advisor_and_behavioral_features,
     inject_data_quality_issues,
     clean_clientes_v2_bruto,
+    aggregate_carteira_exposta_por_assessor,
     split_data,
     run_feature_engineering
 )
@@ -29,7 +30,9 @@ from src.model_training.nodes import (
     evaluate_final_model,
     cross_validate,
     get_feature_importance,
-    train_and_compare_v1_v2
+    train_and_compare_v1_v2,
+    bootstrap_ic_diferenca_recall,
+    cross_validate_v2
 )
 
 print("=" * 60)
@@ -75,6 +78,15 @@ catalog.save("base_clientes_v2_bruto", df_v2_bruto)
 catalog.save("base_assessores_bruto", df_advisors_bruto)
 print(f"  Shape bruto: {df_v2_bruto.shape} (v2 limpo: {df_v2.shape}) — {df_v2_bruto.shape[0] - df_v2.shape[0]} linha(s) duplicada(s)")
 print(f"  Nulos introduzidos: {df_v2_bruto.isna().sum().sum()} células | dataset limpo permanece em base_clientes_v2 (não sobrescrito)")
+
+# Direção B como produto de dado separado (correção pós-auditoria: auc_exposto
+# não é feature de churn, é agregação de risco de carteira por assessor)
+carteira_exposta = aggregate_carteira_exposta_por_assessor(df_v2, df_advisors)
+catalog.save("carteira_exposta_por_assessor", carteira_exposta)
+top3 = carteira_exposta.head(3)
+print(f"  Carteira exposta (Direção B, dashboard próprio) — top 3 assessores de maior risco:")
+for _, row in top3.iterrows():
+    print(f"    {row['assessor_id']} ({row['canal']}) — AuC exposto: R$ {row['auc_exposto_total']:.2f}bi ({row['pct_carteira_exposta']*100:.0f}% da carteira)")
 
 # ── FASE 2: Split estratificado ANTES da Engenharia de Features
 print("\n[2/6] Split estratificado...")
@@ -129,7 +141,7 @@ print("\n[5.5/6] Comparando modelo v2 (ADR-0001) contra baseline v1...")
 df_v2_limpo = clean_clientes_v2_bruto(df_v2_bruto, df_advisors_bruto)
 catalog.save("base_clientes_v2_limpo", df_v2_limpo)
 
-comparacao = train_and_compare_v1_v2(df, df_v2_limpo, parameters)
+comparacao, y_test_comum, y_pred_v1, y_pred_v2 = train_and_compare_v1_v2(df, df_v2_limpo, parameters)
 catalog.save("recall_early_warning_vs_baseline_reativo", comparacao)
 
 print(f"  {'Modelo':<28} {'Recall(churn)':>13} {'F1-churn':>9} {'ROC-AUC':>9}")
@@ -138,8 +150,22 @@ for _, row in comparacao.iterrows():
     print(f"  {row['modelo']:<28} {row['recall_churn']:>13.4f} {row['f1_churn']:>9.4f} {row['roc_auc']:>9.4f}")
 recall_v1 = comparacao.loc[comparacao['modelo']=='v1_baseline_reativa', 'recall_churn'].iloc[0]
 recall_v2 = comparacao.loc[comparacao['modelo']=='v2_early_warning_advisor', 'recall_churn'].iloc[0]
+n_churn_teste = int(y_test_comum.sum())
+print(f"  n_teste=240 | n_churn_teste={n_churn_teste} (gate: proporcao sempre com n)")
+
+# GATE ML: proporcao sempre com n e IC -- bootstrap sobre as predicoes
+ic = bootstrap_ic_diferenca_recall(y_test_comum, y_pred_v1, y_pred_v2, n_bootstrap=1000, seed=parameters.get("random_state", 42))
+print(f"  Diferenca de recall (v2-v1): {ic['diferenca_media']:+.4f} | IC95% [{ic['ic95_lo']:+.4f}, {ic['ic95_hi']:+.4f}]")
+veredito_ic = "[IC exclui zero -- diferenca real]" if ic["ic_exclui_zero"] else "[IC INCLUI ZERO -- pode ser ruido amostral]"
+print(f"  {veredito_ic}")
+
+# Cross-validation na v2 (single split de 240 e instavel demais sozinho)
+cv_v2_scores, cv_v2_mean, cv_v2_std = cross_validate_v2(df_v2_limpo, parameters)
+catalog.save("cv_scores_v2", cv_v2_scores)
+print(f"  CV 5-fold v2 recall: {cv_v2_mean:.4f} +/- {cv_v2_std:.4f}")
+
 veredito = "[SUPEROU]" if recall_v2 > recall_v1 else "[NAO superou]"
-print(f"  Criterio ADR-0001: v2 recall > v1 recall? {veredito} ({recall_v2:.4f} vs {recall_v1:.4f})")
+print(f"  Criterio ADR-0001 (ponto): v2 recall > v1 recall? {veredito} ({recall_v2:.4f} vs {recall_v1:.4f})")
 
 # ── FASE 6: Persistência dos artefatos ───────────────────────
 print("\n[6/6] Salvando pipeline consolidado...")

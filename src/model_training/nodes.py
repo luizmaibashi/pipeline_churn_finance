@@ -23,7 +23,15 @@ FEATURES_AFTER_FE = [
     "retorno_relativo", "flag_risco", "intensidade_rel"
 ]
 
-# Direção A+B (ADR-0001): early-warning comportamental + risco de assessor.
+# Direção A (ADR-0001, correção pós-auditoria 2026-09-09): só early-warning
+# comportamental entra no modelo de CHURN DO CLIENTE. `auc_exposto` (Direção
+# B) foi removido daqui — feature importance mostrou 1,3% de peso porque
+# risco de saída de assessor é quase independente do churn individual
+# (corr=-0,04, confirmado). Não é sinal fraco, é a métrica errada pro
+# objetivo errado: AuC exposto responde "quanto risco essa carteira de
+# ASSESSOR carrega", não "esse CLIENTE vai sair" — vira agregação própria
+# em aggregate_carteira_exposta_por_assessor(), não feature de classificador.
+#
 # Colunas com nulo estrutural (retorno_12m_pct, dias_desde_ultimo_contato,
 # tempo_resposta_medio_horas) exigem SimpleImputer no pipeline — fit só no
 # treino, igual ao FeatureEngineer, para não vazar (ver _build_preprocessing_v2).
@@ -32,7 +40,7 @@ FEATURES_V2_NUMERICAS_COM_NULO = [
 ]
 FEATURES_V2_EXTRA = [
     "dias_desde_ultimo_contato", "variacao_freq_contato_3m",
-    "tempo_resposta_medio_horas", "auc_exposto",
+    "tempo_resposta_medio_horas",
     "sem_historico_12m", "cliente_novo_sem_contato_hist"
 ]
 FEATURES_V2_BASE = [
@@ -227,6 +235,8 @@ def train_and_compare_v1_v2(
     v2_test = df_v2_indexed.loc[ids_test].reset_index()
 
     resultados = []
+    predicoes = {}
+    y_test_comum = v2_test["churn"].reset_index(drop=True)
     for nome, X_cols, train_df, test_df, pipeline_fn in [
         ("v1_baseline_reativa", FEATURES_BASE, v1_train, v1_test, _create_pipeline),
         ("v2_early_warning_advisor", FEATURES_V2_BASE, v2_train, v2_test, _create_pipeline_v2),
@@ -240,6 +250,7 @@ def train_and_compare_v1_v2(
         pipe.fit(train_df[X_cols], train_df["churn"])
         y_pred = pipe.predict(test_df[X_cols])
         y_prob = pipe.predict_proba(test_df[X_cols])[:, 1]
+        predicoes[nome] = y_pred
 
         resultados.append({
             "modelo": nome,
@@ -250,7 +261,68 @@ def train_and_compare_v1_v2(
         })
 
     df_resultado = pd.DataFrame(resultados)
-    return df_resultado
+    return df_resultado, y_test_comum, predicoes["v1_baseline_reativa"], predicoes["v2_early_warning_advisor"]
+
+
+def bootstrap_ic_diferenca_recall(
+    y_test: pd.Series, y_pred_v1: np.ndarray, y_pred_v2: np.ndarray,
+    n_bootstrap: int = 1000, seed: int = 42
+) -> dict:
+    """
+    IC 95% (bootstrap, reamostragem do conjunto de teste com reposição)
+    para a diferença recall_v2 - recall_v1. Gate ML da base: nunca
+    reportar proporção sem n e intervalo — recall sobre n=48 casos de
+    churn é amostra pequena, precisa de IC antes de declarar vitória.
+    Reamostra as PREDIÇÕES já feitas pelo modelo treinado (não retreina
+    em cada rodada — é o padrão de IC de métrica de avaliação, não de
+    treino, mesmo usado em payflow_inadimplencia/camada1_treino.py).
+    """
+    rng = np.random.default_rng(seed)
+    y_test = np.asarray(y_test)
+    n = len(y_test)
+    diffs = np.zeros(n_bootstrap)
+
+    for i in range(n_bootstrap):
+        idx = rng.integers(0, n, size=n)
+        y_boot = y_test[idx]
+        v1_boot = y_pred_v1[idx]
+        v2_boot = y_pred_v2[idx]
+        if y_boot.sum() == 0:
+            diffs[i] = 0.0
+            continue
+        recall_v1_boot = recall_score(y_boot, v1_boot, pos_label=1, zero_division=0)
+        recall_v2_boot = recall_score(y_boot, v2_boot, pos_label=1, zero_division=0)
+        diffs[i] = recall_v2_boot - recall_v1_boot
+
+    lo, hi = np.percentile(diffs, [2.5, 97.5])
+    return {
+        "diferenca_media": float(diffs.mean()),
+        "ic95_lo": float(lo),
+        "ic95_hi": float(hi),
+        "ic_exclui_zero": bool(lo > 0 or hi < 0),
+        "n_bootstrap": n_bootstrap,
+    }
+
+
+def cross_validate_v2(df_v2_clean: pd.DataFrame, parameters: dict) -> tuple[pd.DataFrame, float, float]:
+    """CV 5-fold na v2 (mesmo padrão de cross_validate, para a v1) — um
+    único split de 240 amostras é instável demais para declarar vitória."""
+    pipe = _create_pipeline_v2(GradientBoostingClassifier(
+        n_estimators=parameters.get("n_estimators", 300),
+        learning_rate=parameters.get("learning_rate", 0.03),
+        max_depth=parameters.get("max_depth", 4),
+        random_state=parameters.get("random_state", 42)
+    ))
+    X, y = df_v2_clean[FEATURES_V2_BASE], df_v2_clean["churn"]
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=parameters.get("random_state", 42))
+
+    cv_scores = cross_val_score(pipe, X, y, cv=skf, scoring="recall", n_jobs=-1)
+
+    df_cv = pd.DataFrame({
+        "fold": [f"Fold {i+1}" for i in range(5)],
+        "recall_churn": cv_scores.round(4)
+    })
+    return df_cv, float(cv_scores.mean()), float(cv_scores.std())
 
 
 def get_feature_importance(model: Pipeline) -> pd.DataFrame:

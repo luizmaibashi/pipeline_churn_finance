@@ -250,6 +250,36 @@ def inject_data_quality_issues(
     return df, adv
 
 
+def aggregate_carteira_exposta_por_assessor(
+    df_clientes_v2: pd.DataFrame, df_advisors: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    Direção B (ADR-0001, correção pós-auditoria 2026-09-09): AuC exposto
+    NÃO é feature do modelo de churn do cliente (removido de
+    model_training/nodes.py — importância 1,3%, risco de saída de
+    assessor é quase independente do churn individual, corr=-0,04).
+
+    É um produto de dado separado: agregação por assessor respondendo
+    "se ESTE assessor sair, quanto AuC da carteira dele está exposto?" —
+    insumo para dashboard de risco de carteira, não para o classificador.
+    """
+    agg = df_clientes_v2.groupby("assessor_id").agg(
+        qtd_clientes=("cliente_id", "count"),
+        auc_total_carteira=("saldo_bi", "sum"),
+        auc_exposto_total=("auc_exposto", "sum"),
+    ).reset_index()
+
+    agg["pct_carteira_exposta"] = (
+        agg["auc_exposto_total"] / agg["auc_total_carteira"]
+    ).round(4)
+
+    out = agg.merge(
+        df_advisors[["assessor_id", "canal", "anos_de_casa", "risco_saida"]],
+        on="assessor_id", how="left"
+    )
+    return out.sort_values("auc_exposto_total", ascending=False).reset_index(drop=True)
+
+
 def clean_clientes_v2_bruto(df_bruto: pd.DataFrame, df_advisors_bruto: pd.DataFrame) -> pd.DataFrame:
     """
     Etapa 3 (ADR-0001): aplica as 6 decisões de tratamento documentadas em

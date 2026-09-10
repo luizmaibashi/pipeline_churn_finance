@@ -26,6 +26,14 @@ recall_early_warning_vs_baseline_reativo:
   type: pandas.CSVDataSet
   filepath: output/data/comparacao_v1_v2.csv
 
+cv_scores_v2:
+  type: pandas.CSVDataSet
+  filepath: output/data/cv_scores_v2.csv
+
+carteira_exposta_por_assessor:
+  type: pandas.CSVDataSet
+  filepath: output/data/carteira_exposta_por_assessor.csv
+
 base_feature_eng:
   type: pandas.CSVDataSet
   filepath: output/data/base_feature_eng.csv
