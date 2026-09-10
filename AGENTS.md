@@ -10,7 +10,7 @@ Projeto de portfólio fictício: pipeline de previsão de churn para carteira si
 | **Churn (v1, reativo)** | `AuC atual < 70% do máximo em 6 meses, por 2 meses consecutivos` — definição contratual em `PROBLEM.md`, mede o efeito já ocorrido |
 | **Early-warning comportamental** | Sinal antecedente à queda de AuC, calculado a partir de cadência/qualidade de interação cliente-assessor (frequência de contato, latência de resposta, proxy de sentimento) — não do saldo |
 | **Advisor attrition** | Risco do assessor responsável pela conta deixar a firma — causa raiz distinta do churn decidido pelo cliente |
-| **AuC exposto** | Fração da carteira de um assessor que tende a migrar junto se ele sair (proxy de risco herdado) |
+| **AuC exposto** | Fração da carteira de um assessor que tende a migrar junto se ele sair (proxy de risco herdado) — métrica **descritiva** de `carteira_exposta_por_assessor`, não feature do classificador de churn (ver correção §6 do ADR-0001) |
 | **Sinal reativo vs. antecedente** | Reativo = mede o efeito já ocorrido; antecedente = mede a causa antes do efeito aparecer |
 | **Janela de observação / previsão** | 90 dias de features (D-90 a D-0) → previsão de 30 dias (D+30), contrato anti-leakage em `PROBLEM.md` §3 |
 
@@ -18,7 +18,8 @@ Projeto de portfólio fictício: pipeline de previsão de churn para carteira si
 
 - **v1 (engenharia):** completa — Kedro catalog, API assíncrona (Redis/SQLite dual-mode), Envoy sidecar, agente de IA com fallback offline, 19 testes passando.
 - **v1 (dado):** gap conhecido — zero teste de leakage temporal apesar do contrato R-01 a R-05 em `PROBLEM.md` ser rígido.
-- **v2 (em andamento, ver [ADR-0001](docs/adr/0001-refatoracao-early-warning-advisor-attrition.md)):** expansão para early-warning comportamental (Direção A) + risco de saída de assessor / AuC exposto (Direção B). Dataset 100% sintético, calibrado com parâmetros estatísticos reais de mercado (pesquisa 2026-09-09) — nenhum dataset público cobre os dois casos.
+- **v2 (fechado no modelo/dado, ver [ADR-0001](docs/adr/0001-refatoracao-early-warning-advisor-attrition.md)):** Direção A (early-warning comportamental) é o classificador de churn — supera a baseline v1 (CV 5-fold recall 0,2958±0,0358 vs. 0,0875±0,0306; 3 features comportamentais somam 55,7% da importância). Direção B (risco de saída de assessor / AuC exposto) é agregação separada (`carteira_exposta_por_assessor`), não feature — dashboard de risco de carteira, não preditor de churn de cliente. Dataset 100% sintético, calibrado com parâmetros estatísticos reais de mercado (pesquisa 2026-09-09), 30 testes passando (inclui gate de CI que trava o critério de sucesso do ADR).
+- **v2 (apresentação — pendente):** `README.md`, `app.py`/`api.py` e `monitor.py`/`agent.py` ainda refletem só a v1. SHAP (`shap_analysis.py`) roda só sobre o modelo v1.
 
 ## Decisões arquiteturais
 
