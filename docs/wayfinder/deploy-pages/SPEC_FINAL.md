@@ -65,13 +65,28 @@ Arquitetura **híbrida Balde 1 + 2a**:
 - Segundo alvo de saída registrado no `pipeline.py` ou script próprio (padrão
   `tech_challenge_fase3`: cópia byte a byte de um HTML gerado).
 
-### 3.5 Identidade visual
-- `ui-ux-pro-max --design-system` calibrado para wealth / early-warning
-  comportamental. **Não** reusar o dark `#0e1117` + neon do `app.py` (tell de IA)
-  nem cair na paleta teal-green dos outros projetos por default.
-- Sequência: `artifact-design → dataviz → ui-ux-pro-max → escrita-organica`.
-- Dataviz: portar os gráficos Plotly para uma lib que roda estática (Plotly.js
-  standalone, ou Observable Plot / Chart.js — decidir na sessão de UI).
+### 3.5 Identidade visual — ✅ executado em 2026-09-11
+- Sequência `artifact-design → dataviz → ui-ux-pro-max → escrita-organica`
+  rodada de verdade (a implementação inicial de 2026-09-10 tinha pulado os 3
+  primeiros passos). Iterado num Artifact antes de tocar no repo, com
+  aprovação do Luiz em cada rodada.
+- Paleta de marca: navy `#0F172A` + dourado `#A16207` (light) /
+  carvão quente `#17140F` + dourado `#D9A441` (dark) — "trust & authority",
+  calibrada pelo `ui-ux-pro-max --design-system` para o domínio wealth
+  management. Tema escuro trocado de navy-preto para carvão quente a pedido do
+  Luiz: navy-preto com azul saturado é o clichê reconhecível de "feito com IA".
+- Paleta de gráfico: instância validada do `dataviz` (`scripts/validate_palette.js`,
+  categórica azul/laranja/água/amarelo + status verde/âmbar/vermelho fixo),
+  não a paleta de marca — nunca a mesma cor fazendo papel de identidade e de
+  status.
+- Tipografia: IBM Plex Sans + IBM Plex Mono (números tabulares).
+- Tema claro/escuro nos 3 estados (`prefers-color-scheme` + `data-theme` +
+  seletor manual) — não existia na versão de 2026-09-10, só claro fixo.
+- Gauge com zonas de risco rotuladas em texto (não só cor), matching a
+  recomendação `--domain chart` do `ui-ux-pro-max` para indicador single-KPI.
+- `escrita-organica` rodado no texto de saída (parágrafos de introdução de
+  aba, card-intro, labels): 17 travessões e 5 meia-riscas de prosa
+  encontrados e reescritos, gate final 0 travessão / 0 emoji.
 
 ### 3.6 Enquadramento honesto
 - **Card de destaque antes das abas** (não fixo no scroll): dado sintético,

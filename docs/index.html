@@ -1,6 +1,853 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pipeline Churn Finance</title><style>
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Fira+Sans:wght@400;500;600;700&display=swap');
-:root{--blue:#1e40af;--blue2:#3b82f6;--amber:#d97706;--ink:#1e3a8a;--muted:#475569;--line:#dbeafe;--paper:#f8fafc;--card:#fff;--risk:#b91c1c}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:#172554;font:16px/1.5 'Fira Sans',sans-serif}.shell{max-width:1180px;margin:auto;padding:40px 24px}header{display:flex;justify-content:space-between;gap:24px;align-items:end}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1;margin:0;color:var(--ink)}.eyebrow{font:500 12px 'Fira Code';letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}.lede{color:var(--muted);max-width:60ch}.notice{margin:28px 0;padding:20px 24px;border-left:5px solid var(--amber);background:#fffbeb;border-radius:8px}.tabs{display:flex;gap:8px;overflow:auto;border-bottom:1px solid var(--line)}button{font:inherit;cursor:pointer}.tab{white-space:nowrap;border:0;background:transparent;padding:14px 16px;color:var(--muted);border-bottom:3px solid transparent}.tab[aria-selected=true]{color:var(--blue);font-weight:700;border-color:var(--blue)}.panel{padding:28px 0}.panel[hidden]{display:none}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;box-shadow:0 1px 2px #1e3a8a0a}label{display:grid;gap:5px;font-weight:600;margin:12px 0}input,select{width:100%;padding:10px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font:inherit}input:focus,button:focus{outline:3px solid #93c5fd;outline-offset:2px}.gauge{width:210px;height:105px;border:28px solid #dbeafe;border-bottom:0;border-radius:210px 210px 0 0;margin:24px auto 0;position:relative}.needle{position:absolute;width:3px;height:84px;bottom:-1px;left:76px;background:var(--risk);transform-origin:bottom;transform:rotate(-70deg)}.score{text-align:center;font-size:3rem;font-weight:700;color:var(--ink)}.metric{font:500 13px 'Fira Code';color:var(--muted)}.value{font-size:1.75rem;font-weight:700;color:var(--ink)}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:9px;text-align:left;border-bottom:1px solid var(--line)}th{color:var(--muted)}.bar{height:12px;background:var(--blue2);border-radius:3px}.tag{display:inline-block;padding:3px 8px;border-radius:99px;background:#dbeafe;color:#1e40af;font-size:.85rem;font-weight:700}@media(max-width:720px){.shell{padding:24px 16px}header,.grid{display:block}.grid>.card{margin-bottom:16px}.tab{padding:12px}.notice{padding:16px}}@media(prefers-reduced-motion:no-preference){.card{transition:box-shadow .2s}.card:hover{box-shadow:0 8px 24px #1e3a8a18}}
-</style></head><body><main class="shell"><a href="#main" class="eyebrow">Pular para o conteúdo</a><header><div><p class="eyebrow">Demonstração de método · v2</p><h1>Early-warning de churn</h1><p class="lede">Uma leitura estática de sinais comportamentais para uma gestora fictícia de wealth management.</p></div><span class="tag">1.200 relações sintéticas</span></header><section class="notice"><strong>O que este projeto demonstra.</strong> O dado é 100% sintético e a gestora é fictícia. A v2 teve +7,1 p.p. de recall no mesmo split, mas com cerca de 28 eventos o IC95% inclui zero. Não é ganho robusto nem efeito de negócio observado.</section><nav class="tabs" aria-label="Seções do dashboard" role="tablist"><button class="tab" role="tab" aria-selected="true" aria-controls="predict" id="t-predict">Predição individual</button><button class="tab" role="tab" aria-selected="false" aria-controls="portfolio" id="t-portfolio">Carteira</button><button class="tab" role="tab" aria-selected="false" aria-controls="performance" id="t-performance">Performance</button><button class="tab" role="tab" aria-selected="false" aria-controls="advisor" id="t-advisor">Assessores</button></nav><div id="main"><section id="predict" class="panel" role="tabpanel" aria-labelledby="t-predict"><div class="grid"><form class="card" id="form"><h2>Perfil da relação</h2><label>Segmento<select name="segmento"><option>Alta Renda</option><option>Private</option><option>Wealth</option><option>Family Office</option></select></label><label>Meses como cliente<input name="meses_cliente" type="number" min="6" max="360" value="48"></label><label>Produtos<input name="qtd_produtos" type="number" min="1" max="12" value="4"></label><label>Contatos no mês<input name="freq_contato_mes" type="number" min="0" max="15" value="3"></label><label>AuC (R$ milhões)<input name="auc_milhoes" type="number" min="3" max="2000" value="120"></label><label>Retorno 12m (%)<input name="retorno_12m_pct" type="number" value="11.5"></label><label>Dias desde o último contato<input name="dias_desde_ultimo_contato" type="number" value="15"></label><label>Variação de cadência (3m)<input name="variacao_freq_contato_3m" type="number" step=".01" value="-.02"></label><label>Latência de resposta (h)<input name="tempo_resposta_medio_horas" type="number" value="16"></label></form><article class="card" aria-live="polite"><p class="eyebrow">Probabilidade de churn</p><div class="gauge" aria-hidden="true"><i class="needle" id="needle"></i></div><div class="score" id="score">...</div><p id="risk" class="metric"></p><hr><p><strong>AuC em risco:</strong> <span id="auc">...</span></p><p class="metric">Ilustração da mecânica: AuC × 30% × probabilidade. Não é projeção financeira.</p></article></div></section><section id="portfolio" class="panel" role="tabpanel" aria-labelledby="t-portfolio" hidden><div class="grid"><article class="card"><p class="metric">Relações com risco alto</p><div class="value" id="high-risk">...</div></article><article class="card"><p class="metric">AuC da carteira</p><div class="value" id="total-auc">...</div></article></div><article class="card"><h2>Distribuição por segmento</h2><div id="segments"></div></article></section><section id="performance" class="panel" role="tabpanel" aria-labelledby="t-performance" hidden><article class="card"><h2>Comparação v1 e v2</h2><table id="comparison"><thead><tr><th>Modelo</th><th>Recall</th><th>ROC-AUC</th></tr></thead><tbody></tbody></table></article><article class="card"><h2>Importância de features</h2><div id="features"></div></article></section><section id="advisor" class="panel" role="tabpanel" aria-labelledby="t-advisor" hidden><article class="card"><h2>Carteira exposta por assessor</h2><table id="advisors"><thead><tr><th>Assessor</th><th>Clientes</th><th>AuC exposto</th><th>% exposta</th></tr></thead><tbody></tbody></table></article></section></div></main><script type="module">
-import{predict}from './infer.mjs';const csv=async n=>(await fetch('./data/'+n)).text().then(t=>{const[r,...rows]=t.trim().split(/\r?\n/);let h=r.split(',');return rows.map(x=>Object.fromEntries(h.map((k,i)=>[k,x.split(',')[i]])))});const model=await fetch('./model.json').then(r=>r.json());const thresholds=Object.fromEntries((await csv('thresholds_v2.csv')).map(x=>[x.segmento,+x.threshold]));const f=document.querySelector('#form'),out=id=>document.querySelector(id);function score(){let x=Object.fromEntries(new FormData(f));for(const k in x)if(k!='segmento')x[k]=+x[k];x.sem_historico_12m=0;x.cliente_novo_sem_contato_hist=0;let p=predict(x,model),t=thresholds[x.segmento],level=p>=t?'Alto':p>=t*.6?'Médio':'Baixo';out('#score').textContent=(p*100).toFixed(1)+'%';out('#risk').textContent='Risco '+level+' · threshold '+(t*100).toFixed(1)+'%';out('#auc').textContent='R$ '+(x.auc_milhoes*.3*p).toFixed(1)+' mi';out('#needle').style.transform=`rotate(${-90+p*180}deg)`}f.addEventListener('input',score);score();document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected','false'));document.querySelectorAll('[role=tabpanel]').forEach(x=>x.hidden=true);b.setAttribute('aria-selected','true');out('#'+b.getAttribute('aria-controls')).hidden=false});const clients=await csv('base_clientes_v2_limpo.csv');out('#high-risk').textContent=clients.filter(x=>x.risco==='ALTO').length;out('#total-auc').textContent='R$ '+(clients.reduce((s,x)=>s+(+x.auc_milhoes),0)/1000).toFixed(1)+' bi';out('#segments').innerHTML=Object.entries(clients.reduce((a,x)=>(a[x.segmento]=(a[x.segmento]||0)+1,a),{})).map(([n,v])=>`<p>${n}: ${v}<span class=bar style="display:inline-block;width:${v/6}px;margin-left:12px"></span></p>`).join('');const cmp=await csv('comparacao_v1_v2.csv');out('#comparison tbody').innerHTML=cmp.map(x=>`<tr><td>${x.modelo}</td><td>${(+x.recall_churn*100).toFixed(1)}%</td><td>${(+x.roc_auc).toFixed(3)}</td></tr>`).join('');const imp=await csv('feature_importance_v2.csv');out('#features').innerHTML=imp.map(x=>`<p>${x.feature}<span class=bar style="display:inline-block;width:${+x.importance*600}px;margin-left:12px"></span></p>`).join('');const adv=(await csv('carteira_exposta_por_assessor.csv')).sort((a,b)=>+b.auc_exposto_total-(+a.auc_exposto_total)).slice(0,15);out('#advisors tbody').innerHTML=adv.map(x=>`<tr><td>${x.assessor_id}</td><td>${x.qtd_clientes}</td><td>R$ ${(+x.auc_exposto_total/1000).toFixed(2)} bi</td><td>${(+x.pct_carteira_exposta*100).toFixed(1)}%</td></tr>`).join('');
-</script><script type="module" src="./shap-layer.mjs"></script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Radar de Retenção</title>
+<meta name="description" content="Dashboard de early-warning de churn para wealth management, com predição interativa executada no navegador.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #F8FAFC;
+    --surface: #FFFFFF;
+    --surface-2: #F1F5F9;
+    --ink: #0F172A;
+    --ink-secondary: #475569;
+    --ink-muted: #94A3B8;
+    --border: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --accent: #A16207;
+    --accent-ink: #FFFFFF;
+    --link: #1E3A8A;
+    --focus-ring: #1E3A8A;
+
+    --chart-surface: #FCFCFB;
+    --chart-grid: #E1E0D9;
+    --chart-muted: #898781;
+
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
+    --series-3: #1baf7a;
+    --series-4: #eda100;
+
+    --seq-1: #cde2fb;
+    --seq-2: #86b6ef;
+    --seq-3: #3987e5;
+    --seq-4: #184f95;
+
+    --status-good: #0ca30c;
+    --status-warning: #b8790a;
+    --status-critical: #d03b3b;
+    --status-good-bg: #e7f6e7;
+    --status-warning-bg: #fdf1de;
+    --status-critical-bg: #fbe9e9;
+
+    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03);
+    --font-sans: 'IBM Plex Sans', system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #17140F;
+      --surface: #201C16;
+      --surface-2: #2A241C;
+      --ink: #F2ECDD;
+      --ink-secondary: #B3A890;
+      --ink-muted: #7D735F;
+      --border: #362F24;
+      --border-strong: #453C2C;
+      --accent: #D9A441;
+      --accent-ink: #221804;
+      --link: #D9A441;
+      --focus-ring: #D9A441;
+
+      --chart-surface: #1A1A19;
+      --chart-grid: #2C2C2A;
+      --chart-muted: #898781;
+
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --series-4: #c98500;
+
+      --seq-1: #2c4a72;
+      --seq-2: #3987e5;
+      --seq-3: #5da0ec;
+      --seq-4: #8fbdf2;
+
+      --status-good: #35c25a;
+      --status-warning: #f0ad2e;
+      --status-critical: #ea6a6a;
+      --status-good-bg: #10291a;
+      --status-warning-bg: #2c2210;
+      --status-critical-bg: #2c1414;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #17140F;
+    --surface: #201C16;
+    --surface-2: #2A241C;
+    --ink: #F2ECDD;
+    --ink-secondary: #B3A890;
+    --ink-muted: #7D735F;
+    --border: #362F24;
+    --border-strong: #453C2C;
+    --accent: #D9A441;
+    --accent-ink: #221804;
+    --link: #D9A441;
+    --focus-ring: #D9A441;
+
+    --chart-surface: #1A1A19;
+    --chart-grid: #2C2C2A;
+    --chart-muted: #898781;
+
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+
+    --seq-1: #2c4a72;
+    --seq-2: #3987e5;
+    --seq-3: #5da0ec;
+    --seq-4: #8fbdf2;
+
+    --status-good: #35c25a;
+    --status-warning: #f0ad2e;
+    --status-critical: #ea6a6a;
+    --status-good-bg: #10291a;
+    --status-warning-bg: #2c2210;
+    --status-critical-bg: #2c1414;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  a { color: var(--link); }
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  button { font-family: inherit; cursor: pointer; }
+
+  .shell { max-width: 1180px; margin: 0 auto; padding: 0 28px 64px; }
+
+  header.top {
+    border-bottom: 1px solid var(--border);
+    padding: 22px 28px 0;
+  }
+  .top-row {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding-bottom: 18px;
+  }
+  .eyebrow {
+    font: 600 11px/1 var(--font-mono);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+    margin: 0 0 8px;
+  }
+  h1 {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  .lede { margin: 0; color: var(--ink-secondary); max-width: 46ch; font-size: 13.5px; }
+  .theme-toggle {
+    display: flex;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    overflow: hidden;
+    height: fit-content;
+  }
+  .theme-toggle button {
+    border: none;
+    background: var(--surface);
+    color: var(--ink-secondary);
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .theme-toggle button + button { border-left: 1px solid var(--border-strong); }
+  .theme-toggle button[aria-pressed="true"] { background: var(--surface-2); color: var(--ink); }
+
+  .notice {
+    max-width: 1180px;
+    margin: 0 auto 18px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink-secondary);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  .notice strong { color: var(--ink); font-weight: 600; }
+
+  nav.tabs {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+  }
+  .tab {
+    border: none;
+    background: none;
+    padding: 11px 4px;
+    margin-right: 22px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink-secondary);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .tab[aria-selected="true"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--accent); }
+
+  section.panel { display: none; padding-top: 28px; }
+  section.panel.active { display: block; }
+  .panel-intro { max-width: 68ch; color: var(--ink-secondary); font-size: 13.5px; line-height: 1.6; margin: 0 0 20px; }
+  .card-intro { color: var(--ink-secondary); font-size: 12.5px; line-height: 1.6; max-width: 62ch; margin: -6px 0 16px; }
+  .metric { color: var(--ink-secondary); font-size: 12.5px; line-height: 1.6; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    box-shadow: var(--shadow-card);
+  }
+  .card + .card { margin-top: 16px; }
+  .card h2 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-secondary);
+    margin: 0 0 16px;
+  }
+
+  .predict-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; align-items: start; }
+  @media (max-width: 860px) { .predict-grid { grid-template-columns: 1fr; } }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--ink-secondary); }
+  .field input, .field select {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .field select { font-family: var(--font-sans); }
+
+  .presets { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .preset-btn {
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .preset-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+
+  .gauge-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
+  .gauge-readout { font: 700 44px/1 var(--font-mono); letter-spacing: -0.02em; margin-top: 10px; }
+  .gauge-sub { font-size: 12px; color: var(--ink-secondary); margin-top: 2px; }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+  .status-pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .status-pill.good { background: var(--status-good-bg); color: var(--status-good); }
+  .status-pill.warning { background: var(--status-warning-bg); color: var(--status-warning); }
+  .status-pill.critical { background: var(--status-critical-bg); color: var(--status-critical); }
+  .status-pill.good .dot { background: var(--status-good); }
+  .status-pill.warning .dot { background: var(--status-warning); }
+  .status-pill.critical .dot { background: var(--status-critical); }
+
+  .gauge-legend { display: flex; gap: 16px; margin-top: 14px; font-size: 11px; color: var(--ink-secondary); }
+  .gauge-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .gauge-legend i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+  .kv-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .kv-row:last-child { border-bottom: none; }
+  .kv-row .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .aside-note { font-size: 11.5px; color: var(--ink-muted); margin-top: 14px; line-height: 1.6; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+  .stat-tile { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .stat-tile .label { font-size: 11px; color: var(--ink-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-tile .value { font: 700 24px/1.2 var(--font-mono); margin-top: 6px; font-variant-numeric: tabular-nums; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--ink-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; position: sticky; top: 0; background: var(--surface); }
+  td.num, th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .table-scroll { max-height: 420px; overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
+  .table-scroll table { border: none; }
+  .table-scroll thead th { border-bottom: 1px solid var(--border-strong); }
+
+  .filters { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .filters select {
+    font-family: var(--font-sans); font-size: 12.5px; padding: 7px 10px;
+    border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface); color: var(--ink);
+  }
+
+  .risk-tag { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 11.5px; }
+  .risk-tag .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .risk-tag.ALTO { color: var(--status-critical); } .risk-tag.ALTO .dot { background: var(--status-critical); }
+  .risk-tag.MEDIO { color: var(--status-warning); } .risk-tag.MEDIO .dot { background: var(--status-warning); }
+  .risk-tag.BAIXO { color: var(--status-good); } .risk-tag.BAIXO .dot { background: var(--status-good); }
+
+  .bars { display: flex; flex-direction: column; gap: 9px; }
+  .bar-row { display: grid; grid-template-columns: 190px 1fr 52px; align-items: center; gap: 10px; font-size: 12px; }
+  .bar-row .label { color: var(--ink-secondary); }
+  .bar-track { height: 12px; background: var(--chart-grid); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; }
+  .bar-row .val { font-family: var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .cm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 380px; }
+  .cm-cell { border-radius: 8px; padding: 16px; border: 1px solid var(--border); }
+  .cm-cell .n { font: 700 26px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+  .cm-cell .lbl { font-size: 11px; color: var(--ink-secondary); margin-top: 5px; }
+  .cm-good { background: var(--status-good-bg); }
+  .cm-bad { background: var(--status-critical-bg); }
+
+  .legend-row { display: flex; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink-secondary); }
+  .legend-row span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-row i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+  .cmp-chart { display: flex; flex-direction: column; gap: 18px; }
+  .cmp-metric .m-label { font-size: 12px; font-weight: 600; color: var(--ink-secondary); margin-bottom: 6px; }
+  .cmp-bars { display: flex; flex-direction: column; gap: 5px; }
+  .cmp-bar-row { display: grid; grid-template-columns: 90px 1fr 48px; align-items: center; gap: 8px; }
+  .cmp-bar-row .name { font-size: 11.5px; color: var(--ink-secondary); }
+  .cmp-bar-row .val { font-family: var(--font-mono); font-size: 11.5px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  footer.page { max-width: 1180px; margin: 32px auto 0; padding: 0 28px; color: var(--ink-muted); font-size: 11px; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-row">
+    <div>
+      <p class="eyebrow">Wealth management · demonstração de método</p>
+      <h1>Radar de Retenção</h1>
+      <p class="lede">Early-warning de churn por sinais de relacionamento, rodando inteiro no navegador, sem servidor.</p>
+    </div>
+    <div class="theme-toggle" role="group" aria-label="Tema">
+      <button type="button" data-theme-choice="light" aria-pressed="false">Claro</button>
+      <button type="button" data-theme-choice="dark" aria-pressed="false">Escuro</button>
+      <button type="button" data-theme-choice="system" aria-pressed="true">Sistema</button>
+    </div>
+  </div>
+</header>
+
+<div class="notice">
+  <strong>O que isto demonstra:</strong> dado 100% sintético, gestora fictícia de 1.200 relações.
+  A v2 teve +7,1 p.p. de recall sobre a baseline reativa no mesmo split, mas com ~28 eventos de
+  churn o IC95% da diferença inclui zero, não é ganho estatisticamente robusto. "AuC em risco" é
+  ilustração da mecânica (AuC × 30% × probabilidade), não projeção financeira.
+</div>
+
+<nav class="tabs" role="tablist" aria-label="Seções do dashboard">
+  <button class="tab" role="tab" aria-selected="true" aria-controls="predict" id="tab-predicao">Predição individual</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="panel-carteira" id="tab-carteira">Carteira</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="panel-performance" id="tab-performance">Performance do modelo</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="panel-assessores" id="tab-assessores">Carteira por assessor</button>
+</nav>
+
+<div class="shell">
+
+  <section class="panel active" id="predict" role="tabpanel" aria-labelledby="tab-predicao">
+    <p class="panel-intro">
+      Preencha o perfil de uma relação (ou clique num dos 3 exemplos prontos) e veja a
+      probabilidade de churn calculada na hora, no seu navegador. O medidor mostra a zona de
+      risco (baixo / médio / alto) calibrada para o segmento escolhido: cada segmento tem um
+      limiar de corte diferente, porque a taxa de churn e o custo de errar mudam de um para outro.
+    </p>
+    <div class="predict-grid">
+
+      <div class="card">
+        <h2>Perfil da relação</h2>
+        <div class="presets" id="presets"></div>
+        <form id="predict-form">
+          <div class="field-grid">
+            <div class="field">
+              <label for="f-segmento">Segmento</label>
+              <select id="f-segmento" name="segmento">
+                <option>Alta Renda</option><option>Private</option><option>Wealth</option><option>Family Office</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-meses">Meses como cliente</label>
+              <input id="f-meses" name="meses_cliente" type="number" min="1" value="30">
+            </div>
+            <div class="field">
+              <label for="f-produtos">Produtos contratados</label>
+              <input id="f-produtos" name="qtd_produtos" type="number" min="1" value="3">
+            </div>
+            <div class="field">
+              <label for="f-auc">AuC (R$ milhões)</label>
+              <input id="f-auc" name="auc_milhoes" type="number" step="0.1" value="25">
+            </div>
+            <div class="field">
+              <label for="f-retorno">Retorno 12m (%)</label>
+              <input id="f-retorno" name="retorno_12m_pct" type="number" step="0.1" value="6">
+            </div>
+            <div class="field">
+              <label for="f-freq">Contatos por mês</label>
+              <input id="f-freq" name="freq_contato_mes" type="number" min="0" value="0">
+            </div>
+            <div class="field">
+              <label for="f-dias">Dias desde o último contato</label>
+              <input id="f-dias" name="dias_desde_ultimo_contato" type="number" min="0" value="70">
+            </div>
+            <div class="field">
+              <label for="f-var">Variação de cadência (3m)</label>
+              <input id="f-var" name="variacao_freq_contato_3m" type="number" step="0.01" value="-0.45">
+            </div>
+            <div class="field">
+              <label for="f-tempo">Latência de resposta (h)</label>
+              <input id="f-tempo" name="tempo_resposta_medio_horas" type="number" step="0.1" value="60">
+            </div>
+          </div>
+        </form>
+        <p class="aside-note">
+          O escoramento roda inteiro no navegador: o GradientBoosting v2 (300 árvores) foi portado
+          para JavaScript e provado equivalente ao <code>predict_proba</code> do sklearn em 3.003
+          casos (max|Δ| ≤ 1e-9, ver ADR-0005). Nenhum dado deste formulário sai do seu navegador.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Probabilidade de churn</h2>
+        <div class="gauge-wrap">
+          <svg id="gauge-svg" width="220" height="128" viewBox="0 0 220 128" role="img" aria-labelledby="gauge-title">
+            <title id="gauge-title">Gauge de probabilidade de churn</title>
+          </svg>
+          <div class="gauge-readout" id="gauge-value">–</div>
+          <div class="gauge-sub" id="gauge-threshold">carregando limiar do segmento…</div>
+          <div class="status-pill" id="status-pill"><span class="dot"></span><span id="status-text">–</span></div>
+          <div class="gauge-legend">
+            <span><i style="background:var(--status-good)"></i>Baixo</span>
+            <span><i style="background:var(--status-warning)"></i>Médio</span>
+            <span><i style="background:var(--status-critical)"></i>Alto</span>
+          </div>
+        </div>
+        <div class="kv-row"><span>AuC sob custódia</span><span class="v" id="kv-auc">–</span></div>
+        <div class="kv-row"><span>AuC em risco (ilustrativo)</span><span class="v" id="kv-auc-risco">–</span></div>
+        <div class="kv-row"><span>Fluxo operacional</span><span class="v" id="kv-fluxo">–</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="panel" id="panel-carteira" role="tabpanel" aria-labelledby="tab-carteira">
+    <p class="panel-intro">
+      Aqui a probabilidade de churn já foi calculada previamente para toda a carteira:
+      é o retrato de "quem olhar primeiro" se você fosse um gestor priorizando ligações hoje.
+      A tabela vem ordenada da relação mais arriscada para a menos arriscada; use os filtros para
+      focar num segmento ou nível de risco específico.
+    </p>
+    <div class="card">
+      <h2>Carteira (1.200 relações, score pré-computado)</h2>
+      <div class="filters">
+        <select id="filtro-segmento"><option value="">Todos os segmentos</option></select>
+        <select id="filtro-risco">
+          <option value="">Todos os riscos</option>
+          <option value="ALTO">Alto</option><option value="MEDIO">Médio</option><option value="BAIXO">Baixo</option>
+        </select>
+      </div>
+      <div class="table-scroll">
+        <table id="tabela-carteira">
+          <thead><tr><th>Relação</th><th>Segmento</th><th class="num">Meses</th><th class="num">AuC (mi)</th><th class="num">Prob. churn</th><th>Risco</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="aside-note" id="carteira-nota"></p>
+    </div>
+
+    <div class="card">
+      <h2>Distribuição por segmento</h2>
+      <div class="legend-row" id="segmento-legend"></div>
+      <div class="bars" id="segmento-bars"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-performance" role="tabpanel" aria-labelledby="tab-performance">
+    <p class="panel-intro">
+      Esta aba não fala de um cliente específico, fala da qualidade do modelo como um todo:
+      como ele foi testado, o que ele aprendeu a olhar e onde ele ainda erra.
+    </p>
+
+    <div class="card">
+      <h2>v1 (reativa) vs. v2 (early-warning), split de teste, n=240</h2>
+      <p class="card-intro">
+        <strong>Recall</strong> mede quantos dos churns reais o modelo conseguiu apontar antes de
+        acontecer (quanto maior, menos casos passam batido). <strong>F1</strong> combina recall
+        com precisão numa nota só. <strong>ROC-AUC</strong> mede a capacidade geral de separar
+        quem vai sair de quem vai ficar: 0,5 é chute aleatório, 1,0 é perfeito.
+      </p>
+      <div class="legend-row">
+        <span><i style="background:var(--series-1)"></i>v1 baseline reativa</span>
+        <span><i style="background:var(--series-2)"></i>v2 early-warning</span>
+      </div>
+      <div class="cmp-chart" id="cmp-chart"></div>
+    </div>
+
+    <div class="card">
+      <h2>Importância das features (Gradient Boosting v2)</h2>
+      <p class="card-intro">
+        Quais dados mais pesam na decisão do modelo. Quanto maior a barra, mais aquele sinal
+        empurra a probabilidade prevista para cima ou para baixo. Os 3 primeiros (cadência de
+        contato, tempo sem contato, latência de resposta) somam mais de 60% do peso total.
+      </p>
+      <div class="bars" id="feature-bars"></div>
+    </div>
+
+    <div class="card">
+      <h2>Recall por fold (validação cruzada, 5 folds)</h2>
+      <p class="card-intro">
+        O modelo foi testado 5 vezes, cada vez num pedaço diferente dos dados, pra checar se o
+        resultado é consistente, e não sorte de um único teste. Folds muito diferentes entre si
+        indicam um modelo instável; aqui eles variam de 10,7% a 21,4%.
+      </p>
+      <div class="bars" id="cv-bars"></div>
+    </div>
+
+    <div class="card">
+      <h2>Threshold por segmento</h2>
+      <p class="card-intro">
+        Cada segmento tem seu próprio ponto de corte: probabilidade acima do threshold vira
+        risco "alto". O corte não é igual pra todos porque a taxa de churn e o volume de dado
+        disponível mudam por segmento. "Fallback global" indica segmento com poucos casos
+        para calibrar um corte próprio, então usa a regra geral.
+      </p>
+      <div class="table-scroll" style="max-height:none;">
+        <table id="tabela-thresholds">
+          <thead><tr><th>Segmento</th><th class="num">Threshold</th><th class="num">Recall</th><th class="num">Precisão</th><th>Origem</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Matriz de confusão (holdout, threshold global)</h2>
+      <p class="card-intro">
+        Dos 240 clientes testados: quantos o modelo classificou certo (verdadeiro negativo/positivo,
+        em verde) e quantos errou (falso positivo/negativo, em vermelho). O ponto fraco aqui é o
+        falso negativo: 28 clientes que sairiam e o modelo não sinalizou.
+      </p>
+      <div class="cm-grid" id="confusion-matrix"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-assessores" role="tabpanel" aria-labelledby="tab-assessores">
+    <p class="panel-intro">
+      Esta aba olha o risco por outro ângulo: não o churn do cliente, mas o assessor que atende
+      esse cliente sair da casa. "AuC exposto" é quanto de patrimônio sob custódia fica vulnerável
+      se os clientes de maior risco desse assessor específico saírem, e ajuda a decidir por onde
+      começar uma ação de retenção quando o recurso é limitado.
+    </p>
+    <div class="card">
+      <h2>Top 15 assessores por AuC exposto</h2>
+      <div class="table-scroll">
+        <table id="tabela-assessores">
+          <thead><tr><th>Assessor</th><th class="num">Clientes</th><th class="num">AuC total (mi)</th><th class="num">AuC exposto (mi)</th><th class="num">% exposta</th><th>Canal</th><th class="num">Anos de casa</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer class="page">pipeline_churn_finance · dashboard estático (ADR-0005) · GradientBoosting v2 portado para JS, zero cold start</footer>
+
+<script type="module">
+import { predict } from './infer.mjs';
+
+/* ---------- dados (CSVs publicados por tools/build_site.py) ---------- */
+async function csv(name) {
+  const text = await fetch('./data/' + name).then(r => r.text());
+  const [headerLine, ...rows] = text.trim().split(/\r?\n/);
+  const headers = headerLine.split(',');
+  return rows.map(line => {
+    const cells = line.split(',');
+    return Object.fromEntries(headers.map((h, i) => [h, cells[i]]));
+  });
+}
+
+const model = await fetch('./model.json').then(r => r.json());
+const data = {
+  clientes: await csv('base_clientes_v2_limpo.csv'),
+  comparacao: await csv('comparacao_v1_v2.csv'),
+  feature_importance: await csv('feature_importance_v2.csv'),
+  cv_scores: await csv('cv_scores_v2.csv'),
+  thresholds: await csv('thresholds_v2.csv'),
+  confusion_matrix: (await csv('confusion_matrix.csv'))[0],
+  assessores: await csv('carteira_exposta_por_assessor.csv'),
+};
+
+/* ---------- tema ---------- */
+const root = document.documentElement;
+const stored = (() => { try { return localStorage.getItem('rr-theme'); } catch { return null; } })();
+function applyTheme(choice) {
+  if (choice === 'light') root.setAttribute('data-theme', 'light');
+  else if (choice === 'dark') root.setAttribute('data-theme', 'dark');
+  else root.removeAttribute('data-theme');
+  document.querySelectorAll('.theme-toggle button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeChoice === choice)));
+  try { localStorage.setItem('rr-theme', choice); } catch {}
+}
+applyTheme(stored || 'system');
+document.querySelectorAll('.theme-toggle button').forEach(b => b.addEventListener('click', () => applyTheme(b.dataset.themeChoice)));
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', 'false'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.setAttribute('aria-selected', 'true');
+    document.getElementById(tab.getAttribute('aria-controls')).classList.add('active');
+  });
+});
+
+/* ---------- gauge (SVG arc, zonas rotuladas) ---------- */
+const GAUGE_CX = 110, GAUGE_CY = 118, GAUGE_R = 92;
+function polar(cx, cy, r, angleDeg) {
+  const a = (angleDeg - 180) * Math.PI / 180;
+  return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+}
+function arcPath(cx, cy, r, a0, a1) {
+  const [x0, y0] = polar(cx, cy, r, a0);
+  const [x1, y1] = polar(cx, cy, r, a1);
+  const large = a1 - a0 > 180 ? 1 : 0;
+  return `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`;
+}
+function renderGaugeStatic(thr) {
+  const svg = document.getElementById('gauge-svg');
+  const midLow = thr * 0.6 * 180;
+  const midHigh = thr * 180;
+  svg.innerHTML = `
+    <path d="${arcPath(GAUGE_CX, GAUGE_CY, GAUGE_R, 0, midLow)}" stroke="var(--status-good)" stroke-width="14" fill="none" stroke-linecap="butt"/>
+    <path d="${arcPath(GAUGE_CX, GAUGE_CY, GAUGE_R, midLow, midHigh)}" stroke="var(--status-warning)" stroke-width="14" fill="none"/>
+    <path d="${arcPath(GAUGE_CX, GAUGE_CY, GAUGE_R, midHigh, 180)}" stroke="var(--status-critical)" stroke-width="14" fill="none"/>
+    <line id="gauge-needle" x1="${GAUGE_CX}" y1="${GAUGE_CY}" x2="${GAUGE_CX}" y2="${GAUGE_CY - GAUGE_R + 18}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" transform="rotate(-90 ${GAUGE_CX} ${GAUGE_CY})"/>
+    <circle cx="${GAUGE_CX}" cy="${GAUGE_CY}" r="5" fill="var(--ink)"/>
+  `;
+}
+function setNeedle(prob) {
+  const needle = document.getElementById('gauge-needle');
+  const angle = -90 + prob * 180;
+  needle.setAttribute('transform', `rotate(${angle} ${GAUGE_CX} ${GAUGE_CY})`);
+}
+
+/* ---------- risco / status (porta leve de src/serving_contract.py) ---------- */
+const thrMap = Object.fromEntries(data.thresholds.map(t => [t.segmento, Number(t.threshold)]));
+function riskLevel(prob, segmento) {
+  const thr = thrMap[segmento];
+  if (prob >= thr) return 'ALTO';
+  if (prob >= thr * 0.6) return 'MEDIO';
+  return 'BAIXO';
+}
+function statusClass(risco) { return risco === 'ALTO' ? 'critical' : risco === 'MEDIO' ? 'warning' : 'good'; }
+function statusLabel(risco) { return risco === 'ALTO' ? 'Alto risco' : risco === 'MEDIO' ? 'Médio risco' : 'Baixo risco'; }
+
+function readForm() {
+  const f = document.getElementById('predict-form');
+  const fd = new FormData(f);
+  const row = Object.fromEntries(fd.entries());
+  for (const k of Object.keys(row)) if (k !== 'segmento') row[k] = Number(row[k]);
+  row.sem_historico_12m = 0;
+  row.cliente_novo_sem_contato_hist = 0;
+  return row;
+}
+
+function runPredict() {
+  const row = readForm();
+  const prob = predict(row, model);
+  const risco = riskLevel(prob, row.segmento);
+  const thr = thrMap[row.segmento];
+
+  renderGaugeStatic(thr);
+  setNeedle(prob);
+
+  document.getElementById('gauge-value').textContent = (prob * 100).toFixed(1) + '%';
+  document.getElementById('gauge-threshold').textContent = `Threshold do segmento ${row.segmento}: ${(thr * 100).toFixed(0)}%`;
+
+  const pill = document.getElementById('status-pill');
+  pill.className = 'status-pill ' + statusClass(risco);
+  document.getElementById('status-text').textContent = statusLabel(risco);
+
+  const aucRisco = Math.round(row.auc_milhoes * 0.30 * prob * 100) / 100;
+  document.getElementById('kv-auc').textContent = 'R$ ' + row.auc_milhoes.toFixed(1) + ' mi';
+  document.getElementById('kv-auc-risco').textContent = 'R$ ' + aucRisco.toFixed(1) + ' mi';
+  const revisaoHumana = row.segmento === 'Wealth' || row.segmento === 'Family Office' || row.auc_milhoes >= 250;
+  document.getElementById('kv-fluxo').textContent = revisaoHumana ? 'Revisão humana (especialista)' : 'Automático → CRM';
+}
+document.getElementById('predict-form').addEventListener('input', runPredict);
+
+const PRESETS = [
+  { nome: 'Alto risco', desc: 'Private · 70d sem contato', status: 'critical',
+    vals: { segmento: 'Private', meses_cliente: 30, qtd_produtos: 3, retorno_12m_pct: 6, freq_contato_mes: 0, auc_milhoes: 25, dias_desde_ultimo_contato: 70, variacao_freq_contato_3m: -0.45, tempo_resposta_medio_horas: 60 } },
+  { nome: 'Médio risco', desc: 'Alta Renda · cadência em queda', status: 'warning',
+    vals: { segmento: 'Alta Renda', meses_cliente: 24, qtd_produtos: 3, retorno_12m_pct: 9, freq_contato_mes: 1, auc_milhoes: 8, dias_desde_ultimo_contato: 30, variacao_freq_contato_3m: -0.15, tempo_resposta_medio_horas: 24 } },
+  { nome: 'Baixo risco', desc: 'Wealth · contato recente', status: 'good',
+    vals: { segmento: 'Wealth', meses_cliente: 96, qtd_produtos: 6, retorno_12m_pct: 14, freq_contato_mes: 5, auc_milhoes: 150, dias_desde_ultimo_contato: 6, variacao_freq_contato_3m: 0.05, tempo_resposta_medio_horas: 8 } },
+];
+const presetsEl = document.getElementById('presets');
+PRESETS.forEach(p => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'preset-btn';
+  btn.innerHTML = `<span class="preset-dot" style="background:var(--status-${p.status})"></span>${p.nome} <span style="color:var(--ink-muted); font-weight:400;">· ${p.desc}</span>`;
+  btn.addEventListener('click', () => {
+    for (const [k, v] of Object.entries(p.vals)) {
+      const el = document.querySelector(`[name="${k}"]`);
+      if (el) el.value = v;
+    }
+    runPredict();
+  });
+  presetsEl.appendChild(btn);
+});
+runPredict();
+
+/* ---------- Carteira ---------- */
+const TABELA_CARTEIRA_LIMITE = 200;
+const segmentos = [...new Set(data.clientes.map(c => c.segmento))].sort();
+const filtroSeg = document.getElementById('filtro-segmento');
+segmentos.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; filtroSeg.appendChild(o); });
+
+function renderCarteira() {
+  const seg = filtroSeg.value, risco = document.getElementById('filtro-risco').value;
+  const filtradas = data.clientes
+    .filter(c => !seg || c.segmento === seg)
+    .filter(c => !risco || c.risco === risco)
+    .sort((a, b) => Number(b.prob_churn) - Number(a.prob_churn));
+  const rows = filtradas.slice(0, TABELA_CARTEIRA_LIMITE);
+  document.querySelector('#tabela-carteira tbody').innerHTML = rows.map(c => `
+    <tr><td>${c.cliente_id}</td><td>${c.segmento}</td><td class="num">${c.meses_cliente}</td>
+        <td class="num">${Number(c.auc_milhoes).toFixed(1)}</td><td class="num">${(Number(c.prob_churn) * 100).toFixed(1)}%</td>
+        <td><span class="risk-tag ${c.risco}"><span class="dot"></span>${c.risco === 'ALTO' ? 'Alto' : c.risco === 'MEDIO' ? 'Médio' : 'Baixo'}</span></td></tr>
+  `).join('');
+  document.getElementById('carteira-nota').textContent = filtradas.length > TABELA_CARTEIRA_LIMITE
+    ? `Mostrando as ${TABELA_CARTEIRA_LIMITE} relações de maior risco do filtro atual, de ${filtradas.length} encontradas (${data.clientes.length} na carteira inteira).`
+    : `${filtradas.length} relações no filtro atual, de ${data.clientes.length} na carteira inteira.`;
+}
+filtroSeg.addEventListener('change', renderCarteira);
+document.getElementById('filtro-risco').addEventListener('change', renderCarteira);
+renderCarteira();
+
+const seriesColors = ['var(--series-1)', 'var(--series-2)', 'var(--series-3)', 'var(--series-4)'];
+const segCounts = segmentos.map(s => ({ s, n: data.clientes.filter(c => c.segmento === s).length }));
+const maxCount = Math.max(...segCounts.map(x => x.n));
+document.getElementById('segmento-legend').innerHTML = segmentos.map((s, i) => `<span><i style="background:${seriesColors[i]}"></i>${s}</span>`).join('');
+document.getElementById('segmento-bars').innerHTML = segCounts.map((x, i) => `
+  <div class="bar-row"><span class="label">${x.s}</span>
+    <div class="bar-track"><div class="bar-fill" style="width:${(x.n / maxCount * 100).toFixed(0)}%; background:${seriesColors[i]}"></div></div>
+    <span class="val">${x.n}</span></div>
+`).join('');
+
+/* ---------- Performance ---------- */
+const metrics = [
+  { key: 'recall_churn', label: 'Recall (churn)', fmt: v => (v * 100).toFixed(1) + '%' },
+  { key: 'f1_churn', label: 'F1 (churn)', fmt: v => (v * 100).toFixed(1) + '%' },
+  { key: 'roc_auc', label: 'ROC-AUC', fmt: v => v.toFixed(3) },
+];
+document.getElementById('cmp-chart').innerHTML = metrics.map(m => {
+  const v1 = Number(data.comparacao[0][m.key]), v2 = Number(data.comparacao[1][m.key]);
+  const max = Math.max(v1, v2, 0.001);
+  return `<div class="cmp-metric">
+    <div class="m-label">${m.label}</div>
+    <div class="cmp-bars">
+      <div class="cmp-bar-row"><span class="name">v1</span><div class="bar-track"><div class="bar-fill" style="width:${(v1/max*100).toFixed(0)}%; background:var(--series-1)"></div></div><span class="val">${m.fmt(v1)}</span></div>
+      <div class="cmp-bar-row"><span class="name">v2</span><div class="bar-track"><div class="bar-fill" style="width:${(v2/max*100).toFixed(0)}%; background:var(--series-2)"></div></div><span class="val">${m.fmt(v2)}</span></div>
+    </div>
+  </div>`;
+}).join('');
+
+const fiSorted = [...data.feature_importance].sort((a, b) => b.importance - a.importance).slice(0, 10);
+const fiMax = Math.max(...fiSorted.map(f => Number(f.importance)));
+const seqSteps = ['--seq-1', '--seq-2', '--seq-3', '--seq-4'];
+document.getElementById('feature-bars').innerHTML = fiSorted.map((f) => {
+  const v = Number(f.importance);
+  const step = Math.min(seqSteps.length - 1, Math.floor((v / fiMax) * (seqSteps.length - 1)));
+  return `<div class="bar-row"><span class="label">${f.feature}</span>
+    <div class="bar-track"><div class="bar-fill" style="width:${(v / fiMax * 100).toFixed(0)}%; background:var(${seqSteps[step]})"></div></div>
+    <span class="val">${(v * 100).toFixed(1)}%</span></div>`;
+}).join('');
+
+const cvMax = Math.max(...data.cv_scores.map(c => Number(c.recall_churn)));
+document.getElementById('cv-bars').innerHTML = data.cv_scores.map(c => `
+  <div class="bar-row"><span class="label">${c.fold}</span>
+    <div class="bar-track"><div class="bar-fill" style="width:${(Number(c.recall_churn) / cvMax * 100).toFixed(0)}%; background:var(--series-3)"></div></div>
+    <span class="val">${(Number(c.recall_churn) * 100).toFixed(1)}%</span></div>
+`).join('');
+
+document.querySelector('#tabela-thresholds tbody').innerHTML = data.thresholds.map(t => `
+  <tr><td>${t.segmento}</td><td class="num">${(Number(t.threshold) * 100).toFixed(0)}%</td>
+      <td class="num">${(Number(t.recall) * 100).toFixed(1)}%</td><td class="num">${(Number(t.precision) * 100).toFixed(1)}%</td>
+      <td>${t.origem_threshold === 'segmento' ? 'Segmento' : 'Fallback global'}</td></tr>
+`).join('');
+
+const cm = data.confusion_matrix;
+document.getElementById('confusion-matrix').innerHTML = `
+  <div class="cm-cell cm-good"><div class="n">${cm.tn}</div><div class="lbl">Verdadeiro negativo</div></div>
+  <div class="cm-cell cm-bad"><div class="n">${cm.fp}</div><div class="lbl">Falso positivo</div></div>
+  <div class="cm-cell cm-bad"><div class="n">${cm.fn}</div><div class="lbl">Falso negativo</div></div>
+  <div class="cm-cell cm-good"><div class="n">${cm.tp}</div><div class="lbl">Verdadeiro positivo</div></div>
+`;
+
+/* ---------- Assessores ---------- */
+const assessoresTop15 = [...data.assessores]
+  .sort((a, b) => Number(b.auc_exposto_total) - Number(a.auc_exposto_total))
+  .slice(0, 15);
+document.querySelector('#tabela-assessores tbody').innerHTML = assessoresTop15.map(a => `
+  <tr><td>${a.assessor_id}</td><td class="num">${a.qtd_clientes}</td><td class="num">${Number(a.auc_total_carteira).toFixed(1)}</td>
+      <td class="num">${Number(a.auc_exposto_total).toFixed(1)}</td><td class="num">${(Number(a.pct_carteira_exposta) * 100).toFixed(1)}%</td>
+      <td>${a.canal}</td><td class="num">${Number(a.anos_de_casa).toFixed(1)}</td></tr>
+`).join('');
+</script>
+
+<script type="module" src="./shap-layer.mjs"></script></body>
+</html>
