@@ -2,6 +2,8 @@
 
 Projeto de portfólio fictício sobre early-warning de churn em wealth management. O dado é sintético; métricas offline não devem ser apresentadas como efeito de negócio real.
 
+> **Código não-trivial antes de deploy público (Pages)** → aplicar `spec-governance` da base (`Base_de_Conhecimento/.claude/skills/spec-governance/SKILL.md`).
+
 ## Linguagem ubíqua
 
 | Termo | Significado |
