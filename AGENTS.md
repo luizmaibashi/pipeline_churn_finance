@@ -21,7 +21,7 @@ Projeto de portfólio fictício sobre early-warning de churn em wealth managemen
 - **v2 apresentação:** concluída no Bloco 4. `app.py`, `monitor.py`, `agent.py` e `agent_chat.py` rodam o modelo v2, features de early-warning e segmentos de wealth. `shap_analysis.py` v1 aposentado (só `shap_analysis_v2.py`).
 - **v2 serving contract:** `serving_contract.py` (ADR-0003) é a fonte única de features, segmentos, thresholds, regras de risco/fluxo e limiares de fator de risco. `api.py`/`app.py`/`agent.py`/`monitor.py` são consumidores finos.
 - **v2 notebooks + infra:** concluído no Bloco 5. `01` reenquadrado para wealth, `02` mantido como apêndice de Spark, stack Docker/Envoy assumida como showcase de engenharia explícito no README. MLOps-lite v1 (`version_manager.py`) removido.
-- **evidência:** 55 testes. `feature_importance_v2.csv`, thresholds e SHAP v2 são os artefatos citáveis.
+- **evidência:** 58 testes. `feature_importance_v2.csv`, thresholds e SHAP v2 são os artefatos citáveis.
 - **limite:** no teste há 28 eventos. A diferença de recall v2 menos v1 tem IC95% que inclui zero; não declarar ganho robusto.
 
 ## Regras
